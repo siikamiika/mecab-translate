@@ -1,0 +1,51 @@
+.atom:hover {
+    background-color: gray;
+}
+
+#output {
+    font-size: 36px;
+}
+
+#info {
+    font-size: 20px;
+}
+
+.noun, .proper-noun, .pronoun {
+    background-color: #A0FFA0;
+}
+
+.preposition, .postposition {
+    background-color: #8090FF;
+}
+
+.prefix, .suffix {
+    background-color: #A0B0FF;
+}
+
+.conjunction {
+    background-color: #A0C0FF;
+}
+
+.verb {
+    background-color: #FF4040;
+}
+
+.adjective {
+    background-color: #FF7070;
+}
+
+.adverb {
+    background-color: #FF9090;
+}
+
+.determiner {
+    background-color: #FFB0B0;
+}
+
+.interjection {
+    background-color: #FFFFA0;
+}
+
+.number {
+    background-color: #50FFFF;
+}
