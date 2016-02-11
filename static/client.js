@@ -60,6 +60,18 @@ function mc_flt (v) {
     return v != '' && v != '*';
 }
 
+function common_sort (a, b) {
+    if ((a.common && b.common) || (!a.common && !b.common)) {
+        return 0;
+    }
+    else if (b.common) {
+        return 1;
+    }
+    else {
+        return -1;
+    }
+}
+
 function show_output (data) {
 
     var output_parts = [];
@@ -89,22 +101,23 @@ function show_output (data) {
                 // such async
                 return function () {
                     XHR('POST', '/edict2', JSON.stringify(_j.lemma), function (lemma_trans) {
-                        //lemma_trans = JSON.parse(lemma_trans);
-                        //lemma_trans = lemma_trans ? lemma_trans.join('') : '';
-                        lemma_trans = JSON.stringify(JSON.parse(lemma_trans), null, 4);
-                        XHR('POST', '/edict2', JSON.stringify(_j.literal), function (literal_trans) {
-                            //literal_trans = JSON.parse(literal_trans);
-                            //literal_trans = literal_trans ? literal_trans.join('') : '';
-                            literal_trans = JSON.stringify(JSON.parse(literal_trans), null, 4);
-                            info.textContent = 'type: ' + ([_j.pos, _j.pos2, _j.pos3, _j.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
-                                'infl: ' + [_j.inflection_type, _j.inflection_form].filter(mc_flt).join(', ') + '\n' +
-                                'lemma: ' + (mc_flt(_j.lemma) ? _j.lemma : '') + '\n' +
-                                lemma_trans + '\n' +
-                                (literal_trans == lemma_trans ? '' :
-                                    'literal (in case lemma was incorrectly detected): ' + (mc_flt(_j.literal) ? _j.literal : '') + '\n' +
-                                    literal_trans);
-
-                        }, [['Content-Type', 'application/json; charset=utf-8']]);
+                        lemma_trans = JSON.parse(lemma_trans).sort(common_sort);
+                        info.textContent = 'type: ' + ([_j.pos, _j.pos2, _j.pos3, _j.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
+                            'infl: ' + [_j.inflection_type, _j.inflection_form].filter(mc_flt).join(', ') + '\n' +
+                            'lemma: ' + (mc_flt(_j.lemma) ? _j.lemma : '') + '\n' +
+                            lemma_trans.map(function (entry) {
+                                var output = []
+                                if (entry.common) {
+                                    output.push('common word');
+                                }
+                                output.push(entry.words.join(';'));
+                                output.push(entry.readings.join(';'));
+                                output.push(entry.translations.map(function (translation, i) {
+                                    var pos = '    ' + translation.parts_of_speech.join(',');
+                                    return [pos, '    ' + (i+1) + '.' + translation.definition].join('\n')
+                                }));
+                                return output.join('\n');
+                            }).join('\n\n');
                     }, [['Content-Type', 'application/json; charset=utf-8']]);
                 }
             }(_j));

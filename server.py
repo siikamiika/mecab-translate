@@ -94,6 +94,7 @@ class VeHandler(web.RequestHandler):
 
     def post(self):
         data = json.loads(self.request.body.decode('utf-8'))
+        data = data.replace('\n', '')
         ve_output = check_output(['ruby', 've_json.rb', data])
         self.write(ve_output)
 
