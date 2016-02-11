@@ -4,6 +4,7 @@ from tornado import web, ioloop
 from tornado.log import enable_pretty_logging
 from subprocess import check_output
 import json
+import re
 
 class Edict2(object):
 
@@ -16,24 +17,63 @@ class Edict2(object):
     def get(self, word):
         return self.dictionary.get(word)
 
+    def _entry(self, line):
+        entry = dict(words=[], readings=[], translations=[], common=False)
+        jp, eng = line.split('/', 1)
+
+        # words, readings
+        if '[' in jp:
+            words, readings = jp.split(None, 1)
+            entry['readings'] = readings.strip()[1:-1].split(';')
+        else:
+            words = jp
+        entry['words'] = words.strip().split(';')
+
+        # common
+        eng = re.sub(r'/EntL\d+X?/$', r'', eng.strip())
+        if eng.endswith('/(P)'):
+            entry['common'] = True
+            eng = eng[:-4]
+
+        # translations
+        if re.match(r'(\(.*?\)) \(1\)', eng):
+            i = 1
+            while True:
+                translation = dict()
+                # (n) (1) (esp. 例え) example/(2) (esp. 譬え, 喩え) simile/metaphor/allegory/fable/parable
+                # |1|-----|        2       |-|                           3                            |
+                pos, definition, eng = re.match(
+                    r'(?:\((.*?)\) )?\({}\) ' # (n) (1) 
+                    r'(.*?)' # (esp. 例え) example
+                    r'(?:/(?=(?:\(.*?\) )?\({}\))|$)(.*)'.format(i, i+1), # /(2) (esp. .....
+                    eng).groups()
+                translation['definition'] = definition
+                translation['parts_of_speech'] = pos.split(',') if pos else []
+                entry['translations'].append(translation)
+                if not eng:
+                    break
+                i += 1
+        else:
+            translation = dict()
+            pos, definition = re.match(r'\((.*?)\) (.*)', eng).groups()
+            entry['translations'].append(
+                dict(parts_of_speech=pos.split(','), definition=definition))
+
+        return entry
+
     def _parse(self):
 
         print(self.dictfile.readline())
 
         for line in self.dictfile:
 
-            keys = line.split('/', 1)[0].strip()
-            if '[' in keys:
-                keys = keys.split(None, 1)
-                keys = '{};{}'.format(keys[0], keys[1][1:-1])
-            keys = [(k[:-3], True) if k[-3:] == '(P)' else (k, False)
-                for k in keys.split(';')]
+            entry = self._entry(line)
 
-            # TODO: use (P) somehow
-            for key in keys:
-                if not self.dictionary.get(key[0]):
-                    self.dictionary[key[0]] = []
-                self.dictionary[key[0]].append(line)
+            keys = [re.match(r'[^\(]+', k).group(0) for k in entry['words'] + entry['readings']]
+            for k in keys:
+                if not self.dictionary.get(k):
+                    self.dictionary[k] = []
+                self.dictionary[k].append(entry)
 
         self.dictfile.close()
 

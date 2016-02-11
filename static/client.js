@@ -68,9 +68,17 @@ function show_output (data) {
     // words
     for (i = 0; i < data.length; i++) {
         _cls = data[i].part_of_speech.replace(' ', '-');
+        _i = data[i];
         output_parts[i] = document.createElement('ruby');
         output_parts[i].classList.add(_cls);
         output_parts[i].setAttribute('title', _cls);
+        output_parts[i].addEventListener('contextmenu', function (_i) {
+            return function () {
+                XHR('POST', '/edict2', JSON.stringify(_i.lemma), function (lemma_trans) {
+                    info.textContent = lemma_trans;//JSON.parse(lemma_trans).join('');
+                }, [['Content-Type', 'application/json; charset=utf-8']]);
+            }
+        }(_i));
         // word parts
         for (j = 0; j < data[i].tokens.length; j++) {
             _j = data[i].tokens[j];
@@ -81,12 +89,13 @@ function show_output (data) {
                 // such async
                 return function () {
                     XHR('POST', '/edict2', JSON.stringify(_j.lemma), function (lemma_trans) {
-                        lemma_trans = JSON.parse(lemma_trans);
-                        lemma_trans = lemma_trans ? lemma_trans.join('') : '';
+                        //lemma_trans = JSON.parse(lemma_trans);
+                        //lemma_trans = lemma_trans ? lemma_trans.join('') : '';
+                        lemma_trans = JSON.stringify(JSON.parse(lemma_trans), null, 4);
                         XHR('POST', '/edict2', JSON.stringify(_j.literal), function (literal_trans) {
-                            literal_trans = JSON.parse(literal_trans);
-                            literal_trans = literal_trans ? literal_trans.join('') : '';
-
+                            //literal_trans = JSON.parse(literal_trans);
+                            //literal_trans = literal_trans ? literal_trans.join('') : '';
+                            literal_trans = JSON.stringify(JSON.parse(literal_trans), null, 4);
                             info.textContent = 'type: ' + ([_j.pos, _j.pos2, _j.pos3, _j.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
                                 'infl: ' + [_j.inflection_type, _j.inflection_form].filter(mc_flt).join(', ') + '\n' +
                                 'lemma: ' + (mc_flt(_j.lemma) ? _j.lemma : '') + '\n' +
