@@ -113,9 +113,13 @@ function show_output (data) {
                                 output.push(entry.words.join(';'));
                                 output.push(entry.readings.join(';'));
                                 output.push(entry.translations.map(function (translation, i) {
-                                    var pos = '    ' + translation.parts_of_speech.join(',');
-                                    return [pos, '    ' + (i+1) + '.' + translation.definition].join('\n')
-                                }));
+                                    var tl = []
+                                    if (translation.parts_of_speech.length) {
+                                        tl.push('    ' + translation.parts_of_speech.join(','));
+                                    }
+                                    tl.push('    ' + (i+1) + '. ' + translation.definition);
+                                    return tl.join('\n')
+                                }).join('\n'));
                                 return output.join('\n');
                             }).join('\n\n');
                     }, [['Content-Type', 'application/json; charset=utf-8']]);
