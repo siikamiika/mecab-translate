@@ -101,11 +101,11 @@ function show_output (data) {
                 // such async
                 return function () {
                     XHR('POST', '/edict2', JSON.stringify(_j.lemma), function (lemma_trans) {
-                        lemma_trans = JSON.parse(lemma_trans).sort(common_sort);
+                        lemma_trans = JSON.parse(lemma_trans);
                         info.textContent = 'type: ' + ([_j.pos, _j.pos2, _j.pos3, _j.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
                             'infl: ' + [_j.inflection_type, _j.inflection_form].filter(mc_flt).join(', ') + '\n' +
-                            'lemma: ' + (mc_flt(_j.lemma) ? _j.lemma : '') + '\n' +
-                            lemma_trans.map(function (entry) {
+                            'lemma: ' + (mc_flt(_j.lemma) ? _j.lemma : '') + '\n\n' +
+                            (lemma_trans ? lemma_trans.sort(common_sort).map(function (entry) {
                                 var output = []
                                 if (entry.common) {
                                     output.push('common word');
@@ -113,7 +113,7 @@ function show_output (data) {
                                 output.push(entry.words.join(';'));
                                 output.push(entry.readings.join(';'));
                                 output.push(entry.translations.map(function (translation, i) {
-                                    var tl = []
+                                    var tl = [];
                                     if (translation.parts_of_speech.length) {
                                         tl.push('    ' + translation.parts_of_speech.join(','));
                                     }
@@ -121,7 +121,7 @@ function show_output (data) {
                                     return tl.join('\n')
                                 }).join('\n'));
                                 return output.join('\n');
-                            }).join('\n\n');
+                            }).join('\n\n') : 'no translation available');
                     }, [['Content-Type', 'application/json; charset=utf-8']]);
                 }
             }(_j));
