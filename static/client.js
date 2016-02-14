@@ -22,6 +22,14 @@ function XHR (type, path, data, onready, headers, async) {
     xhr.send(data);
 }
 
+function color (text, color) {
+    return '<span style="color:'+color+'">'+text+'</span>';
+}
+
+function style (text, style) {
+    return '<span style="'+style+'">'+text+'</span>';
+}
+
 var hira_to_kata = {
 
     あ: 'ア', い: 'イ', う: 'ウ', ゔ: 'ヴ', え: 'エ', お: 'オ',
@@ -102,26 +110,28 @@ function show_output (data) {
                 return function () {
                     XHR('POST', '/edict2', JSON.stringify(_j.lemma), function (lemma_trans) {
                         lemma_trans = JSON.parse(lemma_trans);
-                        info.textContent = 'type: ' + ([_j.pos, _j.pos2, _j.pos3, _j.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
+                        info.innerHTML = ('type: ' + ([_j.pos, _j.pos2, _j.pos3, _j.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
                             'infl: ' + [_j.inflection_type, _j.inflection_form].filter(mc_flt).join(', ') + '\n' +
                             'lemma: ' + (mc_flt(_j.lemma) ? _j.lemma : '') + '\n\n' +
                             (lemma_trans ? lemma_trans.sort(common_sort).map(function (entry) {
                                 var output = []
                                 if (entry.common) {
-                                    output.push('common word');
+                                    output.push(color('common word', 'green'));
                                 }
-                                output.push(entry.words.join(';'));
-                                output.push(entry.readings.join(';'));
+                                output.push(style(entry.words.map(function (w) {return color(w, 'red')}).join('; '), 'font-size: 28px;'));
+                                if (entry.readings.length) {
+                                    output.push(style(entry.readings.map(function (w) {return color(w, 'green')}).join('; '), 'font-size: 20px;'));
+                                }
                                 output.push(entry.translations.map(function (translation, i) {
                                     var tl = [];
                                     if (translation.parts_of_speech.length) {
-                                        tl.push('    ' + translation.parts_of_speech.join(','));
+                                        tl.push(translation.parts_of_speech.map(function (pos) {return color(pos, 'blue')}).join(', '));
                                     }
-                                    tl.push('    ' + (i+1) + '. ' + translation.definition);
+                                    tl.push((i+1) + '. ' + translation.definition);
                                     return tl.join('\n')
                                 }).join('\n'));
                                 return output.join('\n');
-                            }).join('\n\n') : 'no translation available');
+                            }).join('\n\n\n') : 'no translation available')).replace(/(\(.*?\))/g, function(_, b) {return color(b, '#8090FF')});
                     }, [['Content-Type', 'application/json; charset=utf-8']]);
                 }
             }(_j));
