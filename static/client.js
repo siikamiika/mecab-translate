@@ -54,6 +54,62 @@ var hira_to_kata = {
 
 }
 
+
+// PoS
+var MEISHI = '名詞'
+var KOYUUMEISHI = '固有名詞'
+var DAIMEISHI = '代名詞'
+var JODOUSHI = '助動詞'
+var KAZU = '数'
+var JOSHI = '助詞'
+var SETTOUSHI = '接頭詞'
+var DOUSHI = '動詞'
+var KIGOU = '記号'
+var FIRAA = 'フィラー'
+var SONOTA = 'その他'
+var KANDOUSHI = '感動詞'
+var RENTAISHI = '連体詞'
+var SETSUZOKUSHI = '接続詞'
+var FUKUSHI = '副詞'
+var SETSUZOKUJOSHI = '接続助詞'
+var KEIYOUSHI = '形容詞'
+
+// Pos2 and Inflection types
+var HIJIRITSU = '非自立'
+var FUKUSHIKANOU = '副詞可能'
+var SAHENSETSUZOKU = 'サ変接続'
+var KEIYOUDOUSHIGOKAN = '形容動詞語幹'
+var NAIKEIYOUSHIGOKAN = 'ナイ形容詞語幹'
+var JODOUSHIGOKAN = '助動詞語幹'
+var FUKUSHIKA = '副詞化'
+var TAIGENSETSUZOKU = '体言接続'
+var RENTAIKA = '連体化'
+var TOKUSHU = '特殊'
+var SETSUBI = '接尾'
+var SETSUZOKUSHITEKI = '接続詞的'
+var DOUSHIHIJIRITSUTEKI = '動詞非自立的'
+var SAHEN_SURU = 'サ変・スル'
+var TOKUSHU_TA = '特殊・タ'
+var TOKUSHU_NAI = '特殊・ナイ'
+var TOKUSHU_TAI = '特殊・タイ'
+var TOKUSHU_DESU = '特殊・デス'
+var TOKUSHU_DA = '特殊・ダ'
+var TOKUSHU_MASU = '特殊・マス'
+var TOKUSHU_NU = '特殊・ヌ'
+var FUHENKAGATA = '不変化型'
+var JINMEI = '人名'
+var MEIREI_I = '命令ｉ'
+var KAKARIJOSHI = '係助詞'
+
+// Etc
+var NA = 'な'
+var NI = 'に'
+var TE = 'て'
+var DE = 'で'
+var BA = 'ば'
+var NN = 'ん'
+var SA = 'さ'
+
 function same_kana (a, b) {
 
     for (var i = 0; i < a.length; i++) {
@@ -83,51 +139,221 @@ function common_sort (a, b) {
 function show_output (data) {
 
     var output_parts = [];
-    var _i, _j, _cls, _fg;
+    var _i, eat_next, attach_to_previous, update_pos, eat_lemma, pos, also_attach_to_lemma;
 
-    // words
+    // preprocessing
     for (i = 0; i < data.length; i++) {
         _i = data[i];
-        output_parts[i] = document.createElement('span');
-        output_parts[i].textContent = _i.literal;
-        output_parts[i].classList.add('atom');
-        output_parts[i].addEventListener('click', function (_i) {
-            // such async
-            return function () {
-                XHR('POST', '/edict2', JSON.stringify(_i.lemma), function (lemma_trans) {
-                    lemma_trans = JSON.parse(lemma_trans);
-                    info.innerHTML = ('type: ' + ([_i.pos, _i.pos2, _i.pos3, _i.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
-                        'infl: ' + [_i.inflection_type, _i.inflection_form].filter(mc_flt).join(', ') + '\n' +
-                        'lemma: ' + (mc_flt(_i.lemma) ? _i.lemma : '') + '\n\n' +
-                        (lemma_trans ? lemma_trans.sort(common_sort).map(function (entry) {
-                            var output = []
-                            if (entry.common) {
-                                output.push(color('common word', 'green'));
-                            }
-                            output.push(style(entry.words.map(function (w) {return color(w, 'red')}).join('; '), 'font-size: 28px;'));
-                            if (entry.readings.length) {
-                                output.push(style(entry.readings.map(function (w) {return color(w, 'green')}).join('; '), 'font-size: 20px;'));
-                            }
-                            output.push(entry.translations.map(function (translation, i) {
-                                var tl = [];
-                                if (translation.parts_of_speech.length) {
-                                    tl.push(translation.parts_of_speech.map(function (pos) {return color(pos, 'blue')}).join(', '));
-                                }
-                                tl.push((i+1) + '. ' + translation.definition);
-                                return tl.join('\n')
-                            }).join('\n'));
-                            return output.join('\n');
-                        }).join('\n\n\n') : 'no translation available')).replace(/(\(.*?\))/g, function(_, b) {return color(b, '#8090FF')});
-                }, [['Content-Type', 'application/json; charset=utf-8']]);
-            }
-        }(_i));
-    }
 
-    output.innerHTML = '';
-    for (i = 0; i < output_parts.length; i++) {
-        output.appendChild(output_parts[i]);
-        output.appendChild(document.createTextNode(' '));
+        pos = null;
+        eat_next = false;
+        eat_lemma = true;
+        attach_to_previous = false;
+        also_attach_to_lemma = false;
+        update_pos = false;
+
+        // part of speech class
+        if (_i.pos == MEISHI) {
+            pos = 'noun';
+            if (_i.pos2 == KOYUUMEISHI) {
+                pos = 'proper-noun';
+            }
+            else if (_i.pos2 == DAIMEISHI) {
+                pos = 'pronoun';
+            }
+            else if  (_i.pos2 == FUKUSHIKANOU || _i.pos2 == SAHENSETSUZOKU || _i.pos2 == KEIYOUDOUSHIGOKAN || _i.pos2 == NAIKEIYOUSHIGOKAN) {
+                if (data[i + 1] !== undefined) {
+                    if (data[i + 1].inflection_type == SAHEN_SURU) {
+                        pos = 'verb';
+                        eat_next = true;
+                    }
+                    else if (data[i + 1].inflection_type == TOKUSHU_DA) {
+                        pos = 'adjective';
+                        if (data[i + 1].inflection_form == TAIGENSETSUZOKU) {
+                            eat_next = true;
+                            eat_lemma = false;
+                        }
+                    }
+                    else if (data[i + 1].inflection_type == TOKUSHU_NAI) {
+                        pos = 'adjective';
+                        eat_next =  true;
+                    }
+                    else if (data[i + 1].pos == JOSHI && data[i + 1].literal == NI) {
+                        pos = 'adverb';
+                        eat_next = false;
+                    }
+                }
+            }
+            else if (_i.pos2 == HIJIRITSU || _i.pos2 == TOKUSHU) {
+                if (data[i + 1] !== undefined) {
+                    if (_i.pos3 == FUKUSHIKANOU) {
+                        if (data[i + 1].pos == JOSHI && data[i + 1].literal == NI) {
+                            pos = 'adverb';
+                            eat_next = true;
+                        }
+                    }
+                    else if (_i.pos3 == JODOUSHIGOKAN) {
+                        if (data[i + 1].inflection_type == TOKUSHU_DA) {
+                            pos = 'verb'; // aux
+                            if (data[i + 1].inflection_form == TAIGENSETSUZOKU) {
+                                eat_next = false;
+                            }
+                        }
+                        else if (data[i + 1].pos == JOSHI && data[i + 1].pos2 == FUKUSHIKA) {
+                            pos = 'adverb';
+                            eat_next = true;
+                        }
+                    }
+                    else if (_i.pos3 == KEIYOUDOUSHIGOKAN) {
+                        pos = 'adjective';
+                        if (data[i + 1].inflection_type == TOKUSHU_DA && data[i + 1].inflection_form == TAIGENSETSUZOKU || data[i + 1].pos2 == RENTAIKA) {
+                            eat_next = true;
+                        }
+                    }
+                }
+            }
+            else if (_i.pos2 == KAZU) {
+                pos = 'number';
+                // meh
+            }
+            else if (_i.pos2 == SETSUBI) {
+                if (_i.pos3 == JINMEI) {
+                    pos = 'suffix';
+                }
+                else {
+                    if (_i.pos3 == TOKUSHU && _i.lemma == SA) {
+                        update_pos = true;
+                        pos = 'noun';
+                    }
+                    else {
+                        also_attach_to_lemma = true;
+                    }
+                    attach_to_previous = true;
+                }
+            }
+            else if (_i.pos2 == SETSUZOKUSHITEKI) {
+                pos = 'conjunction';
+            }
+            else if (_i.pos2 == DOUSHIHIJIRITSUTEKI) {
+                pos = 'verb'; // nominal
+            }
+        }
+        else if (_i.pos == SETTOUSHI) {
+            pos = 'prefix';
+        }
+        else if (_i.pos == JODOUSHI) {
+            pos = 'postposition';
+            console.log([TOKUSHU_TA, TOKUSHU_NAI, TOKUSHU_TAI, TOKUSHU_MASU, TOKUSHU_NU].indexOf(_i.inflection_type))
+            if ((data[i - 1] === undefined || (data[i - 1] !== undefined && data[i - 1].pos2 != KAKARIJOSHI)) &&
+                [TOKUSHU_TA, TOKUSHU_NAI, TOKUSHU_TAI, TOKUSHU_MASU, TOKUSHU_NU].indexOf(_i.inflection_type) > -1) {
+                attach_to_previous = true;
+            }
+            else if (_i.inflection_type == FUHENKAGATA && _i.lemma == NN) {
+                attach_to_previous = true;
+            }
+            else if ((_i.inflection_type == TOKUSHU_DA || _i.inflection_type == TOKUSHU_DESU) && _i.literal != NA) {
+                pos = 'verb';
+            }
+        }
+        else if (_i.pos == DOUSHI) {
+            pos = 'verb';
+            if (_i.pos2 == SETSUBI) {
+                attach_to_previous = true;
+            }
+            else if (_i.pos2 == HIJIRITSU && _i.inflection_form != MEIREI_I) {
+                attach_to_previous = true;
+            }
+        }
+        else if (_i.pos == KEIYOUSHI) {
+            pos = 'adjective';
+        }
+        else if (_i.pos == JOSHI) {
+            pos = 'postposition';
+            if (_i.pos2 == SETSUZOKUSHI && [TE, DE, BA].indexOf(_i.literal) > -1) {
+                attach_to_previous = true;
+            }
+        }
+        else if (_i.pos == RENTAISHI) {
+            pos = 'determiner';
+        }
+        else if (_i.pos == SETSUZOKUSHI) {
+            pos = 'conjunction';
+        }
+        else if (_i.pos == FUKUSHI) {
+            pos = 'adverb';
+        }
+        else if (_i.pos == KIGOU) {
+            pos = 'symbol';
+        }
+        else if (_i.pos == KANDOUSHI || _i.pos == FIRAA) {
+            pos = 'interjection';
+        }
+        else {
+            pos = 'other';
+        }
+
+        if (attach_to_previous && output_parts.length > 0) {
+            output_parts[output_parts.length - 1].tokens.push(_i);
+            if (update_pos) {
+                output_parts[output_parts.length - 1].part_of_speech = pos;
+            }
+        }
+        else {
+            var word = {
+                part_of_speech: pos,
+                tokens: [_i]
+            }
+            if (eat_next) {
+                i++;
+                word.tokens.push(data[i]);
+            }
+            output_parts.push(word);
+        }
     }
+    console.log(output_parts)
+
+    // output_parts.map(function (part) {
+    //     output_parts[i] = document.createElement('span');
+    //     output_parts[i].textContent = _i.literal;
+    //     output_parts[i].classList.add('atom');
+    //     output_parts[i].classList.add(pos);
+    //     output_parts[i].addEventListener('click', function (_i) {
+    //         // such async
+    //         return function () {
+    //             XHR('POST', '/edict2', JSON.stringify(_i.lemma), function (lemma_trans) {
+    //                 lemma_trans = JSON.parse(lemma_trans);
+    //                 info.innerHTML = ('type: ' + ([_i.pos, _i.pos2, _i.pos3, _i.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
+    //                     'infl: ' + [_i.inflection_type, _i.inflection_form].filter(mc_flt).join(', ') + '\n' +
+    //                     'lemma: ' + (mc_flt(_i.lemma) ? _i.lemma : '') + '\n\n' +
+    //                     (lemma_trans ? lemma_trans.sort(common_sort).map(function (entry) {
+    //                         var output = []
+    //                         if (entry.common) {
+    //                             output.push(color('common word', 'green'));
+    //                         }
+    //                         output.push(style(entry.words.map(function (w) {return color(w, 'red')}).join('; '), 'font-size: 28px;'));
+    //                         if (entry.readings.length) {
+    //                             output.push(style(entry.readings.map(function (w) {return color(w, 'green')}).join('; '), 'font-size: 20px;'));
+    //                         }
+    //                         output.push(entry.translations.map(function (translation, i) {
+    //                             var tl = [];
+    //                             if (translation.parts_of_speech.length) {
+    //                                 tl.push(translation.parts_of_speech.map(function (pos) {return color(pos, 'blue')}).join(', '));
+    //                             }
+    //                             tl.push((i+1) + '. ' + translation.definition);
+    //                             return tl.join('\n')
+    //                         }).join('\n'));
+    //                         return output.join('\n');
+    //                     }).join('\n\n\n') : 'no translation available')).replace(/(\(.*?\))/g, function(_, b) {return color(b, '#8090FF')});
+    //             }, [['Content-Type', 'application/json; charset=utf-8']]);
+    //         }
+    //     }(_i));
+    // });
+
+    // output.innerHTML = '';
+    // for (i = 0; i < output_parts.length; i++) {
+    //     output.appendChild(output_parts[i]);
+    //     output.appendChild(document.createTextNode(' '));
+    // }
 
 }
 

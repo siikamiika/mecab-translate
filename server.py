@@ -32,11 +32,9 @@ class Mecab(object):
 
             part = dict()
             part['literal'], line = line.split('\t')
-            part.update(zip(
-                ['pos1', 'pos2', 'pos3', 'pos4', 'inflection_type',
+            part.update(zip(['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
                 'inflection_form', 'lemma', 'reading', 'hatsuon'],
-                line.split(',')
-                ))
+                line.split(',')))
             result.append(part)
         return result
 
