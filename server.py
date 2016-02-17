@@ -30,11 +30,14 @@ class Mecab(object):
             if line == 'EOS':
                 break
 
-            part = dict()
-            part['literal'], line = line.split('\t')
-            part.update(zip(['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
-                'inflection_form', 'lemma', 'reading', 'hatsuon'],
-                line.split(',')))
+            try:
+                part = dict()
+                part['literal'], line = line.split('\t')
+                part.update(zip(['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
+                    'inflection_form', 'lemma', 'reading', 'hatsuon'],
+                    line.split(',')))
+            except Exception as e:
+                print(e)
             result.append(part)
         return result
 

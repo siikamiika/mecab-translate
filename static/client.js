@@ -243,7 +243,6 @@ function show_output (data) {
         }
         else if (_i.pos == JODOUSHI) {
             pos = 'postposition';
-            console.log([TOKUSHU_TA, TOKUSHU_NAI, TOKUSHU_TAI, TOKUSHU_MASU, TOKUSHU_NU].indexOf(_i.inflection_type))
             if ((data[i - 1] === undefined || (data[i - 1] !== undefined && data[i - 1].pos2 != KAKARIJOSHI)) &&
                 [TOKUSHU_TA, TOKUSHU_NAI, TOKUSHU_TAI, TOKUSHU_MASU, TOKUSHU_NU].indexOf(_i.inflection_type) > -1) {
                 attach_to_previous = true;
@@ -312,48 +311,53 @@ function show_output (data) {
     }
     console.log(output_parts)
 
-    // output_parts.map(function (part) {
-    //     output_parts[i] = document.createElement('span');
-    //     output_parts[i].textContent = _i.literal;
-    //     output_parts[i].classList.add('atom');
-    //     output_parts[i].classList.add(pos);
-    //     output_parts[i].addEventListener('click', function (_i) {
-    //         // such async
-    //         return function () {
-    //             XHR('POST', '/edict2', JSON.stringify(_i.lemma), function (lemma_trans) {
-    //                 lemma_trans = JSON.parse(lemma_trans);
-    //                 info.innerHTML = ('type: ' + ([_i.pos, _i.pos2, _i.pos3, _i.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
-    //                     'infl: ' + [_i.inflection_type, _i.inflection_form].filter(mc_flt).join(', ') + '\n' +
-    //                     'lemma: ' + (mc_flt(_i.lemma) ? _i.lemma : '') + '\n\n' +
-    //                     (lemma_trans ? lemma_trans.sort(common_sort).map(function (entry) {
-    //                         var output = []
-    //                         if (entry.common) {
-    //                             output.push(color('common word', 'green'));
-    //                         }
-    //                         output.push(style(entry.words.map(function (w) {return color(w, 'red')}).join('; '), 'font-size: 28px;'));
-    //                         if (entry.readings.length) {
-    //                             output.push(style(entry.readings.map(function (w) {return color(w, 'green')}).join('; '), 'font-size: 20px;'));
-    //                         }
-    //                         output.push(entry.translations.map(function (translation, i) {
-    //                             var tl = [];
-    //                             if (translation.parts_of_speech.length) {
-    //                                 tl.push(translation.parts_of_speech.map(function (pos) {return color(pos, 'blue')}).join(', '));
-    //                             }
-    //                             tl.push((i+1) + '. ' + translation.definition);
-    //                             return tl.join('\n')
-    //                         }).join('\n'));
-    //                         return output.join('\n');
-    //                     }).join('\n\n\n') : 'no translation available')).replace(/(\(.*?\))/g, function(_, b) {return color(b, '#8090FF')});
-    //             }, [['Content-Type', 'application/json; charset=utf-8']]);
-    //         }
-    //     }(_i));
-    // });
+    output_parts = output_parts.map(function (part) {
+        var part_element = document.createElement('span');
+        part_element.classList.add(part.part_of_speech);
+        part = part.tokens.map(function (atom) {
+            var atom_element = document.createElement('span');
+            atom_element.innerHTML = atom.literal;
+            atom_element.classList.add('atom');
+            atom_element.addEventListener('click', function () {
+                XHR('POST', '/edict2', JSON.stringify(atom.lemma), function (lemma_trans) {
+                    lemma_trans = JSON.parse(lemma_trans);
+                    info.innerHTML = ('type: ' + ([atom.pos, atom.pos2, atom.pos3, atom.pos4].filter(mc_flt).join(', ') || '—') + '\n' +
+                        'infl: ' + [atom.inflection_type, atom.inflection_form].filter(mc_flt).join(', ') + '\n' +
+                        'lemma: ' + (mc_flt(atom.lemma) ? atom.lemma : '') + '\n\n' +
+                        (lemma_trans ? lemma_trans.sort(common_sort).map(function (entry) {
+                            var output = []
+                            if (entry.common) {
+                                output.push(color('common word', 'green'));
+                            }
+                            output.push(style(entry.words.map(function (w) {return color(w, 'red')}).join('; '), 'font-size: 28px;'));
+                            if (entry.readings.length) {
+                                output.push(style(entry.readings.map(function (w) {return color(w, 'green')}).join('; '), 'font-size: 20px;'));
+                            }
+                            output.push(entry.translations.map(function (translation, i) {
+                                var tl = [];
+                                if (translation.parts_of_speech.length) {
+                                    tl.push(translation.parts_of_speech.map(function (pos) {return color(pos, 'blue')}).join(', '));
+                                }
+                                tl.push((i+1) + '. ' + translation.definition);
+                                return tl.join('\n')
+                            }).join('\n'));
+                            return output.join('\n');
+                        }).join('\n\n\n') : 'no translation available')).replace(/(\(.*?\))/g, function(_, b) {return color(b, '#8090FF')});
+                }, [['Content-Type', 'application/json; charset=utf-8']]);
+            });
+            return atom_element;
+        });
+        for (i = 0; i < part.length; i++) {
+            part_element.appendChild(part[i]);
+        }
+        return part_element;
+    });
 
-    // output.innerHTML = '';
-    // for (i = 0; i < output_parts.length; i++) {
-    //     output.appendChild(output_parts[i]);
-    //     output.appendChild(document.createTextNode(' '));
-    // }
+    output.innerHTML = '';
+    for (i = 0; i < output_parts.length; i++) {
+        output.appendChild(output_parts[i]);
+        output.appendChild(document.createTextNode(' '));
+    }
 
 }
 
