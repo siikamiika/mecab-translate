@@ -269,7 +269,7 @@ function show_output (data) {
         }
         else if (_i.pos == JOSHI) {
             pos = 'postposition';
-            if (_i.pos2 == SETSUZOKUSHI && [TE, DE, BA].indexOf(_i.literal) > -1) {
+            if (_i.pos2 == SETSUZOKUJOSHI && [TE, DE, BA].indexOf(_i.literal) > -1) {
                 attach_to_previous = true;
             }
         }
