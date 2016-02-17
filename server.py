@@ -2,9 +2,37 @@
 
 from tornado import web, ioloop
 from tornado.log import enable_pretty_logging
-from subprocess import check_output
+from subprocess import PIPE, Popen
 import json
 import re
+from queue import Queue
+from threading import Thread
+
+class Mecab(object):
+
+    def __init__(self):
+        self.process = Popen(["mecab"], stdout=PIPE, stdin=PIPE, bufsize=1)
+        self.output = Queue()
+        self.t = Thread(target=self._handle_stdout)
+        self.t.daemon = True
+        self.t.start()
+
+    def analyze(self, text):
+        self.process.stdin.write((text + '\n').encode('utf-8'))
+        self.process.stdin.flush()
+        result = []
+        while True:
+            line = self.output.get()
+            if line == 'EOS':
+                break
+            result.append(line)
+        return result
+
+    def _handle_stdout(self):
+        for line in iter(self.process.stdout.readline, b''):
+            self.output.put(line.decode().strip())
+        self.process.stdout.close()
+
 
 class Edict2(object):
 
@@ -112,13 +140,12 @@ class JsHandler(web.RequestHandler):
         self.render('client.html')
 
 
-class VeHandler(web.RequestHandler):
+class MecabHandler(web.RequestHandler):
 
     def post(self):
         data = json.loads(self.request.body.decode('utf-8'))
         data = data.replace('\n', '')
-        ve_output = check_output(['ruby', 've_json.rb', data])
-        self.write(ve_output)
+        self.write(json.dumps(mecab.analyze(data)))
 
 
 class Edict2Handler(web.RequestHandler):
@@ -132,7 +159,7 @@ def get_app():
 
     return web.Application([
         (r'/', IndexHandler),
-        (r'/ve', VeHandler),
+        (r'/mecab', MecabHandler),
         (r'/edict2', Edict2Handler),
         (r'/static/(.*)', web.StaticFileHandler, {'path': 'static'}),
     ])
@@ -140,6 +167,7 @@ def get_app():
 
 if __name__ == '__main__':
     edict2 = Edict2()
+    mecab = Mecab()
     app = get_app()
     app.listen(9874)
     main_loop = ioloop.IOLoop.instance()
