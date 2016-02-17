@@ -10,12 +10,24 @@ class Edict2(object):
 
     def __init__(self):
 
-        self.dictfile = open('edict2', 'rU', encoding='euc-jp')
+        self.dictfile = open('edict2', 'rb')
+        self.line_offset = []
         self.dictionary = dict()
         self._parse()
 
     def get(self, word):
-        return self.dictionary.get(word)
+        word = self.dictionary.get(word)
+        if not word:
+            return
+
+        lines = [self.line_offset[e] for e in word]
+
+        entries = []
+        for pos in lines:
+            self.dictfile.seek(pos)
+            line = self.dictfile.readline().decode('euc-jp')
+            entries.append(self._entry(line))
+        return entries
 
     def _entry(self, line):
         entry = dict(words=[], readings=[], translations=[], common=False)
@@ -65,17 +77,27 @@ class Edict2(object):
 
         print(self.dictfile.readline())
 
-        for line in self.dictfile:
+        position = self.dictfile.tell()
+        while True:
+            line = self.dictfile.readline().decode('euc-jp')
+            if not line:
+                break
+            self.line_offset.append(position)
+            position = self.dictfile.tell()
 
-            entry = self._entry(line)
+            keys = line.split('/', 1)[0].strip()
+            if '[' in keys:
+                keys = keys.split(None, 1)
+                keys = '{};{}'.format(keys[0], keys[1][1:-1])
 
-            keys = [re.match(r'[^\(]+', k).group(0) for k in entry['words'] + entry['readings']]
+            keys = [re.match(r'[^\(]+', k).group(0) for k in keys.split(';')]
+
             for k in keys:
                 if not self.dictionary.get(k):
                     self.dictionary[k] = []
-                self.dictionary[k].append(entry)
+                self.dictionary[k].append(len(self.line_offset) - 1)
 
-        self.dictfile.close()
+        print('dictionary parsed!')
 
 
 class IndexHandler(web.RequestHandler):
