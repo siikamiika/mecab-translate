@@ -11,27 +11,42 @@ from threading import Thread
 class Mecab(object):
 
     def __init__(self):
+
         self.process = Popen(["mecab"], stdout=PIPE, stdin=PIPE, bufsize=1)
         self.output = Queue()
         self.t = Thread(target=self._handle_stdout)
         self.t.daemon = True
         self.t.start()
 
+
     def analyze(self, text):
+
         self.process.stdin.write((text + '\n').encode('utf-8'))
         self.process.stdin.flush()
+
         result = []
         while True:
             line = self.output.get()
             if line == 'EOS':
                 break
-            result.append(line)
+
+            part = dict()
+            part['literal'], line = line.split('\t')
+            part.update(zip(
+                ['pos1', 'pos2', 'pos3', 'pos4', 'inflection_type',
+                'inflection_form', 'lemma', 'reading', 'hatsuon'],
+                line.split(',')
+                ))
+            result.append(part)
         return result
 
+
     def _handle_stdout(self):
+
         for line in iter(self.process.stdout.readline, b''):
             self.output.put(line.decode().strip())
         self.process.stdout.close()
+
 
 
 class Edict2(object):
@@ -43,7 +58,9 @@ class Edict2(object):
         self.dictionary = dict()
         self._parse()
 
+
     def get(self, word):
+
         word = self.dictionary.get(word)
         if not word:
             return
@@ -57,7 +74,9 @@ class Edict2(object):
             entries.append(self._entry(line))
         return entries
 
+
     def _entry(self, line):
+
         entry = dict(words=[], readings=[], translations=[], common=False)
         jp, eng = line.split('/', 1)
 
@@ -128,16 +147,19 @@ class Edict2(object):
         print('dictionary parsed!')
 
 
+
 class IndexHandler(web.RequestHandler):
 
     def get(self):
         self.render('client.html')
 
 
+
 class JsHandler(web.RequestHandler):
 
     def get(self):
         self.render('client.html')
+
 
 
 class MecabHandler(web.RequestHandler):
@@ -148,11 +170,13 @@ class MecabHandler(web.RequestHandler):
         self.write(json.dumps(mecab.analyze(data)))
 
 
+
 class Edict2Handler(web.RequestHandler):
 
     def post(self):
         query = json.loads(self.request.body.decode('utf-8'))
         self.write(json.dumps(edict2.get(query)))
+
 
 
 def get_app():
@@ -163,6 +187,7 @@ def get_app():
         (r'/edict2', Edict2Handler),
         (r'/static/(.*)', web.StaticFileHandler, {'path': 'static'}),
     ])
+
 
 
 if __name__ == '__main__':
