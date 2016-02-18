@@ -30,6 +30,32 @@ function style (text, style) {
     return '<span style="'+style+'">'+text+'</span>';
 }
 
+function same_kana (a, b) {
+
+    for (var i = 0; i < a.length; i++) {
+        if (a[i] != b[i] && hira_to_kata[a[i]] != b[i] && hira_to_kata[b[i]] != a[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function mc_flt (v) {
+    return v != '' && v != '*';
+}
+
+function common_sort (a, b) {
+    if ((a.common && b.common) || (!a.common && !b.common)) {
+        return 0;
+    }
+    else if (b.common) {
+        return 1;
+    }
+    else {
+        return -1;
+    }
+}
+
 var hira_to_kata = {
 
     あ: 'ア', い: 'イ', う: 'ウ', ゔ: 'ヴ', え: 'エ', お: 'オ',
@@ -54,7 +80,9 @@ var hira_to_kata = {
 
 }
 
-
+// This whole part of speech parsing is ported from
+// https://github.com/Kimtaro/ve/blob/7a902322befbb0d37dba8e7af552596dfce8bd04/lib/providers/mecab_ipadic.rb
+// which is licensed under the MIT license.
 // PoS
 var MEISHI = '名詞'
 var KOYUUMEISHI = '固有名詞'
@@ -109,32 +137,6 @@ var DE = 'で'
 var BA = 'ば'
 var NN = 'ん'
 var SA = 'さ'
-
-function same_kana (a, b) {
-
-    for (var i = 0; i < a.length; i++) {
-        if (a[i] != b[i] && hira_to_kata[a[i]] != b[i] && hira_to_kata[b[i]] != a[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function mc_flt (v) {
-    return v != '' && v != '*';
-}
-
-function common_sort (a, b) {
-    if ((a.common && b.common) || (!a.common && !b.common)) {
-        return 0;
-    }
-    else if (b.common) {
-        return 1;
-    }
-    else {
-        return -1;
-    }
-}
 
 function show_output (data) {
 
