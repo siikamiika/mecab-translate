@@ -47,6 +47,24 @@ function common_sort (a, b) {
     }
 }
 
+var mecab_to_edict_pos = {
+    '名詞': ['n', 'n-suf', 'n-pref'],
+    '名詞接続': ['n-pref'],
+    '代名詞': ['pn'],
+    '助動詞': ['aux', 'aux-v', 'aux-adj'],
+    '助詞': ['prt'],
+    '動詞': ['v1', 'v5', 'v5aru', 'v5b', 'v5g', 'v5k', 'v5k-s', 'v5m', 'v5n', 'v5r', 'v5r-i', 'v5s', 'v5t', 'v5u', 'v5u-s', 'v5uru', 'v5z', 'vz', 'vk', 'vn'],
+    '接頭詞': ['pref'],
+    '副詞可能': ['n-adv', 'adv'],
+    '副詞': ['adv', 'adj-f'],
+    '接尾': ['suf', 'n-suf'],
+    '感動詞': ['int'],
+    '助数詞': ['ctr'],
+    '接続助詞': ['conj'],
+    '接続詞': ['conj'],
+    '連体詞': ['adj-pn']
+}
+
 
 // This whole part of speech parsing is ported from
 // https://github.com/Kimtaro/ve/blob/7a902322befbb0d37dba8e7af552596dfce8bd04/lib/providers/mecab_ipadic.rb
@@ -310,14 +328,27 @@ function show_output (data) {
                             if (entry.common) {
                                 output.push(color('common word', 'green'));
                             }
-                            output.push(style(entry.words.map(function (w) {return color(w, 'red')}).join('; '), 'font-size: 28px;'));
+                            output.push(style(entry.words.map(function (w) {
+                                return color(w, 'red');
+                            }).join('; '), 'font-size: 28px;'));
                             if (entry.readings.length) {
-                                output.push(style(entry.readings.map(function (w) {return color(w, 'green')}).join('; '), 'font-size: 20px;'));
+                                output.push(style(entry.readings.map(function (w) {
+                                    return color(w, 'green');
+                                }).join('; '), 'font-size: 20px;'));
                             }
                             output.push(entry.translations.map(function (translation, i) {
                                 var tl = [];
                                 if (translation.parts_of_speech.length) {
-                                    tl.push(translation.parts_of_speech.map(function (pos) {return color(pos, 'blue')}).join(', '));
+                                    tl.push(translation.parts_of_speech.map(function (pos) {
+                                        var _pos = [atom.pos, atom.pos2, atom.pos3, atom.pos4];
+                                        for (_i in _pos) {
+                                            if (mecab_to_edict_pos[_pos[_i]]) {
+                                                if (mecab_to_edict_pos[_pos[_i]].indexOf(pos) > -1)
+                                                    return style(pos, 'color: blue; border: 2px solid red;');
+                                            }
+                                        }
+                                        return color(pos, 'blue');
+                                    }).join(', '));
                                 }
                                 tl.push((i+1) + '. ' + translation.definition);
                                 return tl.join('\n')
