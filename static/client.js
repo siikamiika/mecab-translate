@@ -1,4 +1,5 @@
 var text_input = document.getElementById('text-input');
+var reading = document.getElementById('reading');
 var output = document.getElementById('output');
 var info = document.getElementById('info');
 var debug_output = document.getElementById('debug-output');
@@ -315,6 +316,18 @@ function show_output (data) {
     output_parts = output_parts.map(function (part) {
         var part_element = document.createElement('span');
         part_element.classList.add(part.part_of_speech);
+        part_element.setAttribute('title', part.part_of_speech);
+        var r = part.tokens.map(function (p) {
+            return p.reading;
+        }).join('');
+        part_element.addEventListener('mouseenter', function (part_of_speech) {
+            return function () {
+                reading.innerHTML = r + ' (' + part_of_speech + ')';
+            }
+        }(part.part_of_speech));
+        part_element.addEventListener('mouseleave', function () {
+            reading.innerHTML = '-';
+        });
         part = part.tokens.map(function (atom) {
             var atom_element = document.createElement('span');
             atom_element.innerHTML = atom.literal;
