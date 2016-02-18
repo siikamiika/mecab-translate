@@ -31,16 +31,6 @@ function style (text, style) {
     return '<span style="'+style+'">'+text+'</span>';
 }
 
-function same_kana (a, b) {
-
-    for (var i = 0; i < a.length; i++) {
-        if (a[i] != b[i] && hira_to_kata[a[i]] != b[i] && hira_to_kata[b[i]] != a[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
 function mc_flt (v) {
     return v != '' && v != '*';
 }
@@ -57,29 +47,6 @@ function common_sort (a, b) {
     }
 }
 
-var hira_to_kata = {
-
-    あ: 'ア', い: 'イ', う: 'ウ', ゔ: 'ヴ', え: 'エ', お: 'オ',
-    か: 'カ', き: 'キ', く: 'ク', け: 'ケ', こ: 'コ',
-    が: 'ガ', ぎ: 'ギ', ぐ: 'グ', げ: 'ゲ', ご: 'ゴ',
-    さ: 'サ', し: 'シ', す: 'ス', せ: 'セ', そ: 'ソ',
-    ざ: 'ザ', じ: 'ジ', ず: 'ズ', ぜ: 'ゼ', ぞ: 'ゾ',
-    た: 'タ', ち: 'チ', つ: 'ツ', て: 'テ', と: 'ト',
-    だ: 'ダ', ぢ: 'ヂ', づ: 'ヅ', で: 'デ', ど: 'ド',
-    な: 'ナ', に: 'ニ', ぬ: 'ヌ', ね: 'ネ', の: 'ノ',
-    は: 'ハ', ひ: 'ヒ', ふ: 'フ', へ: 'ヘ', ほ: 'ホ',
-    ば: 'バ', び: 'ビ', ぶ: 'ブ', べ: 'ベ', ぼ: 'ボ',
-    ぱ: 'パ', ぴ: 'ピ', ぷ: 'プ', ぺ: 'ペ', ぽ: 'ポ',
-    ま: 'マ', み: 'ミ', む: 'ム', め: 'メ', も: 'モ',
-    や: 'ヤ', ゆ: 'ユ', よ: 'ヨ',
-    ら: 'ラ', り: 'リ', る: 'ル', れ: 'レ', ろ: 'ロ',
-    わ: 'ワ', を: 'ヲ',
-    ん: 'ン',
-    ぁ: 'ァ', ぃ: 'ィ', ぅ: 'ゥ', ぇ: 'ェ', ぉ: 'ォ',
-    ゃ: 'ャ', ゅ: 'ュ', ょ: 'ョ',
-    っ: 'ッ'
-
-}
 
 // This whole part of speech parsing is ported from
 // https://github.com/Kimtaro/ve/blob/7a902322befbb0d37dba8e7af552596dfce8bd04/lib/providers/mecab_ipadic.rb

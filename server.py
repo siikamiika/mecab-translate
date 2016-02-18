@@ -156,13 +156,6 @@ class IndexHandler(web.RequestHandler):
 
 
 
-class JsHandler(web.RequestHandler):
-
-    def get(self):
-        self.render('client.html')
-
-
-
 class MecabHandler(web.RequestHandler):
 
     def post(self):
