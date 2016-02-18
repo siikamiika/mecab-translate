@@ -48,7 +48,7 @@ function common_sort (a, b) {
 }
 
 var mecab_to_edict_pos = {
-    '名詞': ['n', 'n-suf', 'n-pref'],
+    '名詞': ['n', 'n-suf', 'n-pref', 'adj-t', 'adv-to', 'n-t'],
     '名詞接続': ['n-pref'],
     '代名詞': ['pn'],
     '助動詞': ['aux', 'aux-v', 'aux-adj'],
@@ -62,7 +62,10 @@ var mecab_to_edict_pos = {
     '助数詞': ['ctr'],
     '接続助詞': ['conj'],
     '接続詞': ['conj'],
-    '連体詞': ['adj-pn']
+    '連体詞': ['adj-pn'],
+    '形容詞': ['adj-i'],
+    '形容動詞語幹': ['adj-na', 'adj-no'],
+    '数': ['num']
 }
 
 
