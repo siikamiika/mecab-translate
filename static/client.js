@@ -139,11 +139,11 @@ function common_sort (a, b) {
 function show_output (data) {
 
     var output_parts = [];
-    var _i, eat_next, attach_to_previous, update_pos, eat_lemma, pos, also_attach_to_lemma;
+    var d, eat_next, attach_to_previous, update_pos, eat_lemma, pos, also_attach_to_lemma;
 
     // preprocessing
     for (i = 0; i < data.length; i++) {
-        _i = data[i];
+        d = data[i];
 
         pos = null;
         eat_next = false;
@@ -153,15 +153,15 @@ function show_output (data) {
         update_pos = false;
 
         // part of speech class
-        if (_i.pos == MEISHI) {
+        if (d.pos == MEISHI) {
             pos = 'noun';
-            if (_i.pos2 == KOYUUMEISHI) {
+            if (d.pos2 == KOYUUMEISHI) {
                 pos = 'proper-noun';
             }
-            else if (_i.pos2 == DAIMEISHI) {
+            else if (d.pos2 == DAIMEISHI) {
                 pos = 'pronoun';
             }
-            else if  (_i.pos2 == FUKUSHIKANOU || _i.pos2 == SAHENSETSUZOKU || _i.pos2 == KEIYOUDOUSHIGOKAN || _i.pos2 == NAIKEIYOUSHIGOKAN) {
+            else if  (d.pos2 == FUKUSHIKANOU || d.pos2 == SAHENSETSUZOKU || d.pos2 == KEIYOUDOUSHIGOKAN || d.pos2 == NAIKEIYOUSHIGOKAN) {
                 if (data[i + 1] !== undefined) {
                     if (data[i + 1].inflection_type == SAHEN_SURU) {
                         pos = 'verb';
@@ -184,15 +184,15 @@ function show_output (data) {
                     }
                 }
             }
-            else if (_i.pos2 == HIJIRITSU || _i.pos2 == TOKUSHU) {
+            else if (d.pos2 == HIJIRITSU || d.pos2 == TOKUSHU) {
                 if (data[i + 1] !== undefined) {
-                    if (_i.pos3 == FUKUSHIKANOU) {
+                    if (d.pos3 == FUKUSHIKANOU) {
                         if (data[i + 1].pos == JOSHI && data[i + 1].literal == NI) {
                             pos = 'adverb';
                             eat_next = true;
                         }
                     }
-                    else if (_i.pos3 == JODOUSHIGOKAN) {
+                    else if (d.pos3 == JODOUSHIGOKAN) {
                         if (data[i + 1].inflection_type == TOKUSHU_DA) {
                             pos = 'verb'; // aux
                             if (data[i + 1].inflection_form == TAIGENSETSUZOKU) {
@@ -204,7 +204,7 @@ function show_output (data) {
                             eat_next = true;
                         }
                     }
-                    else if (_i.pos3 == KEIYOUDOUSHIGOKAN) {
+                    else if (d.pos3 == KEIYOUDOUSHIGOKAN) {
                         pos = 'adjective';
                         if (data[i + 1].inflection_type == TOKUSHU_DA && data[i + 1].inflection_form == TAIGENSETSUZOKU || data[i + 1].pos2 == RENTAIKA) {
                             eat_next = true;
@@ -212,16 +212,16 @@ function show_output (data) {
                     }
                 }
             }
-            else if (_i.pos2 == KAZU) {
+            else if (d.pos2 == KAZU) {
                 pos = 'number';
                 // meh
             }
-            else if (_i.pos2 == SETSUBI) {
-                if (_i.pos3 == JINMEI) {
+            else if (d.pos2 == SETSUBI) {
+                if (d.pos3 == JINMEI) {
                     pos = 'suffix';
                 }
                 else {
-                    if (_i.pos3 == TOKUSHU && _i.lemma == SA) {
+                    if (d.pos3 == TOKUSHU && d.lemma == SA) {
                         update_pos = true;
                         pos = 'noun';
                     }
@@ -231,60 +231,60 @@ function show_output (data) {
                     attach_to_previous = true;
                 }
             }
-            else if (_i.pos2 == SETSUZOKUSHITEKI) {
+            else if (d.pos2 == SETSUZOKUSHITEKI) {
                 pos = 'conjunction';
             }
-            else if (_i.pos2 == DOUSHIHIJIRITSUTEKI) {
+            else if (d.pos2 == DOUSHIHIJIRITSUTEKI) {
                 pos = 'verb'; // nominal
             }
         }
-        else if (_i.pos == SETTOUSHI) {
+        else if (d.pos == SETTOUSHI) {
             pos = 'prefix';
         }
-        else if (_i.pos == JODOUSHI) {
+        else if (d.pos == JODOUSHI) {
             pos = 'postposition';
             if ((data[i - 1] === undefined || (data[i - 1] !== undefined && data[i - 1].pos2 != KAKARIJOSHI)) &&
-                [TOKUSHU_TA, TOKUSHU_NAI, TOKUSHU_TAI, TOKUSHU_MASU, TOKUSHU_NU].indexOf(_i.inflection_type) > -1) {
+                [TOKUSHU_TA, TOKUSHU_NAI, TOKUSHU_TAI, TOKUSHU_MASU, TOKUSHU_NU].indexOf(d.inflection_type) > -1) {
                 attach_to_previous = true;
             }
-            else if (_i.inflection_type == FUHENKAGATA && _i.lemma == NN) {
+            else if (d.inflection_type == FUHENKAGATA && d.lemma == NN) {
                 attach_to_previous = true;
             }
-            else if ((_i.inflection_type == TOKUSHU_DA || _i.inflection_type == TOKUSHU_DESU) && _i.literal != NA) {
+            else if ((d.inflection_type == TOKUSHU_DA || d.inflection_type == TOKUSHU_DESU) && d.literal != NA) {
                 pos = 'verb';
             }
         }
-        else if (_i.pos == DOUSHI) {
+        else if (d.pos == DOUSHI) {
             pos = 'verb';
-            if (_i.pos2 == SETSUBI) {
+            if (d.pos2 == SETSUBI) {
                 attach_to_previous = true;
             }
-            else if (_i.pos2 == HIJIRITSU && _i.inflection_form != MEIREI_I) {
+            else if (d.pos2 == HIJIRITSU && d.inflection_form != MEIREI_I) {
                 attach_to_previous = true;
             }
         }
-        else if (_i.pos == KEIYOUSHI) {
+        else if (d.pos == KEIYOUSHI) {
             pos = 'adjective';
         }
-        else if (_i.pos == JOSHI) {
+        else if (d.pos == JOSHI) {
             pos = 'postposition';
-            if (_i.pos2 == SETSUZOKUJOSHI && [TE, DE, BA].indexOf(_i.literal) > -1) {
+            if (d.pos2 == SETSUZOKUJOSHI && [TE, DE, BA].indexOf(d.literal) > -1) {
                 attach_to_previous = true;
             }
         }
-        else if (_i.pos == RENTAISHI) {
+        else if (d.pos == RENTAISHI) {
             pos = 'determiner';
         }
-        else if (_i.pos == SETSUZOKUSHI) {
+        else if (d.pos == SETSUZOKUSHI) {
             pos = 'conjunction';
         }
-        else if (_i.pos == FUKUSHI) {
+        else if (d.pos == FUKUSHI) {
             pos = 'adverb';
         }
-        else if (_i.pos == KIGOU) {
+        else if (d.pos == KIGOU) {
             pos = 'symbol';
         }
-        else if (_i.pos == KANDOUSHI || _i.pos == FIRAA) {
+        else if (d.pos == KANDOUSHI || d.pos == FIRAA) {
             pos = 'interjection';
         }
         else {
@@ -292,7 +292,7 @@ function show_output (data) {
         }
 
         if (attach_to_previous && output_parts.length > 0) {
-            output_parts[output_parts.length - 1].tokens.push(_i);
+            output_parts[output_parts.length - 1].tokens.push(d);
             if (update_pos) {
                 output_parts[output_parts.length - 1].part_of_speech = pos;
             }
@@ -300,7 +300,7 @@ function show_output (data) {
         else {
             var word = {
                 part_of_speech: pos,
-                tokens: [_i]
+                tokens: [d]
             }
             if (eat_next) {
                 i++;
@@ -309,7 +309,6 @@ function show_output (data) {
             output_parts.push(word);
         }
     }
-    console.log(output_parts)
 
     output_parts = output_parts.map(function (part) {
         var part_element = document.createElement('span');
