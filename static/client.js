@@ -53,7 +53,7 @@ var mecab_to_edict_pos = {
     '代名詞': ['pn'],
     '助動詞': ['aux', 'aux-v', 'aux-adj'],
     '助詞': ['prt'],
-    '動詞': ['v1', 'v5', 'v5aru', 'v5b', 'v5g', 'v5k', 'v5k-s', 'v5m', 'v5n', 'v5r', 'v5r-i', 'v5s', 'v5t', 'v5u', 'v5u-s', 'v5uru', 'v5z', 'vz', 'vk', 'vn'],
+    '動詞': ['v1', 'v1-s', 'v5', 'v5aru', 'v5b', 'v5g', 'v5k', 'v5k-s', 'v5m', 'v5n', 'v5r', 'v5r-i', 'v5s', 'v5t', 'v5u', 'v5u-s', 'v5uru', 'v5z', 'vz', 'vk', 'vn'],
     '接頭詞': ['pref'],
     '副詞可能': ['n-adv', 'adv'],
     '副詞': ['adv', 'adj-f'],
