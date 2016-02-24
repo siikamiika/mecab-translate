@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from tornado import web, ioloop
-from tornado.log import enable_pretty_logging
+from tornado.log import enable_pretty_logging; enable_pretty_logging()
 from subprocess import PIPE, Popen
 import json
 import re
@@ -149,13 +149,6 @@ class Edict2(object):
 
 
 
-class IndexHandler(web.RequestHandler):
-
-    def get(self):
-        self.render('client.html')
-
-
-
 class MecabHandler(web.RequestHandler):
 
     def post(self):
@@ -176,10 +169,10 @@ class Edict2Handler(web.RequestHandler):
 def get_app():
 
     return web.Application([
-        (r'/', IndexHandler),
         (r'/mecab', MecabHandler),
         (r'/edict2', Edict2Handler),
-        (r'/static/(.*)', web.StaticFileHandler, {'path': 'static'}),
+        (r'/(.*)', web.StaticFileHandler,
+            {'path': 'client', 'default_filename': 'index.html'}),
     ])
 
 
