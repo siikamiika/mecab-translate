@@ -1,16 +1,33 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>mecab-translate</title>
-        <link href="stylesheets/client.css" rel="stylesheet" type="text/css">
-    </head>
-    <body>
-        <textarea id="text-input"></textarea>
-        <div id="output"></div>
-        <div id="reading"></div>
-        <div id="info"></div>
-        <pre id="debug-output"></pre>
-        <script src="client.js"></script>
-    </body>
+<html ng-app="mecab-translate">
+<head>
+    <meta charset="utf-8">
+    <title>mecab-translate</title>
+    <link href="stylesheets/client.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div ng-controller="Input">
+        <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
+    </div>
+    <div ng-controller="Output">
+        <span ng-click="translate(word.lemma)" ng-repeat="word in words">{{word.literal}}</span>
+    </div>
+    <div ng-controller="Reading">
+        
+    </div>
+    <div ng-controller="Translation">
+        <div ng-repeat="entry in entries">{{entry}}</div>
+    </div>
+
+<script src="vendor/angular.min.js"></script>
+
+<script src="client.js"></script>
+<script src="controllers/input.js"></script>
+<script src="controllers/output.js"></script>
+<script src="controllers/reading.js"></script>
+<script src="controllers/translation.js"></script>
+
+<script src="services/mecab.js"></script>
+<script src="services/edict2.js"></script>
+</body>
 </html>
