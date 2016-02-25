@@ -2,6 +2,10 @@ body {
     font-family: 'MS PGothic', Arial, sans-serif;
 }
 
+ul {
+    list-style-type: none;
+}
+
 .atom:hover {
     background-color: gray;
 }

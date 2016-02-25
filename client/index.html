@@ -10,13 +10,31 @@
         <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
     </div>
     <div ng-controller="Output">
-        <span ng-click="translate(word.lemma)" ng-repeat="word in words">{{word.literal}}</span>
-    </div>
-    <div ng-controller="Reading">
-        
+        <div id="output">
+            <span
+                class="atom"
+                ng-repeat="word in words"
+                ng-click="translate(word.lemma)"
+                ng-mouseenter="show_reading(word.reading)"
+                ng-mouseleave="show_reading('-')">{{word.literal}}</span>
+        </div>
+        <div>{{reading}}</div>
     </div>
     <div ng-controller="Translation">
-        <div ng-repeat="entry in entries">{{entry}}</div>
+        <ul ng-repeat="entry in entries">
+            <li>
+                <div ng-if="entry.common" style="color: green;">common word</div>
+                <div style="font-size: 28px" ng-bind-html="entry.words.map(w).join('; ') | unsafe"></div>
+                <div style="font-size: 20px" ng-bind-html="entry.readings.map(r).join('; ') | unsafe"></div>
+                <ul ng-repeat="translation in entry.translations">
+                    <li>
+                        <div style="color: blue;">{{translation.parts_of_speech.join(', ')}}</div>
+                        <div ng-bind-html="$index + 1 + '.' + d(translation.definition) | unsafe"></div>
+                    </li>
+                </ul>
+                <hr ng-if="!$last">
+            </li>
+        </ul>
     </div>
 
 <script src="vendor/angular.min.js"></script>
@@ -24,7 +42,6 @@
 <script src="client.js"></script>
 <script src="controllers/input.js"></script>
 <script src="controllers/output.js"></script>
-<script src="controllers/reading.js"></script>
 <script src="controllers/translation.js"></script>
 
 <script src="services/mecab.js"></script>
