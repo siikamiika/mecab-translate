@@ -45,13 +45,13 @@
     </div>
     <!-- Translation -->
     <div ng-controller="Translation">
-        <ul ng-repeat="entry in entries">
-            <li>
+        <ul>
+            <li ng-repeat="entry in entries">
                 <div ng-if="entry.common" style="color: green;">common word</div>
                 <div style="font-size: 28px" ng-bind-html="entry.words.map(w).join('; ') | unsafe"></div>
                 <div style="font-size: 20px" ng-bind-html="entry.readings.map(r).join('; ') | unsafe"></div>
-                <ul ng-repeat="translation in entry.translations">
-                    <li>
+                <ul>
+                    <li ng-repeat="translation in entry.translations">
                         <div style="color: blue;">{{translation.parts_of_speech.join(', ')}}</div>
                         <div ng-bind-html="$index + 1 + '. ' + d(translation.definition) | unsafe"></div>
                     </li>
