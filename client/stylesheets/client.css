@@ -14,10 +14,6 @@ ul {
     font-size: 36px;
 }
 
-#info {
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-}
 
 .noun, .proper-noun, .pronoun {
     background-color: #A0FFA0;

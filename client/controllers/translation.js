@@ -1,8 +1,8 @@
 angular.module('mecab-translate')
 .controller('Translation', function($scope, $sce, Edict2) {
 
-    $scope.$on('edict2Response', function() {
-        $scope.entries = Edict2.response.sort(function(a, b) {
+    Edict2.setOutput(function(output) {
+        $scope.entries = output.sort(function(a, b) {
             if ((a.common && b.common) || (!a.common && !b.common)) {
                 return 0;
             }

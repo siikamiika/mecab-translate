@@ -1,17 +1,18 @@
 angular.module('mecab-translate')
-.factory('Edict2', function($rootScope, $http) {
+.factory('Edict2', function($http) {
 
-    var response = null;
+    var output;
 
     return {
         translate: function(val) {
             $http.post('/edict2', angular.toJson(val))
                 .success(function(data) {
-                    this.response = data;
-                    $rootScope.$broadcast('edict2Response');
+                    this.output(data);
                 }.bind(this));
         },
-        response: response
+        setOutput: function(fn) {
+            this.output = fn;
+        }
     }
 
 });
