@@ -1,5 +1,7 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, Edict2) {
+.controller('Output', function($scope, Mecab, Edict2, Helpers) {
+
+    $scope.posClass = Helpers.posClass;
 
     Mecab.setOutput(function(output) {
         $scope.words = output;

@@ -17,6 +17,8 @@
             <span
                 class="atom"
                 ng-repeat="word in words"
+                ng-class="posClass(word.pos)"
+                ng-attr-title="{{posClass(word.pos)}}"
                 ng-click="showInfo(word); translate(word.lemma)"
                 ng-mouseenter="showReading(word.reading)"
                 ng-mouseleave="showReading('-')">{{word.literal}}</span>
