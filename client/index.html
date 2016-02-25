@@ -51,7 +51,7 @@
                 <ul ng-repeat="translation in entry.translations">
                     <li>
                         <div style="color: blue;">{{translation.parts_of_speech.join(', ')}}</div>
-                        <div ng-bind-html="$index + 1 + '.' + d(translation.definition) | unsafe"></div>
+                        <div ng-bind-html="$index + 1 + '. ' + d(translation.definition) | unsafe"></div>
                     </li>
                 </ul>
                 <hr ng-if="!$last">

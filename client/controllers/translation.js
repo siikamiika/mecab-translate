@@ -20,7 +20,36 @@ angular.module('mecab-translate')
     }
 
     $scope.paren_hilite = function(text) {
-        return text.replace(/(\(.*?\))/g, function(_, b) {return $scope.color(b, '#8090FF')});
+        var output = '';
+        var buffer = '';
+        var depth = 0;
+        for (var i = 0; i < text.length; i++) {
+            if (depth) {
+                buffer += text[i];
+                if (text[i] == '(') {
+                    depth++;
+                }
+                else if (text[i] == ')') {
+                    if (!--depth) {
+                        output += $scope.color(buffer, '#8090FF');
+                        buffer = '';
+                    }
+                }
+            }
+            else {
+                if (text[i] == '(') {
+                    depth++;
+                    buffer += text[i];
+                }
+                else {
+                    output += text[i];
+                }
+            }
+        }
+        if (buffer.length) {
+            output += $scope.color(buffer, '#8090FF');
+        }
+        return output;
     }
 
     $scope.w = function(text) {
