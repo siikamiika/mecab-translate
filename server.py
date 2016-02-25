@@ -64,7 +64,7 @@ class Edict2(object):
 
         word = self.dictionary.get(word)
         if not word:
-            return
+            return []
 
         lines = [self.line_offset[e] for e in word]
 

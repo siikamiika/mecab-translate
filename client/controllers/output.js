@@ -5,13 +5,17 @@ angular.module('mecab-translate')
         $scope.words = output;
     });
 
+    $scope.showInfo = function(word) {
+        $scope.word = word;
+    }
+
     $scope.translate = function(lemma) {
         Edict2.translate(lemma);
     }
 
     $scope.reading = '-';
 
-    $scope.show_reading = function(reading) {
+    $scope.showReading = function(reading) {
        $scope.reading = reading;
     }
 

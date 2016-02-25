@@ -4,22 +4,44 @@
     <meta charset="utf-8">
     <title>mecab-translate</title>
     <link href="stylesheets/client.css" rel="stylesheet" type="text/css">
+    <script src="vendor/angular.min.js"></script>
 </head>
 <body>
+    <!-- Text input box -->
     <div ng-controller="Input">
         <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
     </div>
+    <!-- Analyzed output -->
     <div ng-controller="Output">
         <div id="output">
             <span
                 class="atom"
                 ng-repeat="word in words"
-                ng-click="translate(word.lemma)"
-                ng-mouseenter="show_reading(word.reading)"
-                ng-mouseleave="show_reading('-')">{{word.literal}}</span>
+                ng-click="showInfo(word); translate(word.lemma)"
+                ng-mouseenter="showReading(word.reading)"
+                ng-mouseleave="showReading('-')">{{word.literal}}</span>
         </div>
         <div>{{reading}}</div>
+        <table ng-if="word">
+            <tr>
+                <td>Pos</td>
+                <td>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}</td>
+            </tr>
+            <tr>
+                <td>Infl.</td>
+                <td>{{word.inflection_type}}, {{word.inflection_form}}</td>
+            </tr>
+            <tr>
+                <td>Lemma</td>
+                <td>{{word.lemma}}</td>
+            </tr>
+            <tr>
+                <td>Reading</td>
+                <td>{{word.reading}}</td>
+            </tr>
+        </table>
     </div>
+    <!-- Translation -->
     <div ng-controller="Translation">
         <ul ng-repeat="entry in entries">
             <li>
@@ -36,8 +58,6 @@
             </li>
         </ul>
     </div>
-
-<script src="vendor/angular.min.js"></script>
 
 <script src="client.js"></script>
 <script src="controllers/input.js"></script>
