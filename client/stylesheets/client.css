@@ -6,9 +6,18 @@ ul {
     list-style-type: none;
 }
 
-.atom:hover {
-    background-color: gray;
+.molecule:hover {
+    background-color: #bbb;
 }
+
+.molecule {
+    margin: 2px;
+}
+
+.atom:hover {
+    background-color: #777;
+}
+
 
 #output {
     font-size: 36px;

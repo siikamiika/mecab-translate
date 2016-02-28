@@ -1,10 +1,14 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, Edict2, Helpers) {
+.controller('Output', function($scope, Mecab, Edict2, Kanjidic2, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
     Mecab.setOutput(function(output) {
         $scope.words = output;
+    });
+
+    Kanjidic2.setOutput(function(output) {
+        $scope.kanji = output;
     });
 
     $scope.showInfo = function(word) {
@@ -13,6 +17,10 @@ angular.module('mecab-translate')
 
     $scope.translate = function(lemma) {
         Edict2.translate(lemma);
+    }
+
+    $scope.getKanjidic2 = function(kanji) {
+        Kanjidic2.get(kanji);
     }
 
     $scope.reading = '-';

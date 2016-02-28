@@ -15,33 +15,64 @@
     <div ng-controller="Output">
         <div id="output">
             <span
-                class="atom"
+                class="molecule"
                 ng-repeat="word in words"
                 ng-class="posClass(word.pos)"
                 ng-attr-title="{{posClass(word.pos)}}"
                 ng-click="showInfo(word); translate(word.lemma)"
                 ng-mouseenter="showReading(word.reading)"
-                ng-mouseleave="showReading('-')">{{word.literal}}</span>
+                ng-mouseleave="showReading('-')"><span
+                    class="atom"
+                    ng-repeat="char in word.literal track by $index"
+                    ng-click="getKanjidic2(char)">{{char}}</span></span>
         </div>
         <div>{{reading}}</div>
-        <table ng-if="word">
-            <tr>
-                <td>Pos</td>
-                <td>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}</td>
-            </tr>
-            <tr>
-                <td>Infl.</td>
-                <td>{{word.inflection_type}}, {{word.inflection_form}}</td>
-            </tr>
-            <tr>
-                <td>Lemma</td>
-                <td>{{word.lemma}}</td>
-            </tr>
-            <tr>
-                <td>Reading</td>
-                <td>{{word.reading}}</td>
-            </tr>
-        </table>
+        <div>
+            <table style="display: inline-block;">
+                <tr>
+                    <td><b>Pos</b></td>
+                    <td>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}</td>
+                </tr>
+                <tr>
+                    <td><b>Infl.</b></td>
+                    <td>{{word.inflection_type}}, {{word.inflection_form}}</td>
+                </tr>
+                <tr>
+                    <td><b>Lemma</b></td>
+                    <td>{{word.lemma}}</td>
+                </tr>
+                <tr>
+                    <td><b>Reading</b></td>
+                    <td>{{word.reading}}</td>
+                </tr>
+            </table>
+            <table style="display: inline-block;">
+                <tr>
+                    <td><b>Kanji</b></td>
+                    <td>{{kanji.literal}}</td>
+                </tr>
+                <tr>
+                    <td><b>Meaning</b></td>
+                    <td>{{kanji.meaning.join(', ')}}</td>
+                </tr>
+                <tr>
+                    <td><b>Kun</b></td>
+                    <td>{{kanji.kun.join(', ')}}</td>
+                </tr>
+                <tr>
+                    <td><b>On</b></td>
+                    <td>{{kanji.on.join(', ')}}</td>
+                </tr>
+                <tr>
+                    <td><b>Freq.</b></td>
+                    <td>{{kanji.freq}}</td>
+                </tr>
+                <tr>
+                    <td><b>Strokes</b></td>
+                    <td>{{kanji.stroke_count}}</td>
+                </tr>
+            </table>
+        </div>
     </div>
     <!-- Translation -->
     <div ng-controller="Translation">
@@ -68,6 +99,7 @@
 
 <script src="services/mecab.js"></script>
 <script src="services/edict2.js"></script>
+<script src="services/kanjidic2.js"></script>
 <script src="services/helpers.js"></script>
 </body>
 </html>

@@ -169,9 +169,10 @@ class Kanjidic2(object):
 
         for character in self.root.iter('character'):
 
-            entry = dict(on=[], kun=[], nanori=[], meaning=[])
-
             literal = character.find('literal').text
+
+            entry = dict(literal=literal, on=[], kun=[], nanori=[], meaning=[])
+
 
             # stroke count, frequency
             misc = character.find('misc')
