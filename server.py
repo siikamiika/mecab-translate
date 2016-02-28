@@ -4,6 +4,7 @@ from tornado import web, ioloop
 from tornado.log import enable_pretty_logging; enable_pretty_logging()
 from subprocess import PIPE, Popen
 import json
+import xml.etree.ElementTree as ET
 import re
 from queue import Queue
 from threading import Thread
@@ -54,7 +55,7 @@ class Edict2(object):
 
     def __init__(self):
 
-        self.dictfile = open('edict2', 'rb')
+        self.dictfile = open('data/edict2', 'rb')
         self.line_offset = []
         self.dictionary = dict()
         self._parse()
@@ -145,7 +146,69 @@ class Edict2(object):
                     self.dictionary[k] = []
                 self.dictionary[k].append(len(self.line_offset) - 1)
 
-        print('dictionary parsed!')
+        print('edict2 parsed!')
+
+
+
+class Kanjidic2(object):
+
+    def __init__(self):
+
+        self.root = ET.parse('data/kanjidic2.xml').getroot()
+        self.dic = dict()
+        self._parse()
+        del(self.root)
+
+
+    def get(self, kanji):
+
+        return self.dic.get(kanji)
+
+
+    def _parse(self):
+
+        for character in self.root.iter('character'):
+
+            entry = dict(on=[], kun=[], nanori=[], meaning=[])
+
+            literal = character.find('literal').text
+
+            # stroke count, frequency
+            misc = character.find('misc')
+
+            stroke_count = misc.find('stroke_count')
+            if stroke_count is not None:
+                stroke_count = int(stroke_count.text)
+            entry['stroke_count'] = stroke_count
+
+            freq = misc.find('freq')
+            if freq is not None:
+                freq = int(freq.text)
+            entry['freq'] = freq
+
+            reading_meaning = character.find('reading_meaning')
+            if not reading_meaning:
+                continue
+            rmgroup = reading_meaning.find('rmgroup')
+            # meaning
+            for meaning in rmgroup.iter('meaning'):
+                if meaning.get('m_lang') and meaning.get('m_lang') != 'en':
+                    continue
+                entry['meaning'].append(meaning.text)
+            # reading
+            for reading in rmgroup.iter('reading'):
+                r_type = reading.get('r_type')
+                if r_type == 'ja_on':
+                    entry['on'].append(reading.text)
+                if r_type == 'ja_kun':
+                    entry['kun'].append(reading.text)
+            # nanori
+            for nanori in reading_meaning.iter('nanori'):
+                entry['nanori'].append(nanori.text)
+
+            self.dic[literal] = entry
+
+        print('kanjidic2 parsed!')
 
 
 
@@ -166,11 +229,20 @@ class Edict2Handler(web.RequestHandler):
 
 
 
+class Kanjidic2Handler(web.RequestHandler):
+
+    def post(self):
+        query = json.loads(self.request.body.decode('utf-8'))
+        self.write(json.dumps(kanjidic2.get(query)))
+
+
+
 def get_app():
 
     return web.Application([
         (r'/mecab', MecabHandler),
         (r'/edict2', Edict2Handler),
+        (r'/kanjidic2', Kanjidic2Handler),
         (r'/(.*)', web.StaticFileHandler,
             {'path': 'client', 'default_filename': 'index.html'}),
     ])
@@ -178,8 +250,9 @@ def get_app():
 
 
 if __name__ == '__main__':
-    edict2 = Edict2()
     mecab = Mecab()
+    edict2 = Edict2()
+    kanjidic2 = Kanjidic2()
     app = get_app()
     app.listen(9874)
     main_loop = ioloop.IOLoop.instance()
