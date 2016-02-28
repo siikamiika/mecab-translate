@@ -173,7 +173,6 @@ class Kanjidic2(object):
 
             entry = dict(literal=literal, on=[], kun=[], nanori=[], meaning=[])
 
-
             # stroke count, frequency
             misc = character.find('misc')
 

@@ -8,7 +8,7 @@ angular.module('mecab-translate')
     });
 
     Kanjidic2.setOutput(function(output) {
-        $scope.kanji = output;
+        $scope.kanjidicInfo = output;
     });
 
     $scope.showInfo = function(word) {
@@ -20,6 +20,7 @@ angular.module('mecab-translate')
     }
 
     $scope.getKanjidic2 = function(kanji) {
+        $scope.kanji = kanji;
         Kanjidic2.get(kanji);
     }
 

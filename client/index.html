@@ -28,7 +28,7 @@
         </div>
         <div>{{reading}}</div>
         <div>
-            <table style="display: inline-block;">
+            <table ng-if="word.pos" style="display: inline-block;">
                 <tr>
                     <td><b>Pos</b></td>
                     <td>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}</td>
@@ -46,30 +46,35 @@
                     <td>{{word.reading}}</td>
                 </tr>
             </table>
-            <table style="display: inline-block;">
+            <img
+                ng-if="kanji"
+                ng-src="kanji/{{('00000' + kanji.charCodeAt(0).toString(16)).slice(-5) + '.svg'}}"
+                height="150px"
+                width="150px">
+            <table ng-if="kanjidicInfo.literal" style="display: inline-block;">
                 <tr>
                     <td><b>Kanji</b></td>
-                    <td>{{kanji.literal}}</td>
+                    <td>{{kanjidicInfo.literal}}</td>
                 </tr>
                 <tr>
                     <td><b>Meaning</b></td>
-                    <td>{{kanji.meaning.join(', ')}}</td>
+                    <td>{{kanjidicInfo.meaning.join(', ')}}</td>
                 </tr>
                 <tr>
                     <td><b>Kun</b></td>
-                    <td>{{kanji.kun.join(', ')}}</td>
+                    <td>{{kanjidicInfo.kun.join(', ')}}</td>
                 </tr>
                 <tr>
                     <td><b>On</b></td>
-                    <td>{{kanji.on.join(', ')}}</td>
+                    <td>{{kanjidicInfo.on.join(', ')}}</td>
                 </tr>
                 <tr>
                     <td><b>Freq.</b></td>
-                    <td>{{kanji.freq}}</td>
+                    <td>{{kanjidicInfo.freq}}</td>
                 </tr>
                 <tr>
                     <td><b>Strokes</b></td>
-                    <td>{{kanji.stroke_count}}</td>
+                    <td>{{kanjidicInfo.stroke_count}}</td>
                 </tr>
             </table>
         </div>
