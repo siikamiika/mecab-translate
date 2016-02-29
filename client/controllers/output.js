@@ -19,8 +19,74 @@ angular.module('mecab-translate')
         Edict2.translate(lemma);
     }
 
+    var kanjivg = document.getElementById('kanjivg');
+
+    var activateKanjivgPart = function (part, i, original) {
+        part.setAttribute('stroke', Helpers.kanjiPartColors[i]);
+        var kanjiPart = part.getAttribute('kvg:original');
+        if (!kanjiPart) {
+            kanjiPart = part.getAttribute('kvg:element');
+        }
+        part.onclick = function() {
+            $scope.getKanjidic2(kanjiPart);
+        }
+        part.onmouseover = function() {
+            part.setAttribute('stroke', 'gray');
+            Kanjidic2.get(kanjiPart);
+        }
+        part.onmouseleave = function() {
+            part.setAttribute('stroke', Helpers.kanjiPartColors[i]);
+            Kanjidic2.get(original);
+        }
+    }
+
+    kanjivg.onload = function() {
+        var parts = kanjivg.contentDocument.children[0].children[0].children[0];
+        parts.setAttribute('stroke-width', 5);
+        var original = parts.getAttribute('kvg:element');
+        parts = parts.children;
+        var colorOffset = 0;
+        for (var i = 0; i < parts.length; i++) {
+            var el = parts[i].getAttribute('kvg:element');
+            if (!el) {
+                try {
+                    var subparts = parts[i].children;
+                    var good = false;
+                    for (var j = 0; j < 3; j++) {
+                        for (var k = 0; k < subparts.length; k++) {
+                            el = subparts[k].getAttribute('kvg:element');
+                            if (el) {
+                                good = true;
+                                break;
+                            }
+                        }
+                        if (good) {
+                            break;
+                        }
+                        else {
+                            subparts = subparts[0].children;
+                        }
+                    }
+                    for (var l = 0; l < subparts.length; l++) {
+                        el = subparts[l].getAttribute('kvg:element');
+                        if (el) {
+                            activateKanjivgPart(subparts[l], i + colorOffset, original);
+                            colorOffset++;
+                        }
+                    }
+                }
+                catch(error) {
+                    console.log(error.message);
+                }
+            }
+            else {
+                activateKanjivgPart(parts[i], i + colorOffset, original);
+            }
+        }
+    }
+
     $scope.getKanjidic2 = function(kanji) {
-        $scope.kanji = kanji;
+        $scope.kanji = kanji || $scope.kanji;
         Kanjidic2.get(kanji);
     }
 

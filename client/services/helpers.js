@@ -107,7 +107,20 @@ angular.module('mecab-translate')
                 default:
                     return 'other';
             }
-        }
+        },
+        kanjiPartColors: [
+            '#0d5ba6',
+            '#ce3434',
+            '#049a40',
+            '#e6a600',
+            '#d27d8e',
+            'blue',
+            'red',
+            'green',
+            'cyan',
+            'magenta',
+            'yellow'
+        ]
     }
 
 });

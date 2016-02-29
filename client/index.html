@@ -46,12 +46,13 @@
                     <td>{{word.reading}}</td>
                 </tr>
             </table>
-            <img
-                ng-if="kanji"
-                ng-src="kanji/{{('00000' + kanji.charCodeAt(0).toString(16)).slice(-5) + '.svg'}}"
-                height="150px"
-                width="150px">
-            <table ng-if="kanjidicInfo.literal" style="display: inline-block;">
+            <object
+                id="kanjivg"
+                type="image/svg+xml"
+                height="200px"
+                width="200px"
+                ng-attr-data="kanji/{{('00000' + (kanji || 'あ').charCodeAt(0).toString(16)).slice(-5) + '.svg'}}"></object>
+            <table ng-if="kanjidicInfo.literal" style="display: inline-block; max-width: 400px;">
                 <tr>
                     <td><b>Kanji</b></td>
                     <td>{{kanjidicInfo.literal}}</td>
@@ -67,6 +68,10 @@
                 <tr>
                     <td><b>On</b></td>
                     <td>{{kanjidicInfo.on.join(', ')}}</td>
+                </tr>
+                <tr>
+                    <td><b>Nanori</b></td>
+                    <td>{{kanjidicInfo.nanori.join(', ')}}</td>
                 </tr>
                 <tr>
                     <td><b>Freq.</b></td>
