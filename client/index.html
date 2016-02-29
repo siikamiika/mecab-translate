@@ -12,7 +12,7 @@
         <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
     </div>
     <!-- Analyzed output -->
-    <div ng-controller="Output">
+    <div ng-controller="Output" ng-mouseup="translateSelection()">
         <div id="output">
             <span
                 class="molecule"

@@ -19,6 +19,10 @@ angular.module('mecab-translate')
         Edict2.translate(lemma);
     }
 
+    $scope.translateSelection = function() {
+        Edict2.translate(window.getSelection().toString());
+    }
+
     var kanjivg = document.getElementById('kanjivg');
 
     var activateKanjivgPart = function (part, i, original) {
@@ -45,7 +49,7 @@ angular.module('mecab-translate')
         parts.setAttribute('stroke-width', 5);
         var original = parts.getAttribute('kvg:element');
         parts = parts.children;
-        var colorOffset = 0;
+        var color = 0;
         for (var i = 0; i < parts.length; i++) {
             var el = parts[i].getAttribute('kvg:element');
             if (!el) {
@@ -70,8 +74,8 @@ angular.module('mecab-translate')
                     for (var l = 0; l < subparts.length; l++) {
                         el = subparts[l].getAttribute('kvg:element');
                         if (el) {
-                            activateKanjivgPart(subparts[l], i + colorOffset, original);
-                            colorOffset++;
+                            activateKanjivgPart(subparts[l], color, original);
+                            color++;
                         }
                     }
                 }
@@ -80,7 +84,8 @@ angular.module('mecab-translate')
                 }
             }
             else {
-                activateKanjivgPart(parts[i], i + colorOffset, original);
+                activateKanjivgPart(parts[i], color, original);
+                color++;
             }
         }
     }
