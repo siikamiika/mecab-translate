@@ -20,7 +20,10 @@ angular.module('mecab-translate')
     }
 
     $scope.translateSelection = function() {
-        Edict2.translate(window.getSelection().toString());
+        var selection = window.getSelection().toString();
+        if (selection) {
+            Edict2.translate(selection);
+        }
     }
 
     var kanjivg = document.getElementById('kanjivg');
