@@ -61,7 +61,7 @@ angular.module('mecab-translate')
         // firefox
         var textElements = kanjivg.contentDocument.getElementsByTagName('text');
         for (var i = 0; i < textElements.length; i++) {
-            textElements[i].setAttribute('style', 'font-size: 8px;');
+            textElements[i].setAttribute('style', 'font-size: 8px; pointer-events: none;');
         }
 
         var groups = [].slice.call(kanjivg.contentDocument.getElementsByTagName('g'), 1);
