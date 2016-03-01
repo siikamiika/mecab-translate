@@ -94,7 +94,12 @@ angular.module('mecab-translate')
     }
 
     $scope.getKanjidic2 = function(kanji) {
-        $scope.kanji = kanji || $scope.kanji;
+        if (kanji.length == 1) {
+            var url = 'kanji/' + ('00000' + kanji.charCodeAt(0).toString(16)).slice(-5) + '.svg';
+            Helpers.ifExists(url, function() {
+                $scope.kanji = url;
+            });
+        }
         Kanjidic2.get(kanji);
     }
 

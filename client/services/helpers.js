@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.factory('Helpers', function() {
+.factory('Helpers', function($http) {
 
     var mecabPos = {
         MEISHI: '名詞',
@@ -120,7 +120,13 @@ angular.module('mecab-translate')
             'cyan',
             'magenta',
             'yellow'
-        ]
+        ],
+        ifExists: function(url, callback) {
+            $http.get(url)
+            .then(function success(data) {
+                callback();
+            }, function error(data) {});
+        }
     }
 
 });
