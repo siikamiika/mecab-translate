@@ -49,6 +49,11 @@ angular.module('mecab-translate')
 
     kanjivg.onload = function() {
         var parts = kanjivg.contentDocument.children[0].children[0].children[0];
+        // firefox
+        var textElements = kanjivg.contentDocument.getElementsByTagName('text');
+        for (var i = 0; i < textElements.length; i++) {
+            textElements[i].setAttribute('style', 'font-size: 8px;');
+        }
         parts.setAttribute('stroke-width', 5);
         var original = parts.getAttribute('kvg:element');
         parts = parts.children;
@@ -102,8 +107,6 @@ angular.module('mecab-translate')
         }
         Kanjidic2.get(kanji);
     }
-
-    $scope.reading = '-';
 
     $scope.showReading = function(reading) {
        $scope.reading = reading;

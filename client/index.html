@@ -26,7 +26,7 @@
                     ng-repeat="char in word.literal track by $index"
                     ng-click="getKanjidic2(char)">{{char}}</span></span>
         </div>
-        <div>{{reading}}</div>
+        <div ng-init="reading = '-'">{{reading}}</div>
         <div>
             <table ng-if="word.pos" style="display: inline-block;">
                 <tr>
