@@ -28,23 +28,29 @@ angular.module('mecab-translate')
 
     var kanjivg = document.getElementById('kanjivg');
 
-    var activateKanjivgPart = function (part, color, original) {
-        part.setAttribute('stroke', Helpers.kanjiPartColors[color]);
-        var kanjiPart = part.getAttribute('kvg:original');
-        if (!kanjiPart) {
-            kanjiPart = part.getAttribute('kvg:element');
-        }
-        part.onclick = function() {
-            $scope.getKanjidic2(kanjiPart);
-        }
-        part.onmouseover = function() {
-            part.setAttribute('stroke', 'gray');
-            Kanjidic2.get(kanjiPart);
-        }
-        part.onmouseleave = function() {
+    var activateKanjivgPart = function (parts, color, original) {
+        parts.forEach(function(part) {
             part.setAttribute('stroke', Helpers.kanjiPartColors[color]);
-            Kanjidic2.get(original);
-        }
+            var kanjiPart = part.getAttribute('kvg:original');
+            if (!kanjiPart) {
+                kanjiPart = part.getAttribute('kvg:element');
+            }
+            part.onclick = function() {
+                $scope.getKanjidic2(kanjiPart);
+            }
+            part.onmouseover = function() {
+                parts.forEach(function(_part) {
+                    _part.setAttribute('stroke', 'gray');
+                });
+                Kanjidic2.get(kanjiPart);
+            }
+            part.onmouseleave = function() {
+                parts.forEach(function(_part) {
+                    _part.setAttribute('stroke', Helpers.kanjiPartColors[color]);
+                });
+                Kanjidic2.get(original);
+            }
+        });
     }
 
     kanjivg.onload = function() {
@@ -98,9 +104,7 @@ angular.module('mecab-translate')
         }
 
         for (var x in queue) {
-            queue[x].parts.forEach(function(g) {
-                activateKanjivgPart(g, queue[x].color, original);
-            });
+            activateKanjivgPart(queue[x].parts, queue[x].color, original);
         }
     }
 
