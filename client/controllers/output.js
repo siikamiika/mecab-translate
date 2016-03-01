@@ -31,6 +31,10 @@ angular.module('mecab-translate')
     var activateKanjivgPart = function (parts, color, original) {
         parts.forEach(function(part) {
             part.setAttribute('stroke', Helpers.kanjiPartColors[color]);
+            var outlines = part.cloneNode(true);
+            outlines.setAttribute('stroke-width', 24);
+            outlines.setAttribute('style', 'opacity: 0;');
+            part.appendChild(outlines);
             var kanjiPart = part.getAttribute('kvg:original');
             if (!kanjiPart) {
                 kanjiPart = part.getAttribute('kvg:element');
