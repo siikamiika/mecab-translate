@@ -59,12 +59,6 @@ angular.module('mecab-translate')
         var original = groups[0].getAttribute('kvg:element');
 
         var topGroups = groups.slice(1).filter(function(group) {
-            var parent = group.parentElement.getAttribute('kvg:element');
-            var element = group.getAttribute('kvg:original');
-            if (!element) {
-                element = group.getAttribute('kvg:element');
-            }
-
             var parent = group.parentElement;
             var parentKvgElement;
             while (true) {
@@ -75,7 +69,7 @@ angular.module('mecab-translate')
                     }
                 }
                 catch (error) {
-                    if (element) {
+                    if (group.getAttribute('kvg:element')) {
                         return true;
                     }
                     else {
