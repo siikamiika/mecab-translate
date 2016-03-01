@@ -28,8 +28,8 @@ angular.module('mecab-translate')
 
     var kanjivg = document.getElementById('kanjivg');
 
-    var activateKanjivgPart = function (part, i, original) {
-        part.setAttribute('stroke', Helpers.kanjiPartColors[i]);
+    var activateKanjivgPart = function (part, color, original) {
+        part.setAttribute('stroke', Helpers.kanjiPartColors[color]);
         var kanjiPart = part.getAttribute('kvg:original');
         if (!kanjiPart) {
             kanjiPart = part.getAttribute('kvg:element');
@@ -42,59 +42,60 @@ angular.module('mecab-translate')
             Kanjidic2.get(kanjiPart);
         }
         part.onmouseleave = function() {
-            part.setAttribute('stroke', Helpers.kanjiPartColors[i]);
+            part.setAttribute('stroke', Helpers.kanjiPartColors[color]);
             Kanjidic2.get(original);
         }
     }
 
     kanjivg.onload = function() {
-        var parts = kanjivg.contentDocument.children[0].children[0].children[0];
         // firefox
         var textElements = kanjivg.contentDocument.getElementsByTagName('text');
         for (var i = 0; i < textElements.length; i++) {
             textElements[i].setAttribute('style', 'font-size: 8px;');
         }
-        parts.setAttribute('stroke-width', 5);
-        var original = parts.getAttribute('kvg:element');
-        parts = parts.children;
-        var color = 0;
-        for (var i = 0; i < parts.length; i++) {
-            var el = parts[i].getAttribute('kvg:element');
-            if (!el) {
-                try {
-                    var subparts = parts[i].children;
-                    var good = false;
-                    for (var j = 0; j < 3; j++) {
-                        for (var k = 0; k < subparts.length; k++) {
-                            el = subparts[k].getAttribute('kvg:element');
-                            if (el) {
-                                good = true;
-                                break;
-                            }
-                        }
-                        if (good) {
-                            break;
-                        }
-                        else {
-                            subparts = subparts[0].children;
-                        }
-                    }
-                    for (var l = 0; l < subparts.length; l++) {
-                        el = subparts[l].getAttribute('kvg:element');
-                        if (el) {
-                            activateKanjivgPart(subparts[l], color, original);
-                            color++;
-                        }
-                    }
-                }
-                catch(error) {
-                    console.log(error.message);
-                }
+
+        var groups = [].slice.call(kanjivg.contentDocument.getElementsByTagName('g'), 1);
+        groups[0].setAttribute('stroke-width', 5);
+        var original = groups[0].getAttribute('kvg:element');
+
+        var topGroups = groups.slice(1).filter(function(group) {
+            var parent = group.parentElement.getAttribute('kvg:element');
+            var element = group.getAttribute('kvg:original');
+            if (!element) {
+                element = group.getAttribute('kvg:element');
+            }
+
+            if ((!parent || parent == original) && element) {
+                return true;
             }
             else {
-                activateKanjivgPart(parts[i], color, original);
+                return false;
+            }
+        });
+
+        var color = 0;
+        var queue = {};
+        var character;
+        for (var i = 0; i < topGroups.length; i++) {
+            character = topGroups[i].getAttribute('kvg:original');
+            if (!character) {
+                character = topGroups[i].getAttribute('kvg:element');
+            }
+
+            if (queue[character] === undefined) {
+                queue[character] = {
+                    color: color,
+                    parts: []
+                }
                 color++;
             }
+            queue[character].parts.push(topGroups[i]);
+        }
+
+        for (var x in queue) {
+            queue[x].parts.forEach(function(g) {
+                activateKanjivgPart(g, queue[x].color, original);
+            });
         }
     }
 
