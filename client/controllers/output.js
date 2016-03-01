@@ -54,7 +54,7 @@ angular.module('mecab-translate')
             textElements[i].setAttribute('style', 'font-size: 8px;');
         }
 
-        var groups = [].slice.call(kanjivg.contentDocument.getElementsByTagName('g'), 1);
+        var groups = [].slice.call(kanjivg.contentDocument.getElementsByTagName('g'), 1, -1);
         groups[0].setAttribute('stroke-width', 5);
         var original = groups[0].getAttribute('kvg:element');
 
@@ -65,11 +65,24 @@ angular.module('mecab-translate')
                 element = group.getAttribute('kvg:element');
             }
 
-            if ((!parent || parent == original) && element) {
-                return true;
-            }
-            else {
-                return false;
+            var parent = group.parentElement;
+            var parentKvgElement;
+            while (true) {
+                try {
+                    parentKvgElement = parent.getAttribute('kvg:element');
+                    if (parentKvgElement && parentKvgElement !== original) {
+                        return false;
+                    }
+                }
+                catch (error) {
+                    if (element) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                parent = parent.parentElement;
             }
         });
 
@@ -100,7 +113,7 @@ angular.module('mecab-translate')
     }
 
     $scope.getKanjidic2 = function(kanji) {
-        if (kanji.length == 1) {
+        if (kanji && kanji.length == 1) {
             var url = 'kanji/' + ('00000' + kanji.charCodeAt(0).toString(16)).slice(-5) + '.svg';
             Helpers.ifExists(url, function() {
                 $scope.kanji = url;
