@@ -54,29 +54,27 @@ angular.module('mecab-translate')
             textElements[i].setAttribute('style', 'font-size: 8px;');
         }
 
-        var groups = [].slice.call(kanjivg.contentDocument.getElementsByTagName('g'), 1, -1);
+        var groups = [].slice.call(kanjivg.contentDocument.getElementsByTagName('g'), 1);
         groups[0].setAttribute('stroke-width', 5);
         var original = groups[0].getAttribute('kvg:element');
 
         var topGroups = groups.slice(1).filter(function(group) {
-            var parent = group.parentElement;
+            if (!group.getAttribute('kvg:element')) {
+                return false;
+            }
+            var parent = group;
             var parentKvgElement;
             while (true) {
                 try {
+                    parent = parent.parentElement;
                     parentKvgElement = parent.getAttribute('kvg:element');
                     if (parentKvgElement && parentKvgElement !== original) {
                         return false;
                     }
                 }
                 catch (error) {
-                    if (group.getAttribute('kvg:element')) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                    return true;
                 }
-                parent = parent.parentElement;
             }
         });
 
