@@ -33,7 +33,7 @@ angular.module('mecab-translate')
             part.onclick = function() {
                 getKanjidic2(kanjiPart);
             }
-            part.onmouseover = function() {
+            part.onmouseenter = function() {
                 parts.forEach(function(_part) {
                     _part.setAttribute('stroke', 'gray');
                 });
