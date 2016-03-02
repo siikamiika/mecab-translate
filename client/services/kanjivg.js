@@ -1,7 +1,7 @@
 angular.module('mecab-translate')
 .factory('KanjiVG', function(Kanjidic2) {
 
-    var getKanjidic2;
+    var setKanjivgChar;
 
     var kanjiPartColors = [
         '#0d5ba6',
@@ -31,7 +31,8 @@ angular.module('mecab-translate')
                 kanjiPart = part.getAttribute('kvg:element');
             }
             part.onclick = function() {
-                getKanjidic2(kanjiPart);
+                setKanjivgChar(kanjiPart);
+                Kanjidic2.get(kanjiPart);
             }
             part.onmouseenter = function() {
                 parts.forEach(function(_part) {
@@ -103,8 +104,8 @@ angular.module('mecab-translate')
     }
 
     return {
-        setKanjidic: function(fn) {
-            getKanjidic2 = fn;
+        setOutput: function(fn) {
+            setKanjivgChar = fn;
         }
     }
 

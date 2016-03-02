@@ -24,7 +24,7 @@
                 ng-mouseleave="showReading('-')"><span
                     class="atom"
                     ng-repeat="char in word.literal track by $index"
-                    ng-click="getKanjidic2(char)">{{char}}</span></span>
+                    ng-click="setKanjivgChar(char); getKanjidic2(char)">{{char}}</span></span>
         </div>
         <div ng-init="reading = '-'">{{reading}}</div>
         <div>
@@ -51,9 +51,9 @@
                 type="image/svg+xml"
                 height="200px"
                 width="200px"
-                ng-init="kanji = 'kanji/0002e.svg'"
-                ng-show="kanji !== 'kanji/0002e.svg'"
-                ng-attr-data="{{kanji}}"></object>
+                ng-init="kanjivgUrl = 'kanji/0002e.svg'"
+                ng-show="kanjivgUrl !== 'kanji/0002e.svg'"
+                ng-attr-data="{{kanjivgUrl}}"></object>
             <table ng-if="kanjidicInfo.literal" style="display: inline-block; max-width: 400px;">
                 <tr>
                     <td><b>Kanji</b></td>

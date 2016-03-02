@@ -27,16 +27,19 @@ angular.module('mecab-translate')
     }
 
     $scope.getKanjidic2 = function(kanji) {
-        if (kanji && kanji.length == 1) {
-            var url = 'kanji/' + ('00000' + kanji.charCodeAt(0).toString(16)).slice(-5) + '.svg';
-            Helpers.ifExists(url, function() {
-                $scope.kanji = url;
-            });
-        }
         Kanjidic2.get(kanji);
     }
 
-    KanjiVG.setKanjidic($scope.getKanjidic2);
+    $scope.setKanjivgChar = function(kanji) {
+        if (kanji && kanji.length == 1) {
+            var url = 'kanji/' + ('00000' + kanji.charCodeAt(0).toString(16)).slice(-5) + '.svg';
+            Helpers.ifExists(url, function() {
+                $scope.kanjivgUrl = url;
+            });
+        }
+    }
+
+    KanjiVG.setOutput($scope.setKanjivgChar);
 
     $scope.showReading = function(reading) {
        $scope.reading = reading;
