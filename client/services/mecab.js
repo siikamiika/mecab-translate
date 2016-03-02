@@ -1,8 +1,6 @@
 angular.module('mecab-translate')
 .factory('Mecab', function($http) {
 
-    var output;
-
     return {
         analyze: function(val) {
             $http.post('/mecab', angular.toJson(val))

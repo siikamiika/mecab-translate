@@ -108,19 +108,6 @@ angular.module('mecab-translate')
                     return 'other';
             }
         },
-        kanjiPartColors: [
-            '#0d5ba6',
-            '#ce3434',
-            '#049a40',
-            '#e6a600',
-            '#d27d8e',
-            'blue',
-            'red',
-            'green',
-            'cyan',
-            'magenta',
-            'yellow'
-        ],
         ifExists: function(url, callback) {
             $http.get(url)
             .then(function success(data) {

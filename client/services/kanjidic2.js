@@ -1,8 +1,6 @@
 angular.module('mecab-translate')
 .factory('Kanjidic2', function($http) {
 
-    var output;
-
     return {
         get: function(val) {
             $http.post('/kanjidic2', angular.toJson(val))
