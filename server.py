@@ -161,7 +161,7 @@ class JMdict_e(object):
 
     def get(self, word):
 
-        return [self._entry(e) for e in self.dictionary.get(word)]
+        return [self._entry(e) for e in self.dictionary.get(word) or []]
 
 
     def _entry(self, entry):

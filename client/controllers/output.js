@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, Edict2, Kanjidic2, KanjiVG, Helpers) {
+.controller('Output', function($scope, Mecab, Edict2, JMdict_e, Kanjidic2, KanjiVG, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
@@ -17,12 +17,14 @@ angular.module('mecab-translate')
 
     $scope.translate = function(lemma) {
         Edict2.translate(lemma);
+        JMdict_e.translate(lemma);
     }
 
     $scope.translateSelection = function() {
         var selection = window.getSelection().toString();
         if (selection) {
             Edict2.translate(selection);
+            JMdict_e.translate(selection);
         }
     }
 

@@ -87,8 +87,19 @@
         </div>
     </div>
     <!-- Translation -->
-    <div ng-controller="Translation">
-        <ul>
+    <div ng-controller="Translation" ng-init="useEdict2 = false">
+        <form>
+            <label>
+                <input type="radio" ng-model="useEdict2" ng-value="true">
+                edict2
+            </label>
+            <label>
+                <input type="radio" ng-model="useEdict2" ng-value="false">
+                jmdict
+            </label>
+        </form>
+        <!-- legacy edict2 -->
+        <ul ng-if="useEdict2">
             <li ng-repeat="entry in entries">
                 <div ng-if="entry.common" style="color: green;">common word</div>
                 <div style="font-size: 28px" ng-bind-html="entry.words.map(w).join('; ') | unsafe"></div>
@@ -97,6 +108,38 @@
                     <li ng-repeat="translation in entry.translations">
                         <div style="color: blue;">{{translation.parts_of_speech.join(', ')}}</div>
                         <div ng-bind-html="$index + 1 + '. ' + d(translation.definition) | unsafe"></div>
+                    </li>
+                </ul>
+                <hr ng-if="!$last">
+            </li>
+        </ul>
+        <!-- jmdic -->
+        <ul ng-if="!useEdict2">
+            <li ng-repeat="entry in jmdicEntries">
+                <div style="font-size: 28px">
+                    <span ng-repeat="word in entry.words">
+                        <span
+                            ng-style="isCommon(word) &amp;&amp; {'color': 'red'}"
+                            ng-attr-title="{{word.pri.join(', ')}}"
+                            >{{word.text}}</span><span ng-if="!$last">, </span>
+                    </span>
+                </div>
+                <div ng-style="{'font-size': entry.words.length ? '20px' : '28px'}">
+                    <span ng-repeat="reading in entry.readings">
+                        <span
+                            ng-style="isCommon(reading) &amp;&amp; {'color': 'red'}"
+                            ng-attr-title="{{reading.pri.join(', ')}}"
+                            >{{reading.text}}</span><span ng-if="!$last">, </span>
+                    </span>
+                </div>
+                <ul>
+                    <li ng-repeat="translation in entry.translations">
+                        <div style="color: blue;">
+                            <span ng-repeat="pos in translation.pos">{{pos}}<span ng-if="!$last">, </span></span>
+                        </div>
+                        <div>
+                            <span>{{$index + 1}}. </span><span ng-repeat="gloss in translation.gloss">{{gloss}}<span ng-if="!$last">, </span></span>
+                        </div>
                     </li>
                 </ul>
                 <hr ng-if="!$last">
@@ -111,6 +154,7 @@
 
 <script src="services/mecab.js"></script>
 <script src="services/edict2.js"></script>
+<script src="services/jmdict_e.js"></script>
 <script src="services/kanjidic2.js"></script>
 <script src="services/kanjivg.js"></script>
 <script src="services/helpers.js"></script>

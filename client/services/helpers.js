@@ -113,7 +113,24 @@ angular.module('mecab-translate')
             .then(function success(data) {
                 callback();
             }, function error(data) {});
-        }
+        },
+        intersection: function(a, b) {
+            return a.filter(function(i) {
+                if(b.indexOf(i) > -1) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            });
+        },
+        commonPriority: [
+            'news1',
+            'ichi1',
+            'spec1',
+            'spec2',
+            'gai1'
+        ]
     }
 
 });
