@@ -8,6 +8,8 @@ import xml.etree.ElementTree as ET
 import re
 from queue import Queue
 from threading import Thread
+import time
+import pickle
 
 class Mecab(object):
 
@@ -154,9 +156,20 @@ class JMdict_e(object):
 
     def __init__(self):
 
-        self.root = ET.parse('data/JMdict_e').getroot()
-        self.dictionary = dict()
-        self._parse()
+        self.dictfile = 'data/JMdict_e'
+        self.picklefile = self.dictfile + '.pickle'
+
+        try:
+            print('loading JMdict_e.pickle...')
+            start = time.time()
+            self.dictionary = pickle.load(open(self.picklefile, 'rb'))
+            print('    loaded in {:.2f} s'.format(time.time() - start))
+        except FileNotFoundError:
+            self.jmdict = ET.iterparse(self.dictfile)
+            self.dictionary = dict()
+            self._parse()
+            del self.jmdict
+            pickle.dump(self.dictionary, open(self.picklefile, 'wb'))
 
 
     def get(self, word):
@@ -167,6 +180,8 @@ class JMdict_e(object):
     def _entry(self, entry):
 
         entry_obj = dict(words=[], readings=[], translations=[])
+
+        entry = ET.fromstring(entry)
 
         for k_ele in entry.iter('k_ele'):
             word = dict(inf=[], pri=[])
@@ -220,7 +235,13 @@ class JMdict_e(object):
 
     def _parse(self):
 
-        for entry in self.root.iter('entry'):
+        print('parsing JMdict_e...')
+        start = time.time()
+
+        for _, entry in self.jmdict:
+
+            if entry.tag != 'entry':
+                continue
 
             keys = []
 
@@ -230,12 +251,15 @@ class JMdict_e(object):
             for r_ele in entry.iter('r_ele'):
                 keys.append(r_ele.find('reb').text)
 
+            entry_str = ET.tostring(entry, encoding='utf-8')
+            entry.clear()
+
             for k in keys:
                 if not self.dictionary.get(k):
                     self.dictionary[k] = []
-                self.dictionary[k].append(entry)
+                self.dictionary[k].append(entry_str)
 
-        print('JMdict_e parsed!')
+        print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
 
@@ -243,10 +267,13 @@ class Kanjidic2(object):
 
     def __init__(self):
 
+        print('parsing kanjidic2...')
+        start = time.time()
         self.root = ET.parse('data/kanjidic2.xml').getroot()
         self.dic = dict()
         self._parse()
         del(self.root)
+        print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
     def get(self, kanji):
@@ -296,8 +323,6 @@ class Kanjidic2(object):
                 entry['nanori'].append(nanori.text)
 
             self.dic[literal] = entry
-
-        print('kanjidic2 parsed!')
 
 
 
@@ -355,4 +380,6 @@ if __name__ == '__main__':
     app = get_app()
     app.listen(9874)
     main_loop = ioloop.IOLoop.instance()
+    print('done!')
+    print('server listening to *:9874')
     main_loop.start()
