@@ -150,6 +150,95 @@ class Edict2(object):
 
 
 
+class JMdict_e(object):
+
+    def __init__(self):
+
+        self.root = ET.parse('data/JMdict_e').getroot()
+        self.dictionary = dict()
+        self._parse()
+
+
+    def get(self, word):
+
+        return [self._entry(e) for e in self.dictionary.get(word)]
+
+
+    def _entry(self, entry):
+
+        entry_obj = dict(words=[], readings=[], translations=[])
+
+        for k_ele in entry.iter('k_ele'):
+            word = dict(inf=[], pri=[])
+            word['text'] = k_ele.find('keb').text
+
+            for ke_inf in k_ele.iter('ke_inf'):
+                word['inf'].append(ke_inf.text)
+            for ke_pri in k_ele.iter('ke_pri'):
+                word['pri'].append(ke_pri.text)
+
+            entry_obj['words'].append(word)
+
+        for r_ele in entry.iter('r_ele'):
+            reading = dict(inf=[], pri=[], restr=[], nokanji=False)
+            reading['text'] = r_ele.find('reb').text
+
+            for re_inf in r_ele.iter('re_inf'):
+                reading['inf'].append(re_inf.text)
+            for re_pri in r_ele.iter('re_pri'):
+                reading['pri'].append(re_pri.text)
+            for re_restr in r_ele.iter('re_restr'):
+                reading['restr'].append(re_restr.text)
+            if r_ele.find('re_nokanji') is not None:
+                reading['nokanji'] = True
+
+            entry_obj['readings'].append(reading)
+
+        for sense in entry.iter('sense'):
+            def _get_tags(name):
+                return [t.text for t in sense.iter(name)]
+
+            translation = dict(
+                gloss=_get_tags('gloss'),
+                stagk=_get_tags('stagk'),
+                stagr=_get_tags('stagr'),
+                pos=_get_tags('pos'),
+                xref=_get_tags('xref'),
+                ant=_get_tags('ant'),
+                field=_get_tags('field'),
+                misc=_get_tags('misc'),
+                s_inf=_get_tags('s_inf'),
+                lsource=[[ls.text, ls.attrib['{http://www.w3.org/XML/1998/namespace}lang']]
+                    for ls in sense.iter('lsource')],
+                dial=_get_tags('dial'),
+            )
+
+            entry_obj['translations'].append(translation)
+
+        return entry_obj
+
+
+    def _parse(self):
+
+        for entry in self.root.iter('entry'):
+
+            keys = []
+
+            for k_ele in entry.iter('k_ele'):
+                keys.append(k_ele.find('keb').text)
+
+            for r_ele in entry.iter('r_ele'):
+                keys.append(r_ele.find('reb').text)
+
+            for k in keys:
+                if not self.dictionary.get(k):
+                    self.dictionary[k] = []
+                self.dictionary[k].append(entry)
+
+        print('JMdict_e parsed!')
+
+
+
 class Kanjidic2(object):
 
     def __init__(self):
@@ -229,6 +318,14 @@ class Edict2Handler(web.RequestHandler):
 
 
 
+class JMdict_eHandler(web.RequestHandler):
+
+    def post(self):
+        query = json.loads(self.request.body.decode('utf-8'))
+        self.write(json.dumps(jmdict_e.get(query)))
+
+
+
 class Kanjidic2Handler(web.RequestHandler):
 
     def post(self):
@@ -242,6 +339,7 @@ def get_app():
     return web.Application([
         (r'/mecab', MecabHandler),
         (r'/edict2', Edict2Handler),
+        (r'/jmdict_e', JMdict_eHandler),
         (r'/kanjidic2', Kanjidic2Handler),
         (r'/(.*)', web.StaticFileHandler,
             {'path': 'client', 'default_filename': 'index.html'}),
@@ -252,6 +350,7 @@ def get_app():
 if __name__ == '__main__':
     mecab = Mecab()
     edict2 = Edict2()
+    jmdict_e = JMdict_e()
     kanjidic2 = Kanjidic2()
     app = get_app()
     app.listen(9874)
