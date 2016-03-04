@@ -43,8 +43,4 @@ angular.module('mecab-translate')
 
     KanjiVG.setOutput($scope.setKanjivgChar);
 
-    $scope.showReading = function(reading) {
-       $scope.reading = reading;
-    }
-
 });

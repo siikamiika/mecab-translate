@@ -14,19 +14,20 @@
     <!-- Analyzed output -->
     <div ng-controller="Output" ng-mouseup="translateSelection()">
         <div id="output">
-            <span
-                class="molecule"
+            <div
+                class="word"
                 ng-repeat="word in words"
                 ng-class="posClass(word.pos)"
                 ng-attr-title="{{posClass(word.pos)}}"
-                ng-click="showInfo(word); translate(word.lemma)"
-                ng-mouseenter="showReading(word.reading)"
-                ng-mouseleave="showReading('-')"><span
-                    class="atom"
+                ng-click="showInfo(word); translate(word.lemma)">
+                <div
+                    class="character"
                     ng-repeat="char in word.literal track by $index"
-                    ng-click="setKanjivgChar(char); getKanjidic2(char)">{{char}}</span></span>
+                    ng-click="setKanjivgChar(char); getKanjidic2(char)">
+                {{char}}
+                </div>
+            </div>
         </div>
-        <div ng-init="reading = '-'">{{reading}}</div>
         <div>
             <table ng-if="word.pos" style="display: inline-block;">
                 <tr>
@@ -61,19 +62,35 @@
                 </tr>
                 <tr>
                     <td><b>Meaning</b></td>
-                    <td>{{kanjidicInfo.meaning.join(', ')}}</td>
+                    <td>
+                        <span ng-repeat="meaning in kanjidicInfo.meaning">
+                            <span class="important">{{meaning}}</span><span ng-if="!$last">, </span>
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <td><b>Kun</b></td>
-                    <td>{{kanjidicInfo.kun.join(', ')}}</td>
+                    <td>
+                        <span ng-repeat="kun in kanjidicInfo.kun">
+                            <span class="important">{{kun}}</span><span ng-if="!$last">, </span>
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <td><b>On</b></td>
-                    <td>{{kanjidicInfo.on.join(', ')}}</td>
+                    <td>
+                        <span ng-repeat="on in kanjidicInfo.on">
+                            <span class="important">{{on}}</span><span ng-if="!$last">, </span>
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <td><b>Nanori</b></td>
-                    <td>{{kanjidicInfo.nanori.join(', ')}}</td>
+                    <td>
+                        <span ng-repeat="nanori in kanjidicInfo.nanori">
+                            <span class="important">{{nanori}}</span><span ng-if="!$last">, </span>
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <td><b>Freq.</b></td>
@@ -150,7 +167,7 @@
                         <div style="color: blue;">
                             <span ng-repeat="pos in translation.pos">{{pos}}<span ng-if="!$last">, </span></span>
                         </div>
-                        <div style="line-height: 1.2;">
+                        <div>
                             <span>{{$index + 1}}.</span>
                             <span ng-if="translation.stagk.length" style="color: #8090FF;">({{translation.stagk.join(', ')}} only)</span>
                             <span ng-if="translation.stagr.length" style="color: #8090FF;">({{translation.stagr.join(', ')}} only)</span>
@@ -161,9 +178,7 @@
                             <span ng-if="translation.xref.length" style="color: #8090FF;">(See {{translation.xref.join(', ')}})</span>
                             <span ng-if="translation.ant.length" style="color: #8090FF;">(ant: {{translation.ant.join(', ')}})</span>
                             <span ng-repeat="gloss in translation.gloss">
-                                <span
-                                    style="border-style: dotted; border-width: 1px; white-space: nowrap;"
-                                >{{gloss}}</span><span ng-if="!$last">, </span>
+                                <span class="important">{{gloss}}</span><span ng-if="!$last">, </span>
                             </span>
                             <span ng-if="translation.lsource.length" ng-repeat="lsource in translation.lsource" style="color: #8090FF;">({{lsource.join(': ')}})</span>
                         </div>
