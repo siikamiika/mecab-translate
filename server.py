@@ -224,7 +224,7 @@ class JMdict_e(object):
                 field=_get_tags('field'),
                 misc=_get_tags('misc'),
                 s_inf=_get_tags('s_inf'),
-                lsource=[[ls.text, ls.attrib['{http://www.w3.org/XML/1998/namespace}lang']]
+                lsource=[[ls.attrib['{http://www.w3.org/XML/1998/namespace}lang'], ls.text]
                     for ls in sense.iter('lsource')],
                 dial=_get_tags('dial'),
             )
@@ -364,7 +364,7 @@ def get_app():
 
     return web.Application([
         (r'/mecab', MecabHandler),
-        (r'/edict2', Edict2Handler),
+        #(r'/edict2', Edict2Handler),
         (r'/jmdict_e', JMdict_eHandler),
         (r'/kanjidic2', Kanjidic2Handler),
         (r'/(.*)', web.StaticFileHandler,
@@ -375,7 +375,7 @@ def get_app():
 
 if __name__ == '__main__':
     mecab = Mecab()
-    edict2 = Edict2()
+    #edict2 = Edict2()
     jmdict_e = JMdict_e()
     kanjidic2 = Kanjidic2()
     app = get_app()

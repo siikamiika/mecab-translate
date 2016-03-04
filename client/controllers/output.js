@@ -16,14 +16,14 @@ angular.module('mecab-translate')
     }
 
     $scope.translate = function(lemma) {
-        Edict2.translate(lemma);
+        //Edict2.translate(lemma);
         JMdict_e.translate(lemma);
     }
 
     $scope.translateSelection = function() {
         var selection = window.getSelection().toString();
         if (selection) {
-            Edict2.translate(selection);
+            //Edict2.translate(selection);
             JMdict_e.translate(selection);
         }
     }

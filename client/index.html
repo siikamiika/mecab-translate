@@ -88,7 +88,7 @@
     </div>
     <!-- Translation -->
     <div ng-controller="Translation" ng-init="useEdict2 = false">
-        <form>
+        <!-- <form>
             <label>
                 <input type="radio" ng-model="useEdict2" ng-value="true">
                 edict2
@@ -97,9 +97,9 @@
                 <input type="radio" ng-model="useEdict2" ng-value="false">
                 jmdict
             </label>
-        </form>
+        </form> -->
         <!-- legacy edict2 -->
-        <ul ng-if="useEdict2">
+        <!-- <ul ng-if="useEdict2">
             <li ng-repeat="entry in entries">
                 <div ng-if="entry.common" style="color: green;">common word</div>
                 <div style="font-size: 28px" ng-bind-html="entry.words.map(w).join('; ') | unsafe"></div>
@@ -112,7 +112,7 @@
                 </ul>
                 <hr ng-if="!$last">
             </li>
-        </ul>
+        </ul> -->
         <!-- jmdic -->
         <ul ng-if="!useEdict2">
             <li ng-repeat="entry in jmdicEntries">
@@ -150,10 +150,22 @@
                         <div style="color: blue;">
                             <span ng-repeat="pos in translation.pos">{{pos}}<span ng-if="!$last">, </span></span>
                         </div>
-                        <!-- TODO: misc, s-inf, lsource[], xref, ^stagk, ^stagr, ant, dial, {field} -->
-                        <div>
+                        <div style="line-height: 1.2;">
                             <span>{{$index + 1}}.</span>
-                            <span ng-repeat="gloss in translation.gloss">{{gloss}}<span ng-if="!$last">, </span></span>
+                            <span ng-if="translation.stagk.length" style="color: #8090FF;">({{translation.stagk.join(', ')}} only)</span>
+                            <span ng-if="translation.stagr.length" style="color: #8090FF;">({{translation.stagr.join(', ')}} only)</span>
+                            <span ng-if="translation.misc.length" style="color: #8090FF;">({{translation.misc.join(', ')}})</span>
+                            <span ng-if="translation.s_inf.length" style="color: #8090FF;">({{translation.s_inf.join(', ')}})</span>
+                            <span ng-if="translation.dial.length" style="color: #8090FF;">({{translation.dial.join(', ')}})</span>
+                            <span ng-if="translation.field.length" style="color: #8090FF;">{{'{'+translation.field.join(',')+'}'}}</span>
+                            <span ng-if="translation.xref.length" style="color: #8090FF;">(See {{translation.xref.join(', ')}})</span>
+                            <span ng-if="translation.ant.length" style="color: #8090FF;">(ant: {{translation.ant.join(', ')}})</span>
+                            <span ng-repeat="gloss in translation.gloss">
+                                <span
+                                    style="border-style: dotted; border-width: 1px; white-space: nowrap;"
+                                >{{gloss}}</span><span ng-if="!$last">, </span>
+                            </span>
+                            <span ng-if="translation.lsource.length" ng-repeat="lsource in translation.lsource" style="color: #8090FF;">({{lsource.join(': ')}})</span>
                         </div>
                     </li>
                 </ul>
