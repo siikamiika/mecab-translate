@@ -132,6 +132,7 @@
                 <div style="font-size: 28px">
                     <span ng-repeat="word in entry.words">
                         <span
+                            ng-if="word"
                             class="clickable"
                             ng-class="{'common': isCommon(word)}"
                             ng-attr-title="{{word.pri.join(', ')}}"
@@ -147,6 +148,7 @@
                 <div ng-style="{'font-size': entry.words.length ? '20px' : '28px'}">
                     <span ng-repeat="reading in entry.readings">
                         <span
+                            ng-if="word"
                             class="clickable"
                             ng-class="{'common': isCommon(word)}"
                             ng-attr-title="{{reading.pri.join(', ')}}"
