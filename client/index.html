@@ -121,7 +121,12 @@
                         <span
                             ng-style="isCommon(word) &amp;&amp; {'color': 'red'}"
                             ng-attr-title="{{word.pri.join(', ')}}"
-                            >{{word.text}}</span><span ng-if="!$last">, </span>
+                        >{{word.text}}</span><span
+                            ng-if="word.inf.length"
+                            style="color: #8090FF;"
+                        >({{word.inf.join(', ')}})</span><span
+                            ng-if="!$last"
+                        >, </span>
                     </span>
                 </div>
                 <div ng-style="{'font-size': entry.words.length ? '20px' : '28px'}">
@@ -129,7 +134,15 @@
                         <span
                             ng-style="isCommon(reading) &amp;&amp; {'color': 'red'}"
                             ng-attr-title="{{reading.pri.join(', ')}}"
-                            >{{reading.text}}</span><span ng-if="!$last">, </span>
+                        >{{reading.text}}</span><span
+                            ng-if="reading.inf.length"
+                            style="color: #8090FF;"
+                        >({{reading.inf.join(', ')}})</span><span
+                            ng-if="reading.restr.length"
+                            style="color: #8090FF;"
+                        >({{reading.restr.join(', ')}})</span><span
+                            ng-if="!$last"
+                        >, </span>
                     </span>
                 </div>
                 <ul>
@@ -137,8 +150,10 @@
                         <div style="color: blue;">
                             <span ng-repeat="pos in translation.pos">{{pos}}<span ng-if="!$last">, </span></span>
                         </div>
+                        <!-- TODO: misc, s-inf, lsource[], xref, ^stagk, ^stagr, ant, dial, {field} -->
                         <div>
-                            <span>{{$index + 1}}. </span><span ng-repeat="gloss in translation.gloss">{{gloss}}<span ng-if="!$last">, </span></span>
+                            <span>{{$index + 1}}.</span>
+                            <span ng-repeat="gloss in translation.gloss">{{gloss}}<span ng-if="!$last">, </span></span>
                         </div>
                     </li>
                 </ul>
