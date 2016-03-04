@@ -15,7 +15,7 @@
     <div ng-controller="Output" ng-mouseup="translateSelection()">
         <div id="output">
             <div
-                class="word"
+                class="clickable word"
                 ng-repeat="word in words"
                 ng-class="posClass(word.pos)"
                 ng-attr-title="{{posClass(word.pos)}}"
@@ -29,7 +29,7 @@
             </div>
         </div>
         <div>
-            <table ng-if="word.pos" style="display: inline-block;">
+            <table ng-if="word.pos" class="mecab-info">
                 <tr>
                     <td><b>Pos</b></td>
                     <td>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}</td>
@@ -55,7 +55,7 @@
                 ng-init="kanjivgUrl = 'kanji/0002e.svg'"
                 ng-show="kanjivgUrl !== 'kanji/0002e.svg'"
                 ng-attr-data="{{kanjivgUrl}}"></object>
-            <table ng-if="kanjidicInfo.literal" style="display: inline-block; max-width: 400px;">
+            <table ng-if="kanjidicInfo.literal" class="kanjidic-info">
                 <tr>
                     <td><b>Kanji</b></td>
                     <td>{{kanjidicInfo.literal}}</td>
@@ -136,11 +136,13 @@
                 <div style="font-size: 28px">
                     <span ng-repeat="word in entry.words">
                         <span
-                            ng-style="isCommon(word) &amp;&amp; {'color': 'red'}"
+                            class="clickable"
+                            ng-class="{'common': isCommon(word)}"
                             ng-attr-title="{{word.pri.join(', ')}}"
+                            ng-click="translate(word.text)"
                         >{{word.text}}</span><span
                             ng-if="word.inf.length"
-                            style="color: #8090FF;"
+                            class="unobtrusive"
                         >({{word.inf.join(', ')}})</span><span
                             ng-if="!$last"
                         >, </span>
@@ -149,14 +151,16 @@
                 <div ng-style="{'font-size': entry.words.length ? '20px' : '28px'}">
                     <span ng-repeat="reading in entry.readings">
                         <span
-                            ng-style="isCommon(reading) &amp;&amp; {'color': 'red'}"
+                            class="clickable"
+                            ng-class="{'common': isCommon(word)}"
                             ng-attr-title="{{reading.pri.join(', ')}}"
+                            ng-click="translate(reading.text)"
                         >{{reading.text}}</span><span
                             ng-if="reading.inf.length"
-                            style="color: #8090FF;"
+                            class="unobtrusive"
                         >({{reading.inf.join(', ')}})</span><span
                             ng-if="reading.restr.length"
-                            style="color: #8090FF;"
+                            class="unobtrusive"
                         >({{reading.restr.join(', ')}})</span><span
                             ng-if="!$last"
                         >, </span>
@@ -164,23 +168,27 @@
                 </div>
                 <ul>
                     <li ng-repeat="translation in entry.translations">
-                        <div style="color: blue;">
+                        <div class="parts-of-speech">
                             <span ng-repeat="pos in translation.pos">{{pos}}<span ng-if="!$last">, </span></span>
                         </div>
                         <div>
                             <span>{{$index + 1}}.</span>
-                            <span ng-if="translation.stagk.length" style="color: #8090FF;">({{translation.stagk.join(', ')}} only)</span>
-                            <span ng-if="translation.stagr.length" style="color: #8090FF;">({{translation.stagr.join(', ')}} only)</span>
-                            <span ng-if="translation.misc.length" style="color: #8090FF;">({{translation.misc.join(', ')}})</span>
-                            <span ng-if="translation.s_inf.length" style="color: #8090FF;">({{translation.s_inf.join(', ')}})</span>
-                            <span ng-if="translation.dial.length" style="color: #8090FF;">({{translation.dial.join(', ')}})</span>
-                            <span ng-if="translation.field.length" style="color: #8090FF;">{{'{'+translation.field.join(',')+'}'}}</span>
-                            <span ng-if="translation.xref.length" style="color: #8090FF;">(See {{translation.xref.join(', ')}})</span>
-                            <span ng-if="translation.ant.length" style="color: #8090FF;">(ant: {{translation.ant.join(', ')}})</span>
-                            <span ng-repeat="gloss in translation.gloss">
+                            <span ng-if="translation.stagk.length" class="unobtrusive">({{translation.stagk.join(', ')}} only)</span>
+                            <span ng-if="translation.stagr.length" class="unobtrusive">({{translation.stagr.join(', ')}} only)</span>
+                            <span ng-if="translation.misc.length" class="unobtrusive">({{translation.misc.join(', ')}})</span>
+                            <span ng-if="translation.s_inf.length" class="unobtrusive">({{translation.s_inf.join(', ')}})</span>
+                            <span ng-if="translation.dial.length" class="unobtrusive">({{translation.dial.join(', ')}})</span>
+                            <span ng-if="translation.field.length" class="unobtrusive">{{'{'+translation.field.join(',')+'}'}}</span>
+                            <span ng-if="translation.xref.length" class="unobtrusive">(See
+                                <span ng-repeat="xref in translation.xref" ng-click="translate(parseReference(xref))"><span class="clickable reference">{{xref}}</span><span ng-if="!$last">, </span></span>)
+                            </span>
+                            <span ng-if="translation.ant.length" class="unobtrusive">(ant:
+                                <span ng-repeat="ant in translation.ant" ng-click="translate(parseReference(ant))"><span class="clickable reference">{{ant}}</span><span ng-if="!$last">, </span></span>)
+                            </span>
+                            <span ng-repeat="gloss in translation.gloss" class="translation">
                                 <span class="important">{{gloss}}</span><span ng-if="!$last">, </span>
                             </span>
-                            <span ng-if="translation.lsource.length" ng-repeat="lsource in translation.lsource" style="color: #8090FF;">({{lsource.join(': ')}})</span>
+                            <span ng-if="translation.lsource.length" ng-repeat="lsource in translation.lsource" class="unobtrusive">({{lsource.join(': ')}})</span>
                         </div>
                     </li>
                 </ul>

@@ -13,6 +13,40 @@ ul {
     white-space: nowrap;
 }
 
+.reference {
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.translation {
+
+}
+
+.parts-of-speech {
+    color: blue;
+}
+
+.unobtrusive {
+    color: #8090FF;
+}
+
+.mecab-info {
+    display: inline-block;
+}
+
+.kanjidic-info {
+    display: inline-block;
+    max-width: 400px;
+}
+
+.common {
+    color: red;
+}
+
 .word {
     display: inline-block;
     white-space: nowrap;

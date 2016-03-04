@@ -34,6 +34,14 @@ angular.module('mecab-translate')
         });
     });
 
+    $scope.translate = function(text) {
+        JMdict_e.translate(text);
+    }
+
+    $scope.parseReference = function(ref) {
+        return ref.split('・')[0];
+    }
+
     $scope.w = function(text) {
         return $sce.trustAsHtml(Helpers.parenHilite(Helpers.color(text, 'red')));
     }
