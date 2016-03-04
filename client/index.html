@@ -14,19 +14,15 @@
     <!-- Analyzed output -->
     <div ng-controller="Output" ng-mouseup="translateSelection()">
         <div id="output">
-            <div
+            <span
                 class="clickable word"
                 ng-repeat="word in words"
                 ng-class="posClass(word.pos)"
                 ng-attr-title="{{posClass(word.pos)}}"
-                ng-click="showInfo(word); translate(word.lemma)">
-                <div
+                ng-click="showInfo(word); translate(word.lemma)"><span
                     class="character"
                     ng-repeat="char in word.literal track by $index"
-                    ng-click="setKanjivgChar(char); getKanjidic2(char)">
-                {{char}}
-                </div>
-            </div>
+                    ng-click="setKanjivgChar(char); getKanjidic2(char)">{{char}}</span></span>
         </div>
         <div>
             <table ng-if="word.pos" class="mecab-info">

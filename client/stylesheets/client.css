@@ -48,7 +48,6 @@ ul {
 }
 
 .word {
-    display: inline-block;
     white-space: nowrap;
     margin: 2px;
 }
@@ -58,7 +57,6 @@ ul {
 }
 
 .character {
-    display: inline-block;
 }
 
 .character:hover {
