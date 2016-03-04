@@ -156,20 +156,21 @@ class JMdict_e(object):
 
     def __init__(self):
 
-        self.dictfile = 'data/JMdict_e'
-        self.picklefile = self.dictfile + '.pickle'
+        dictfile = 'data/JMdict_e'
+        picklefile = dictfile + '.pickle'
 
         try:
             print('loading JMdict_e.pickle...')
             start = time.time()
-            self.dictionary = pickle.load(open(self.picklefile, 'rb'))
+            self.dictionary = pickle.load(open(picklefile, 'rb'))
             print('    loaded in {:.2f} s'.format(time.time() - start))
         except FileNotFoundError:
-            self.jmdict = ET.iterparse(self.dictfile)
+            print('JMdict_e.pickle not found!')
+            self.jmdict = ET.iterparse(dictfile)
             self.dictionary = dict()
             self._parse()
             del self.jmdict
-            pickle.dump(self.dictionary, open(self.picklefile, 'wb'))
+            pickle.dump(self.dictionary, open(picklefile, 'wb'))
 
 
     def get(self, word):
