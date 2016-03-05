@@ -283,62 +283,88 @@ class Kanjidic2(object):
 
     def __init__(self):
 
-        print('parsing kanjidic2...')
-        start = time.time()
-        self.root = ET.parse('data/kanjidic2.xml').getroot()
+        self.dicfile = open('data/kanjidic2.xml', 'rb')
         self.dic = dict()
         self._parse()
-        del(self.root)
-        print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
     def get(self, kanji):
 
-        return self.dic.get(kanji)
+        dic_entry = self.dic.get(kanji)
+        if not dic_entry:
+            return
+
+        entry = dict(literal=kanji, on=[], kun=[], nanori=[], meaning=[])
+
+        position, length = dic_entry
+
+        self.dicfile.seek(position)
+        character = self.dicfile.read(length)
+        character = ET.fromstring(character)
+
+        # stroke count, frequency
+        misc = character.find('misc')
+
+        stroke_count = misc.find('stroke_count')
+        if stroke_count is not None:
+            stroke_count = int(stroke_count.text)
+        entry['stroke_count'] = stroke_count
+
+        freq = misc.find('freq')
+        if freq is not None:
+            freq = int(freq.text)
+        entry['freq'] = freq
+
+        reading_meaning = character.find('reading_meaning')
+        if not reading_meaning:
+            return
+        rmgroup = reading_meaning.find('rmgroup')
+        # meaning
+        for meaning in rmgroup.iter('meaning'):
+            if meaning.get('m_lang') and meaning.get('m_lang') != 'en':
+                continue
+            entry['meaning'].append(meaning.text)
+        # reading
+        for reading in rmgroup.iter('reading'):
+            r_type = reading.get('r_type')
+            if r_type == 'ja_on':
+                entry['on'].append(reading.text)
+            if r_type == 'ja_kun':
+                entry['kun'].append(reading.text)
+        # nanori
+        for nanori in reading_meaning.iter('nanori'):
+            entry['nanori'].append(nanori.text)
+
+        return entry
 
 
     def _parse(self):
 
-        for character in self.root.iter('character'):
+        print('parsing kanjidic2...')
+        start = time.time()
 
-            literal = character.find('literal').text
+        inside_character = False
+        literal = None
+        character_start = 0
 
-            entry = dict(literal=literal, on=[], kun=[], nanori=[], meaning=[])
+        while True:
+            line = self.dicfile.readline()
+            if not line:
+                break
 
-            # stroke count, frequency
-            misc = character.find('misc')
-
-            stroke_count = misc.find('stroke_count')
-            if stroke_count is not None:
-                stroke_count = int(stroke_count.text)
-            entry['stroke_count'] = stroke_count
-
-            freq = misc.find('freq')
-            if freq is not None:
-                freq = int(freq.text)
-            entry['freq'] = freq
-
-            reading_meaning = character.find('reading_meaning')
-            if not reading_meaning:
+            if not inside_character:
+                if line == b'<character>\n':
+                    inside_character = True
+                    character_start = self.dicfile.tell() - len(line)
+                    literal = self.dicfile.readline()[9:-11].decode('utf-8')
                 continue
-            rmgroup = reading_meaning.find('rmgroup')
-            # meaning
-            for meaning in rmgroup.iter('meaning'):
-                if meaning.get('m_lang') and meaning.get('m_lang') != 'en':
-                    continue
-                entry['meaning'].append(meaning.text)
-            # reading
-            for reading in rmgroup.iter('reading'):
-                r_type = reading.get('r_type')
-                if r_type == 'ja_on':
-                    entry['on'].append(reading.text)
-                if r_type == 'ja_kun':
-                    entry['kun'].append(reading.text)
-            # nanori
-            for nanori in reading_meaning.iter('nanori'):
-                entry['nanori'].append(nanori.text)
 
-            self.dic[literal] = entry
+            if line == b'</character>\n':
+                inside_character = False
+                character_position = (character_start, self.dicfile.tell() - character_start)
+                self.dic[literal] = character_position
+
+        print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
 
