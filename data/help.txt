@@ -1,1 +1,1 @@
-Put "edict2" (legacy), "JMdict_e" and "kanjidic2.xml" here.
+Put "JMdict_e" and "kanjidic2.xml" here.
