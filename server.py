@@ -156,21 +156,10 @@ class JMdict_e(object):
 
     def __init__(self):
 
-        dictfile = 'data/JMdict_e'
-        picklefile = dictfile + '.pickle'
-
-        try:
-            print('loading JMdict_e.pickle...')
-            start = time.time()
-            self.dictionary = pickle.load(open(picklefile, 'rb'))
-            print('    loaded in {:.2f} s'.format(time.time() - start))
-        except FileNotFoundError:
-            print('JMdict_e.pickle not found!')
-            self.jmdict = ET.iterparse(dictfile)
-            self.dictionary = dict()
-            self._parse()
-            del self.jmdict
-            pickle.dump(self.dictionary, open(picklefile, 'wb'))
+        self.dictfile = open('data/JMdict_e', 'rb')
+        self.dictionary = dict()
+        self.entities = dict()
+        self._parse()
 
 
     def get(self, word):
@@ -180,8 +169,16 @@ class JMdict_e(object):
 
     def _entry(self, entry):
 
+        ent = self.entities
+
         entry_obj = dict(words=[], readings=[], translations=[])
 
+        position, length = entry
+
+        self.dictfile.seek(position)
+        entry = self.dictfile.read(length)
+        jmdict_entity = '|'.join(map(re.escape, ent)).encode('utf-8')
+        entry = re.sub(b'&('+jmdict_entity+b');', b'\\1', entry)
         entry = ET.fromstring(entry)
 
         for k_ele in entry.iter('k_ele'):
@@ -189,7 +186,7 @@ class JMdict_e(object):
             word['text'] = k_ele.find('keb').text
 
             for ke_inf in k_ele.iter('ke_inf'):
-                word['inf'].append(ke_inf.text)
+                word['inf'].append([ke_inf.text, ent[ke_inf.text]])
             for ke_pri in k_ele.iter('ke_pri'):
                 word['pri'].append(ke_pri.text)
 
@@ -200,7 +197,7 @@ class JMdict_e(object):
             reading['text'] = r_ele.find('reb').text
 
             for re_inf in r_ele.iter('re_inf'):
-                reading['inf'].append(re_inf.text)
+                reading['inf'].append([re_inf.text, ent[re_inf.text]])
             for re_pri in r_ele.iter('re_pri'):
                 reading['pri'].append(re_pri.text)
             for re_restr in r_ele.iter('re_restr'):
@@ -218,15 +215,15 @@ class JMdict_e(object):
                 gloss=_get_tags('gloss'),
                 stagk=_get_tags('stagk'),
                 stagr=_get_tags('stagr'),
-                pos=_get_tags('pos'),
+                pos=[[pos, ent[pos]] for pos in _get_tags('pos')],
                 xref=_get_tags('xref'),
                 ant=_get_tags('ant'),
-                field=_get_tags('field'),
-                misc=_get_tags('misc'),
+                field=[[field, ent[field]] for field in _get_tags('field')],
+                misc=[[misc, ent[misc]] for misc in _get_tags('misc')],
                 s_inf=_get_tags('s_inf'),
                 lsource=[[ls.attrib['{http://www.w3.org/XML/1998/namespace}lang'], ls.text]
                     for ls in sense.iter('lsource')],
-                dial=_get_tags('dial'),
+                dial=[[dial, ent[dial]] for dial in _get_tags('dial')],
             )
 
             entry_obj['translations'].append(translation)
@@ -239,26 +236,45 @@ class JMdict_e(object):
         print('parsing JMdict_e...')
         start = time.time()
 
-        for _, entry in self.jmdict:
+        inside_jmdict = False
+        inside_entry = False
+        entry_keys = []
+        entry_start = 0
 
-            if entry.tag != 'entry':
+        while True:
+            line = self.dictfile.readline()
+            if not line:
+                break
+
+            if not inside_jmdict:
+                if line.startswith(b'<!ENTITY'):
+                    line = line.decode('utf-8')
+                    key, value = re.match('<!ENTITY (.*?) "(.*?)"', line).groups()
+                    self.entities[key] = value
+                if line == b'<JMdict>\n':
+                    inside_jmdict = True
                 continue
 
-            keys = []
+            if not inside_entry:
+                if line == b'<entry>\n':
+                    inside_entry = True
+                    entry_start = self.dictfile.tell() - len(line)
+                continue
 
-            for k_ele in entry.iter('k_ele'):
-                keys.append(k_ele.find('keb').text)
+            if line[2:5] == b'eb>':
+                entry_keys.append(line[5:-7].decode('utf-8'))
+                continue
 
-            for r_ele in entry.iter('r_ele'):
-                keys.append(r_ele.find('reb').text)
+            if line == b'</entry>\n':
+                inside_entry = False
+                entry_position = (entry_start, self.dictfile.tell() - entry_start)
 
-            entry_str = ET.tostring(entry, encoding='utf-8')
-            entry.clear()
+                for k in entry_keys:
+                    if not self.dictionary.get(k):
+                        self.dictionary[k] = []
+                    self.dictionary[k].append(entry_position)
 
-            for k in keys:
-                if not self.dictionary.get(k):
-                    self.dictionary[k] = []
-                self.dictionary[k].append(entry_str)
+                entry_keys = []
 
         print('    parsed in {:.2f} s'.format(time.time() - start))
 

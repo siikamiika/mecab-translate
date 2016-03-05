@@ -48,7 +48,6 @@ ul {
 }
 
 .word {
-    white-space: nowrap;
     margin: 2px;
 }
 
@@ -57,6 +56,13 @@ ul {
 }
 
 .character {
+
+}
+
+.abbr:after {
+    content: "?";
+    vertical-align: super;
+    font-size: 9px;
 }
 
 .character:hover {
