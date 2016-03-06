@@ -36,6 +36,7 @@ angular.module('mecab-translate')
     }
 
     JMdict_e.setOutput(function(output) {
+        output = output || {};
         $scope.shorterEntries = output.shorter;
         $scope.longerEntries = output.longer;
         if (output.shorter) {
