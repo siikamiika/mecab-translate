@@ -297,16 +297,20 @@ class MecabHandler(web.RequestHandler):
 
 class JMdict_eHandler(web.RequestHandler):
 
-    def post(self):
-        query = json.loads(self.request.body.decode('utf-8')).strip()
+    def get(self):
+        self.set_header('Cache-Control', 'max-age=3600')
+        self.set_header('Content-Type', 'application/json')
+        query = self.get_query_argument('query').strip()
         self.write(json.dumps(jmdict_e.get(query)))
 
 
 
 class Kanjidic2Handler(web.RequestHandler):
 
-    def post(self):
-        query = json.loads(self.request.body.decode('utf-8')).strip()
+    def get(self):
+        self.set_header('Cache-Control', 'max-age=3600')
+        self.set_header('Content-Type', 'application/json')
+        query = self.get_query_argument('query').strip()
         self.write(json.dumps(kanjidic2.get(query)))
 
 

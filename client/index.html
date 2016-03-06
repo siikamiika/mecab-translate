@@ -101,8 +101,11 @@
     </div>
     <!-- Translation -->
     <div ng-controller="Translation">
+        <div ng-if="shorterEntries">
+            No exact matches! Did you mean...
+        </div>
         <ul>
-            <li ng-repeat="entry in exactEntries">
+            <li ng-repeat="entry in entries">
                 <div style="font-size: 28px">
                     <span ng-repeat="word in entry.words">
                         <span
@@ -171,6 +174,9 @@
                 <hr ng-if="!$last">
             </li>
         </ul>
+        <div ng-if="longerEntries.length">
+            <button ng-click="showLongerEntries()">More ({{longerEntries.length}})</button>
+        </div>
     </div>
 
 <script src="client.js"></script>

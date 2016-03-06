@@ -3,8 +3,11 @@ angular.module('mecab-translate')
 
     return {
         translate: function(val) {
-            $http.post('/jmdict_e', angular.toJson(val))
-            .then(function success(data) {
+            $http({
+                method: 'GET',
+                url: '/jmdict_e',
+                params: {query: val}
+            }).then(function success(data) {
                 this.output(data.data);
             }.bind(this), function error(data) {
                 this.output([]);

@@ -5,8 +5,8 @@ angular.module('mecab-translate')
         return Helpers.intersection(Helpers.commonPriority, word.pri).length;
     }
 
-    JMdict_e.setOutput(function(output) {
-        $scope.exactEntries = output['exact'].sort(function(a, b) {
+    $scope.setEntries = function(entries) {
+        $scope.entries = entries ? entries.sort(function(a, b) {
 
             [a, b].forEach(function(entry) {
                 var common = false;
@@ -27,7 +27,23 @@ angular.module('mecab-translate')
 
             return Helpers.commonSort(a, b);
 
-        });
+        }) : [];
+    }
+
+    $scope.showLongerEntries = function() {
+        $scope.entries = [].concat.apply($scope.entries, $scope.longerEntries);
+        $scope.longerEntries = [];
+    }
+
+    JMdict_e.setOutput(function(output) {
+        $scope.shorterEntries = output.shorter;
+        $scope.longerEntries = output.longer;
+        if (output.shorter) {
+            $scope.setEntries(output.shorter);
+        }
+        else {
+            $scope.setEntries(output.exact);
+        }
     });
 
     $scope.translate = function(text) {
