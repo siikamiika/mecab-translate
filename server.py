@@ -9,6 +9,7 @@ import re
 from queue import Queue
 from threading import Thread
 import time
+from lib.trie import Trie
 
 class Mecab(object):
 
@@ -57,14 +58,29 @@ class JMdict_e(object):
     def __init__(self):
 
         self.dictfile = open('data/JMdict_e', 'rb')
-        self.dictionary = dict()
+        self.dictionary = Trie()
         self.entities = dict()
         self._parse()
 
 
     def get(self, word):
 
-        return [self._entry(e) for e in self.dictionary.get(word) or []]
+        res = self.dictionary.get(word, False)
+
+        if not res:
+            return
+
+        if res['exact']:
+            res['exact'] = [self._entry(e) for e in res['exact']]
+        if res['shorter']:
+            res['shorter'] = [self._entry(e) for e in res['shorter']]
+
+        longer = []
+        for l in res['longer']:
+            longer.append([self._entry(e) for e in l])
+        res['longer'] = longer
+
+        return res
 
 
     def _entry(self, entry):
@@ -171,8 +187,9 @@ class JMdict_e(object):
 
                 for k in entry_keys:
                     if not self.dictionary.get(k):
-                        self.dictionary[k] = []
-                    self.dictionary[k].append(entry_position)
+                        self.dictionary.insert(k, [])
+                    entries = self.dictionary.get(k)
+                    entries.append(entry_position)
 
                 entry_keys = []
 
@@ -272,7 +289,7 @@ class Kanjidic2(object):
 class MecabHandler(web.RequestHandler):
 
     def post(self):
-        data = json.loads(self.request.body.decode('utf-8'))
+        data = json.loads(self.request.body.decode('utf-8')).strip()
         data = data.replace('\n', '')
         self.write(json.dumps(mecab.analyze(data)))
 
@@ -281,7 +298,7 @@ class MecabHandler(web.RequestHandler):
 class JMdict_eHandler(web.RequestHandler):
 
     def post(self):
-        query = json.loads(self.request.body.decode('utf-8'))
+        query = json.loads(self.request.body.decode('utf-8')).strip()
         self.write(json.dumps(jmdict_e.get(query)))
 
 
@@ -289,7 +306,7 @@ class JMdict_eHandler(web.RequestHandler):
 class Kanjidic2Handler(web.RequestHandler):
 
     def post(self):
-        query = json.loads(self.request.body.decode('utf-8'))
+        query = json.loads(self.request.body.decode('utf-8')).strip()
         self.write(json.dumps(kanjidic2.get(query)))
 
 

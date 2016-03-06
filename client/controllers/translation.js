@@ -6,7 +6,7 @@ angular.module('mecab-translate')
     }
 
     JMdict_e.setOutput(function(output) {
-        $scope.jmdicEntries = output.sort(function(a, b) {
+        $scope.exactEntries = output['exact'].sort(function(a, b) {
 
             [a, b].forEach(function(entry) {
                 var common = false;
