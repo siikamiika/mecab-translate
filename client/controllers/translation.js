@@ -36,14 +36,19 @@ angular.module('mecab-translate')
     }
 
     JMdict_e.setOutput(function(output) {
-        output = output || {};
-        $scope.shorterEntries = output.shorter;
-        $scope.longerEntries = output.longer;
-        if (output.shorter) {
-            $scope.setEntries(output.shorter);
+        var responseType = Object.prototype.toString.call(output);
+        if(responseType === '[object Object]' ) {
+            $scope.shorterEntries = output.shorter;
+            $scope.longerEntries = output.longer;
+            if (output.shorter) {
+                $scope.setEntries(output.shorter);
+            }
         }
-        else {
-            $scope.setEntries(output.exact);
+        else if (responseType == '[object Array]') {
+            $scope.longerEntries = null;
+            $scope.shorterEntries = null;
+            $scope.setEntries(output);
+            JMdict_e.translate(JMdict_e.getLast(), false);
         }
     });
 

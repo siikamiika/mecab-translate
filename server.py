@@ -63,12 +63,15 @@ class JMdict_e(object):
         self._parse()
 
 
-    def get(self, word):
+    def get(self, word, exact=True):
+
+        if exact:
+            return [self._entry(entry) for entry in self.dictionary.get(word) or []]
 
         res = self.dictionary.get(word, False)
 
         if not res:
-            return
+            return dict()
 
         if res['exact']:
             res['exact'] = [self._entry(e) for e in res['exact']]
@@ -300,8 +303,14 @@ class JMdict_eHandler(web.RequestHandler):
     def get(self):
         self.set_header('Cache-Control', 'max-age=3600')
         self.set_header('Content-Type', 'application/json')
+        exact = self.get_query_argument('exact', default='yes')
         query = self.get_query_argument('query').strip()
-        self.write(json.dumps(jmdict_e.get(query)))
+        response = None
+        if exact == 'no':
+            response = jmdict_e.get(query, False)
+        elif exact == 'yes':
+            response = jmdict_e.get(query)
+        self.write(json.dumps(response))
 
 
 

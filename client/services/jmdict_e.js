@@ -2,11 +2,12 @@ angular.module('mecab-translate')
 .factory('JMdict_e', function($http) {
 
     return {
-        translate: function(val) {
+        translate: function(val, exact) {
+            this.last = val;
             $http({
                 method: 'GET',
                 url: '/jmdict_e',
-                params: {query: val}
+                params: {query: val, exact: exact === false ? 'no' : 'yes'}
             }).then(function success(data) {
                 this.output(data.data);
             }.bind(this), function error(data) {
@@ -15,6 +16,9 @@ angular.module('mecab-translate')
         },
         setOutput: function(fn) {
             this.output = fn;
+        },
+        getLast: function() {
+            return this.last;
         }
     }
 
