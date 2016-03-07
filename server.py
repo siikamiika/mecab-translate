@@ -9,7 +9,6 @@ import re
 from queue import Queue
 from threading import Thread
 import time
-from lib.trie import Trie
 
 class Mecab(object):
 
@@ -53,14 +52,77 @@ class Mecab(object):
 
 
 
+class Dictionary(object):
+
+    def __init__(self, dictionary):
+
+        self.dictionary = list(dictionary.items())
+        self.dictionary.sort(key=lambda e: e[0])
+
+
+    def get(self, key, exact=True):
+
+        index = self._search_dict(key)
+
+        if exact:
+            entry = self.dictionary[index]
+            if entry[0] == key:
+                return entry[1]
+            return
+
+        results = dict(exact=None, shorter=None, longer=[])
+
+        first_entry = self.dictionary[index]
+        if first_entry[0] != key:
+            if first_entry[0][0] != key[0]:
+                return results
+            results['shorter'] = first_entry[1]
+        else:
+            results['exact'] = first_entry[1]
+            while True:
+                index += 1
+                entry = self.dictionary[index]
+                if entry[0].startswith(key):
+                    results['longer'].append(entry[1])
+                else:
+                    break
+
+        return results
+
+
+    def _search_dict(self, key):
+
+        imax = len(self.dictionary) - 1
+        imin = 0
+
+        while True:
+
+            if imin > imax:
+                return imid
+
+            imid = int((imin + imax) / 2)
+
+            if self.dictionary[imid][0] == key:
+                return imid
+
+            elif self.dictionary[imid][0] < key:
+                imin = imid + 1
+
+            else:
+                imax = imid - 1
+
+
+
 class JMdict_e(object):
 
     def __init__(self):
 
         self.dictfile = open('data/JMdict_e', 'rb')
-        self.dictionary = Trie()
+        self.temp_dictionary = dict()
         self.entities = dict()
         self._parse()
+        self.dictionary = Dictionary(self.temp_dictionary)
+        del self.temp_dictionary
 
 
     def get(self, word, exact=True):
@@ -69,9 +131,6 @@ class JMdict_e(object):
             return [self._entry(entry) for entry in self.dictionary.get(word) or []]
 
         res = self.dictionary.get(word, False)
-
-        if not res:
-            return dict()
 
         if res['exact']:
             res['exact'] = [self._entry(e) for e in res['exact']]
@@ -189,10 +248,9 @@ class JMdict_e(object):
                 entry_position = (entry_start, self.dictfile.tell() - entry_start)
 
                 for k in entry_keys:
-                    if not self.dictionary.get(k):
-                        self.dictionary.insert(k, [])
-                    entries = self.dictionary.get(k)
-                    entries.append(entry_position)
+                    if not self.temp_dictionary.get(k):
+                        self.temp_dictionary[k] = []
+                    self.temp_dictionary[k].append(entry_position)
 
                 entry_keys = []
 
