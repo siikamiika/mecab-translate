@@ -71,6 +71,9 @@ class Dictionary(object):
 
         results = dict(exact=None, shorter=None, longer=[])
 
+        if not key:
+            return results
+
         if index is None:
             shorter = key[:-1]
             while shorter:
@@ -83,11 +86,19 @@ class Dictionary(object):
             results['exact'] = self.dictionary[index][1]
 
         if index is None:
-            index = self._search_dict(key, False) - 1
+            index = self._search_dict(key, False)
+            while True:
+                if index >= 0:
+                    entry = self.dictionary[index]
+                else:
+                    break
+                if not entry[0][0] == key[0]:
+                    break
+                index -= 1
 
         while True:
             index += 1
-            if index > len(self.dictionary):
+            if index >= len(self.dictionary):
                 break
             entry = self.dictionary[index]
             if entry[0].startswith(key):
@@ -117,7 +128,7 @@ class Dictionary(object):
                 imax = imid - 1
 
         if not exact:
-            return imid
+            return imin
 
 
 
