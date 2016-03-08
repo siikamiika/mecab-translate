@@ -31,11 +31,12 @@ angular.module('mecab-translate')
     }
 
     $scope.showLongerEntries = function() {
-        $scope.entries = [].concat.apply($scope.entries, $scope.longerEntries);
+        $scope.longerEntryListing = $scope.longerEntries;
         $scope.longerEntries = [];
     }
 
     JMdict_e.setOutput(function(output) {
+        $scope.longerEntryListing = [];
         var responseType = Object.prototype.toString.call(output);
         if(responseType === '[object Object]' ) {
             $scope.shorterEntries = output.shorter;
@@ -45,8 +46,8 @@ angular.module('mecab-translate')
             }
         }
         else if (responseType == '[object Array]') {
-            $scope.longerEntries = null;
             $scope.shorterEntries = null;
+            $scope.longerEntries = null;
             $scope.setEntries(output);
             JMdict_e.translate(JMdict_e.getLast(), false);
         }

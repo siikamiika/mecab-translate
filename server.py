@@ -65,25 +65,27 @@ class Dictionary(object):
         index = self._search_dict(key)
 
         if exact:
-            entry = self.dictionary[index]
-            if entry[0] == key:
-                return entry[1]
-            return
+            if index is None:
+                return
+            return self.dictionary[index][1]
 
         results = dict(exact=None, shorter=None, longer=[])
 
-        first_entry = self.dictionary[index]
-        if first_entry[0] != key:
-            if first_entry[0][0] != key[0]:
-                return results
-            results['shorter'] = first_entry[1]
+        if index is None:
+            shorter = key[:-1]
+            while shorter:
+                index = self._search_dict(shorter)
+                if index is not None:
+                    results['shorter'] = self.dictionary[index][1]
+                    break
+                shorter = shorter[:-1]
         else:
-            results['exact'] = first_entry[1]
+            results['exact'] = self.dictionary[index][1]
             while True:
                 index += 1
                 entry = self.dictionary[index]
                 if entry[0].startswith(key):
-                    results['longer'].append(entry[1])
+                    results['longer'].append(entry[0])
                 else:
                     break
 
@@ -95,10 +97,7 @@ class Dictionary(object):
         imax = len(self.dictionary) - 1
         imin = 0
 
-        while True:
-
-            if imin > imax:
-                return imid
+        while imin <= imax:
 
             imid = int((imin + imax) / 2)
 
@@ -136,11 +135,6 @@ class JMdict_e(object):
             res['exact'] = [self._entry(e) for e in res['exact']]
         if res['shorter']:
             res['shorter'] = [self._entry(e) for e in res['shorter']]
-
-        longer = []
-        for l in res['longer']:
-            longer.append([self._entry(e) for e in l])
-        res['longer'] = longer
 
         return res
 

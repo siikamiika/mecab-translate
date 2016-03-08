@@ -174,8 +174,9 @@
                 <hr ng-if="!$last">
             </li>
         </ul>
-        <div ng-if="longerEntries.length">
-            <button ng-click="showLongerEntries()">More ({{longerEntries.length}})</button>
+        <div>
+            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More ({{longerEntries.length}})</button>
+            <div ng-repeat="entry in longerEntryListing"><span class="clickable" ng-click="translate(entry)">{{entry}}</span></div>
         </div>
     </div>
 
