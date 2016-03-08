@@ -81,18 +81,24 @@ class Dictionary(object):
                 shorter = shorter[:-1]
         else:
             results['exact'] = self.dictionary[index][1]
-            while True:
-                index += 1
-                entry = self.dictionary[index]
-                if entry[0].startswith(key):
-                    results['longer'].append(entry[0])
-                else:
-                    break
+
+        if index is None:
+            index = self._search_dict(key, False) - 1
+
+        while True:
+            index += 1
+            if index > len(self.dictionary):
+                break
+            entry = self.dictionary[index]
+            if entry[0].startswith(key):
+                results['longer'].append(entry[0])
+            else:
+                break
 
         return results
 
 
-    def _search_dict(self, key):
+    def _search_dict(self, key, exact=True):
 
         imax = len(self.dictionary) - 1
         imin = 0
@@ -109,6 +115,9 @@ class Dictionary(object):
 
             else:
                 imax = imid - 1
+
+        if not exact:
+            return imid
 
 
 
