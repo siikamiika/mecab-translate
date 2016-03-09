@@ -60,19 +60,14 @@ class Dictionary(object):
         self.dictionary.sort(key=lambda e: e[0])
 
 
-    def get(self, key, exact=True):
-
-        index = self._search_dict(key)
-
-        if exact:
-            if index is None:
-                return
-            return self.dictionary[index][1]
+    def get(self, key):
 
         results = dict(exact=None, shorter=None, longer=[])
 
         if not key:
             return results
+
+        index = self._search_dict(key)
 
         if index is None:
             shorter = key[:-1]
@@ -144,12 +139,9 @@ class JMdict_e(object):
         del self.temp_dictionary
 
 
-    def get(self, word, exact=True):
+    def get(self, word):
 
-        if exact:
-            return [self._entry(entry) for entry in self.dictionary.get(word) or []]
-
-        res = self.dictionary.get(word, False)
+        res = self.dictionary.get(word)
 
         if res['exact']:
             res['exact'] = [self._entry(e) for e in res['exact']]
@@ -375,13 +367,8 @@ class JMdict_eHandler(web.RequestHandler):
     def get(self):
         self.set_header('Cache-Control', 'max-age=3600')
         self.set_header('Content-Type', 'application/json')
-        exact = self.get_query_argument('exact', default='yes')
         query = self.get_query_argument('query').strip()
-        response = None
-        if exact == 'no':
-            response = jmdict_e.get(query, False)
-        elif exact == 'yes':
-            response = jmdict_e.get(query)
+        response = jmdict_e.get(query)
         self.write(json.dumps(response))
 
 
