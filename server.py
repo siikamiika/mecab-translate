@@ -353,6 +353,78 @@ class Kanjidic2(object):
 
 
 
+class Tatoeba(object):
+
+    def __init__(self):
+
+        self.datafile = open('data/wwwjdic.csv', 'rb')
+        self.dictionary = dict()
+        self._parse()
+
+
+    def get(self, headword, reading, sense):
+
+        entries = self.dictionary.get(headword)
+        if not entries:
+            return
+
+        def matches(entry):
+            if reading and entry[1] and reading != entry[1]:
+                return False
+            if sense and entry[2] and sense != entry[2]:
+                return False
+            return True
+
+        return [dict(self._entry(entry[0]), form=entry[3]) for entry in filter(matches, entries)]
+
+
+    def _entry(self, file_pos):
+
+        file_pos, length = file_pos
+
+        self.datafile.seek(file_pos)
+        line = self.datafile.read(length).decode('utf-8')
+
+        jpn, eng = line.split('\t')[2:4]
+
+        return dict(jpn=jpn, eng=eng)
+
+
+    def _parse(self):
+
+        print('parsing wwwjdic.csv...')
+        start = time.time()
+
+        index_pattern = re.compile(r'([^\(\[\{~]+)(?:\|\d)?(\(.*?\))?(\[\d\d\])?({.*?})?(~)?')
+
+        while True:
+            line = self.datafile.readline()
+            if not line:
+                break
+
+            length = len(line)
+            file_pos = self.datafile.tell() - length
+            file_pos = (file_pos, length)
+
+            indices = line[line.rfind(b'\t') + 1:].decode('utf-8').split()
+
+            for index in indices:
+                headword, reading, sense, form, good = index_pattern.match(index).groups()
+                if good:
+                    if not self.dictionary.get(headword):
+                        self.dictionary[headword] = []
+                    if reading:
+                        reading = reading[1:-1]
+                    if sense:
+                        sense = int(sense[1:-1])
+                    if form:
+                        form = form[1:-1]
+                    self.dictionary[headword].append((file_pos, reading, sense, form))
+
+        print('    parsed in {:.2f} s'.format(time.time() - start))
+
+
+
 class MecabHandler(web.RequestHandler):
 
     def post(self):
@@ -383,12 +455,25 @@ class Kanjidic2Handler(web.RequestHandler):
 
 
 
+class TatoebaHandler(web.RequestHandler):
+
+    def get(self):
+        self.set_header('Cache-Control', 'max-age=3600')
+        self.set_header('Content-Type', 'application/json')
+        query = self.get_query_argument('query').strip()
+        reading = self.get_query_argument('reading', default=None)
+        sense = int(self.get_query_argument('sense', default=0))
+        self.write(json.dumps(tatoeba.get(query, reading, sense)))
+
+
+
 def get_app():
 
     return web.Application([
         (r'/mecab', MecabHandler),
         (r'/jmdict_e', JMdict_eHandler),
         (r'/kanjidic2', Kanjidic2Handler),
+        (r'/tatoeba', TatoebaHandler),
         (r'/(.*)', web.StaticFileHandler,
             {'path': 'client', 'default_filename': 'index.html'}),
     ])
@@ -399,6 +484,7 @@ if __name__ == '__main__':
     mecab = Mecab()
     jmdict_e = JMdict_e()
     kanjidic2 = Kanjidic2()
+    tatoeba = Tatoeba()
     app = get_app()
     app.listen(9874)
     main_loop = ioloop.IOLoop.instance()

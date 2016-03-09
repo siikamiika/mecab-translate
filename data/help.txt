@@ -1,1 +1,4 @@
-Put "JMdict_e" and "kanjidic2.xml" here.
+JMdict_e: http://ftp.monash.edu.au/pub/nihongo/JMdict_e.gz
+kanjidic2.xml: http://www.edrdg.org/kanjidic/kanjidic2.xml.gz
+wwwjdic.csv: http://tatoeba.org/files/downloads/wwwjdic.csv
+kanjivg (put to client/kanji/*.svg): https://github.com/KanjiVG/kanjivg/releases --> kanjivg-*-main.zip
