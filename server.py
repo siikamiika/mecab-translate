@@ -366,7 +366,7 @@ class Tatoeba(object):
 
         entries = self.dictionary.get(headword)
         if not entries:
-            return
+            return []
 
         def matches(entry):
             if reading and entry[1] and reading != entry[1]:
@@ -375,7 +375,7 @@ class Tatoeba(object):
                 return False
             return True
 
-        return [dict(self._entry(entry[0]), form=entry[3]) for entry in filter(matches, entries)]
+        return [dict(self._entry(entry[0]), form=entry[3] or headword) for entry in filter(matches, entries)]
 
 
     def _entry(self, file_pos):

@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Translation', function($scope, JMdict_e, Helpers) {
+.controller('Translation', function($scope, JMdict_e, Tatoeba, Helpers) {
 
     $scope.isCommon = function(word) {
         return Helpers.intersection(Helpers.commonPriority, word.pri).length;
@@ -28,6 +28,24 @@ angular.module('mecab-translate')
             return Helpers.commonSort(a, b);
 
         }) : [];
+    }
+
+    $scope.demonstrate = function(word, reading, sense, cb) {
+        Tatoeba.demonstrate(word, reading, sense, cb);
+    }
+
+    // kill it with directives
+    $scope.showTatoeba = function(event) {
+        return function(examples) {
+            var tatoeba = examples.map(function(example){
+                console.log(example.form)
+                console.log(example.jpn)
+                return '<br>' +
+                    example.jpn.replace(new RegExp('('+example.form+')', 'g'), '<span style="color: red">$1</span>') + '<br>' +
+                    example.eng;
+            });
+            event.target.innerHTML = tatoeba;
+        }
     }
 
     $scope.showLongerEntries = function() {

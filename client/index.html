@@ -168,6 +168,10 @@
                                 <span class="important">{{gloss}}</span><span ng-if="!$last">, </span>
                             </span>
                             <span ng-if="translation.lsource.length" ng-repeat="lsource in translation.lsource" class="unobtrusive">({{lsource.join(': ')}})</span>
+                            <span
+                                class="clickable unobtrusive"
+                                ng-click="demonstrate((entry.words.length ? entry.words : entry.readings)[0].text, entry.readings[0].text, $index + 1, showTatoeba($event))"
+                            >[examples]</span>
                         </div>
                     </li>
                 </ul>
@@ -189,6 +193,7 @@
 <script src="services/jmdict_e.js"></script>
 <script src="services/kanjidic2.js"></script>
 <script src="services/kanjivg.js"></script>
+<script src="services/tatoeba.js"></script>
 <script src="services/helpers.js"></script>
 </body>
 </html>
