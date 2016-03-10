@@ -30,8 +30,14 @@ angular.module('mecab-translate')
         }) : [];
     }
 
-    $scope.demonstrate = function(word, reading, sense, cb) {
-        Tatoeba.demonstrate(word, reading, sense, cb);
+    $scope.demonstrate = function(words, readings, sense, cb) {
+        words = words.map(function(word) {
+            return word.text;
+        }).join(',');
+        readings = readings.map(function(reading) {
+            return reading.text;
+        }).join(',');
+        Tatoeba.demonstrate(words, readings, sense, cb);
     }
 
     // kill it with directives

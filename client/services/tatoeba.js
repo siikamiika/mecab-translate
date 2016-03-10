@@ -2,11 +2,11 @@ angular.module('mecab-translate')
 .factory('Tatoeba', function($http) {
 
     return {
-        demonstrate: function(word, reading, sense, cb) {
+        demonstrate: function(words, readings, sense, cb) {
             $http({
                 method: 'GET',
                 url: '/tatoeba',
-                params: {query: word, reading: reading, sense: sense}
+                params: {query: words, readings: readings, sense: sense}
             }).then(function success(data) {
                 cb(data.data);
             }.bind(this), function error(data) {
