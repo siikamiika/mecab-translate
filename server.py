@@ -364,10 +364,6 @@ class Tatoeba(object):
 
     def get(self, headwords, readings, sense):
 
-        headwords = headwords.split(',')
-        if readings:
-            readings = readings.split(',')
-
         for hw in headwords:
             entries = self.dictionary.get(hw)
             headword = hw
@@ -476,8 +472,8 @@ class TatoebaHandler(web.RequestHandler):
     def get(self):
         self.set_header('Cache-Control', 'max-age=3600')
         self.set_header('Content-Type', 'application/json')
-        query = self.get_query_argument('query').strip()
-        readings = self.get_query_argument('readings', default=None)
+        query = self.get_query_argument('query').strip().split(',')
+        readings = self.get_query_argument('readings', default='').split(',')
         sense = int(self.get_query_argument('sense', default=0))
         self.write(json.dumps(tatoeba.get(query, readings, sense)))
 
