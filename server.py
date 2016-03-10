@@ -364,14 +364,12 @@ class Tatoeba(object):
 
     def get(self, headwords, readings, sense):
 
-        entries = None
-
         for hw in headwords:
             entries = self.dictionary.get(hw)
             headword = hw
             if entries:
                 break
-        if not entries:
+        else:
             return []
 
         def matches(entry):
