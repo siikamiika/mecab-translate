@@ -38,13 +38,11 @@ angular.module('mecab-translate')
     $scope.showTatoeba = function(event) {
         return function(examples) {
             var tatoeba = examples.map(function(example){
-                console.log(example.form)
-                console.log(example.jpn)
                 return '<br>' +
                     example.jpn.replace(new RegExp('('+example.form+')', 'g'), '<span style="color: red">$1</span>') + '<br>' +
                     example.eng;
             });
-            event.target.innerHTML = tatoeba;
+            event.target.parentElement.innerHTML = tatoeba;
         }
     }
 

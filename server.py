@@ -369,9 +369,9 @@ class Tatoeba(object):
             return []
 
         def matches(entry):
-            if reading and entry[1] and reading != entry[1]:
+            if entry[1] and reading != entry[1]:
                 return False
-            if sense and entry[2] and sense != entry[2]:
+            if (sense > 1 and not entry[2]) or (entry[2] and sense != entry[2]):
                 return False
             return True
 

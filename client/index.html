@@ -168,10 +168,12 @@
                                 <span class="important">{{gloss}}</span><span ng-if="!$last">, </span>
                             </span>
                             <span ng-if="translation.lsource.length" ng-repeat="lsource in translation.lsource" class="unobtrusive">({{lsource.join(': ')}})</span>
-                            <span
-                                class="clickable unobtrusive"
-                                ng-click="demonstrate((entry.words.length ? entry.words : entry.readings)[0].text, entry.readings[0].text, $index + 1, showTatoeba($event))"
-                            >[examples]</span>
+                            <span class="unobtrusive">
+                                <span
+                                    class="clickable reference"
+                                    ng-click="demonstrate((entry.words.length ? entry.words : entry.readings)[0].text, entry.readings[0].text, $index + 1, showTatoeba($event))"
+                                >[example]</span>
+                            </span>
                         </div>
                     </li>
                 </ul>
