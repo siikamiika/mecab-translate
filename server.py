@@ -383,7 +383,7 @@ class Tatoeba(object):
                         break
             if reading_matches == False:
                 return False
-            if (sense > 1 and not entry[2]) or (entry[2] and sense != entry[2]):
+            if (sense > 1 and not entry[2]) or (sense and entry[2] and sense != entry[2]):
                 return False
             return True
 
