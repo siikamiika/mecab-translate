@@ -387,7 +387,14 @@ class Tatoeba(object):
                 return False
             return True
 
-        return [dict(self._entry(entry[0]), form=entry[3] or headword) for entry in filter(matches, entries)]
+        return [
+            dict(
+                self._entry(entry[0]),
+                sense=entry[2] or sense,
+                form=entry[3] or headword
+            )
+            for entry in filter(matches, entries)
+        ]
 
 
     def _entry(self, file_pos):
