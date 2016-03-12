@@ -2,7 +2,5 @@
 __pycache__/
 *.py[cod]
 client/vendor/
-data/JMdict_e
-data/kanjidic2.xml
-data/wwwjdic.csv
-client/kanji
+data/
+client/kanji/
