@@ -362,7 +362,7 @@ class Tatoeba(object):
         self._parse()
 
 
-    def get(self, headwords, readings, sense):
+    def get(self, headwords, readings):
 
         for hw in headwords:
             entries = self.dictionary.get(hw)
@@ -383,14 +383,12 @@ class Tatoeba(object):
                         break
             if reading_matches == False:
                 return False
-            if (sense > 1 and not entry[2]) or (sense and entry[2] and sense != entry[2]):
-                return False
             return True
 
         return [
             dict(
                 self._entry(entry[0]),
-                sense=entry[2] or sense,
+                sense=entry[2] or 0,
                 form=entry[3] or headword
             )
             for entry in filter(matches, entries)
@@ -481,8 +479,7 @@ class TatoebaHandler(web.RequestHandler):
         self.set_header('Content-Type', 'application/json')
         query = self.get_query_argument('query').strip().split(',')
         readings = self.get_query_argument('readings', default='').split(',')
-        sense = int(self.get_query_argument('sense', default=0))
-        self.write(json.dumps(tatoeba.get(query, readings, sense)))
+        self.write(json.dumps(tatoeba.get(query, readings)))
 
 
 
