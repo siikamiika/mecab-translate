@@ -4,7 +4,7 @@ angular.module('mecab-translate')
     $scope.posClass = Helpers.posClass;
 
     Mecab.setOutput(function(output) {
-        $scope.words = output;
+        $scope.lines = output;
     });
 
     Kanjidic2.setOutput(function(output) {

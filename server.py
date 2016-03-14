@@ -446,8 +446,7 @@ class MecabHandler(web.RequestHandler):
 
     def post(self):
         data = json.loads(self.request.body.decode('utf-8')).strip()
-        data = data.replace('\n', '')
-        self.write(json.dumps(mecab.analyze(data)))
+        self.write(json.dumps([mecab.analyze(line) for line in data.splitlines()]))
 
 
 
