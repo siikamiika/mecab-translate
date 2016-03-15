@@ -144,36 +144,34 @@
                 <ol>
                     <li ng-repeat="translation in entry.translations">
                         <span ng-repeat="pos in translation.pos"><span class="abbr part-of-speech" ng-attr-title="{{pos[1]}}">{{pos[0]}}</span><span ng-if="!$last">, </span></span>
-                        <span>
-                            <span ng-if="translation.stagk.length" class="unobtrusive">({{translation.stagk.join(', ')}} only)</span>
-                            <span ng-if="translation.stagr.length" class="unobtrusive">({{translation.stagr.join(', ')}} only)</span>
-                            <span ng-if="translation.misc.length" class="unobtrusive">
-                                (<span ng-repeat="misc in translation.misc"><span class="abbr" ng-attr-title="{{misc[1]}}">{{misc[0]}}</span><span ng-if="!$last">, </span></span>)
-                            </span>
-                            <span ng-if="translation.s_inf.length" class="unobtrusive">({{translation.s_inf.join(', ')}})</span>
-                            <span ng-if="translation.dial.length" class="unobtrusive">
-                                (<span ng-repeat="dial in translation.dial"><span class="abbr" ng-attr-title="{{dial[1]}}">{{dial[0]}}</span><span ng-if="!$last">, </span></span>)
-                            </span>
-                            <span ng-if="translation.field.length" class="unobtrusive">
-                                {<span ng-repeat="field in translation.field"><span class="abbr" ng-attr-title="{{field[1]}}">{{field[0]}}</span><span ng-if="!$last">, </span></span>}
-                            </span>
-                            <span ng-if="translation.xref.length" class="unobtrusive">(See
-                                <span ng-repeat="xref in translation.xref"><span ng-click="translate(parseReference(xref))" class="clickable reference">{{xref}}</span><span ng-if="!$last">, </span></span>)
-                            </span>
-                            <span ng-if="translation.ant.length" class="unobtrusive">(ant:
-                                <span ng-repeat="ant in translation.ant"><span ng-click="translate(parseReference(ant))" class="clickable reference">{{ant}}</span><span ng-if="!$last">, </span></span>)
-                            </span>
-                            <span ng-repeat="gloss in translation.gloss" class="translation">
-                                <span class="important">{{gloss}}</span><span ng-if="!$last">, </span>
-                            </span>
-                            <span ng-if="translation.lsource.length" ng-repeat="lsource in translation.lsource" class="unobtrusive">({{lsource.join(': ')}})</span>
-                            <span class="unobtrusive clickable reference" ng-if="translation.example" ng-click="translation.showExample = !translation.showExample">[example]</span>
-                            <span ng-if="translation.showExample" class="unobtrusive">
-                                <br>
-                                <span ng-repeat="part in translation.example.jpn"><span ng-style="{'color': part.form ? 'red' : ''}">{{part.text}}</span></span>
-                                <br>
-                                <span>{{translation.example.eng}}</span>
-                            </span>
+                        <span ng-if="translation.stagk.length" class="unobtrusive">({{translation.stagk.join(', ')}} only)</span>
+                        <span ng-if="translation.stagr.length" class="unobtrusive">({{translation.stagr.join(', ')}} only)</span>
+                        <span ng-if="translation.misc.length" class="unobtrusive">
+                            (<span ng-repeat="misc in translation.misc"><span class="abbr" ng-attr-title="{{misc[1]}}">{{misc[0]}}</span><span ng-if="!$last">, </span></span>)
+                        </span>
+                        <span ng-if="translation.s_inf.length" class="unobtrusive">({{translation.s_inf.join(', ')}})</span>
+                        <span ng-if="translation.dial.length" class="unobtrusive">
+                            (<span ng-repeat="dial in translation.dial"><span class="abbr" ng-attr-title="{{dial[1]}}">{{dial[0]}}</span><span ng-if="!$last">, </span></span>)
+                        </span>
+                        <span ng-if="translation.field.length" class="unobtrusive">
+                            {<span ng-repeat="field in translation.field"><span class="abbr" ng-attr-title="{{field[1]}}">{{field[0]}}</span><span ng-if="!$last">, </span></span>}
+                        </span>
+                        <span ng-if="translation.xref.length" class="unobtrusive">(See
+                            <span ng-repeat="xref in translation.xref"><span ng-click="translate(parseReference(xref))" class="clickable reference">{{xref}}</span><span ng-if="!$last">, </span></span>)
+                        </span>
+                        <span ng-if="translation.ant.length" class="unobtrusive">(ant:
+                            <span ng-repeat="ant in translation.ant"><span ng-click="translate(parseReference(ant))" class="clickable reference">{{ant}}</span><span ng-if="!$last">, </span></span>)
+                        </span>
+                        <span ng-repeat="gloss in translation.gloss" class="translation">
+                            <span class="important">{{gloss}}</span><span ng-if="!$last">, </span>
+                        </span>
+                        <span ng-if="translation.lsource.length" ng-repeat="lsource in translation.lsource" class="unobtrusive">({{lsource.join(': ')}})</span>
+                        <span class="unobtrusive clickable reference" ng-if="translation.example" ng-click="translation.showExample = !translation.showExample">[example]</span>
+                        <span ng-if="translation.showExample" class="unobtrusive">
+                            <br>
+                            <span ng-repeat="part in translation.example.jpn"><span ng-style="{'color': part.form ? 'red' : ''}">{{part.text}}</span></span>
+                            <br>
+                            <span>{{translation.example.eng}}</span>
                         </span>
                     </li>
                 </ol>
