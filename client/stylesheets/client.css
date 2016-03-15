@@ -31,7 +31,7 @@ ul {
 }
 
 .unobtrusive {
-    color: #8090FF;
+    color: #999;
 }
 
 .mecab-info {
@@ -48,7 +48,8 @@ ul {
 }
 
 .word {
-    margin: 2px;
+    margin: 4px;
+    text-decoration: underline;
 }
 
 .word:hover {
@@ -75,41 +76,41 @@ ul {
 
 
 .noun, .proper-noun, .pronoun {
-    background-color: #A0FFA0;
+    text-decoration-color: #A0FFA0;
 }
 
 .preposition, .postposition {
-    background-color: #8090FF;
+    text-decoration-color: #8090FF;
 }
 
 .prefix, .suffix {
-    background-color: #A0B0FF;
+    text-decoration-color: #A0B0FF;
 }
 
 .conjunction {
-    background-color: #A0C0FF;
+    text-decoration-color: #A0C0FF;
 }
 
 .verb {
-    background-color: #FF4040;
+    text-decoration-color: #FF4040;
 }
 
 .adjective {
-    background-color: #FF7070;
+    text-decoration-color: #FF7070;
 }
 
 .adverb {
-    background-color: #FF9090;
+    text-decoration-color: #FF9090;
 }
 
 .determiner {
-    background-color: #FFB0B0;
+    text-decoration-color: #FFB0B0;
 }
 
 .interjection {
-    background-color: #FFFFA0;
+    text-decoration-color: #FFFFA0;
 }
 
 .number {
-    background-color: #50FFFF;
+    text-decoration-color: #50FFFF;
 }
