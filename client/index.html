@@ -141,13 +141,10 @@
                         >, </span>
                     </span>
                 </div>
-                <ul>
+                <ol>
                     <li ng-repeat="translation in entry.translations">
-                        <div class="parts-of-speech">
-                            <span ng-repeat="pos in translation.pos"><span class="abbr" ng-attr-title="{{pos[1]}}">{{pos[0]}}</span><span ng-if="!$last">, </span></span>
-                        </div>
-                        <div>
-                            <span>{{$index + 1}}.</span>
+                        <span ng-repeat="pos in translation.pos"><span class="abbr part-of-speech" ng-attr-title="{{pos[1]}}">{{pos[0]}}</span><span ng-if="!$last">, </span></span>
+                        <span>
                             <span ng-if="translation.stagk.length" class="unobtrusive">({{translation.stagk.join(', ')}} only)</span>
                             <span ng-if="translation.stagr.length" class="unobtrusive">({{translation.stagr.join(', ')}} only)</span>
                             <span ng-if="translation.misc.length" class="unobtrusive">
@@ -177,9 +174,9 @@
                                 <br>
                                 <span>{{translation.example.eng}}</span>
                             </span>
-                        </div>
+                        </span>
                     </li>
-                </ul>
+                </ol>
                 <hr ng-if="!$last">
             </li>
         </ul>
