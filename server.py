@@ -205,7 +205,9 @@ class JMdict_e(object):
                 field=[[field, ent[field]] for field in _get_tags('field')],
                 misc=[[misc, ent[misc]] for misc in _get_tags('misc')],
                 s_inf=_get_tags('s_inf'),
-                lsource=[[ls.attrib.get('{http://www.w3.org/XML/1998/namespace}lang') or 'eng', ls.text]
+                lsource=[[ls.attrib.get('{http://www.w3.org/XML/1998/namespace}lang') or
+                        (ls.attrib.get('ls_wasei') and 'wasei') or 'eng',
+                        ls.text]
                     for ls in sense.iter('lsource')],
                 dial=[[dial, ent[dial]] for dial in _get_tags('dial')],
             )
