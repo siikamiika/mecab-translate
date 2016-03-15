@@ -49,7 +49,6 @@ ul {
 
 .word {
     margin: 4px;
-    text-decoration: underline;
 }
 
 .word:hover {
@@ -76,41 +75,41 @@ ul {
 
 
 .noun, .proper-noun, .pronoun {
-    text-decoration-color: #A0FFA0;
+    border-bottom: 3px solid #A0FFA0;
 }
 
 .preposition, .postposition {
-    text-decoration-color: #8090FF;
+    border-bottom: 3px solid #8090FF;
 }
 
 .prefix, .suffix {
-    text-decoration-color: #A0B0FF;
+    border-bottom: 3px solid #A0B0FF;
 }
 
 .conjunction {
-    text-decoration-color: #A0C0FF;
+    border-bottom: 3px solid #A0C0FF;
 }
 
 .verb {
-    text-decoration-color: #FF4040;
+    border-bottom: 3px solid #FF4040;
 }
 
 .adjective {
-    text-decoration-color: #FF7070;
+    border-bottom: 3px solid #FF7070;
 }
 
 .adverb {
-    text-decoration-color: #FF9090;
+    border-bottom: 3px solid #FF9090;
 }
 
 .determiner {
-    text-decoration-color: #FFB0B0;
+    border-bottom: 3px solid #FFB0B0;
 }
 
 .interjection {
-    text-decoration-color: #FFFFA0;
+    border-bottom: 3px solid #FFFFA0;
 }
 
 .number {
-    text-decoration-color: #50FFFF;
+    border-bottom: 3px solid #50FFFF;
 }
