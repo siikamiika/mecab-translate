@@ -43,6 +43,10 @@ ul {
     max-width: 400px;
 }
 
+.kanjidic-info td {
+    white-space: nowrap;
+}
+
 .common {
     color: red;
 }
