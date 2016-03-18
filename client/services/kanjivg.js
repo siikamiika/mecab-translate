@@ -106,6 +106,9 @@ angular.module('mecab-translate')
     return {
         setOutput: function(fn) {
             setKanjivgChar = fn;
+        },
+        setKanjivgChar: function(kanji) {
+            setKanjivgChar(kanji);
         }
     }
 

@@ -111,11 +111,9 @@
                 <div style="font-size: 28px">
                     <span ng-repeat="word in entry.words">
                         <span
-                            class="clickable"
                             ng-class="{'common': isCommon(word)}"
                             ng-attr-title="{{word.pri.join(', ')}}"
-                            ng-click="translate(word.text)"
-                        >{{word.text}}</span><span
+                        ><span ng-repeat="char in word.text" class="clickable" ng-click="setKanjivgChar(char); getKanjidic2(char)">{{char}}</span></span><span
                             ng-if="word.inf.length"
                             class="unobtrusive"
                         >(<span ng-repeat="inf in word.inf"><span class="abbr" ng-attr-title="{{inf[1]}}">{{inf[0]}}</span><span ng-if="!$last">, </span></span>)</span><span
