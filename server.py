@@ -37,7 +37,7 @@ class Mecab(object):
                 part['literal'], line = line.split('\t')
                 part.update(zip(['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
                     'inflection_form', 'lemma', 'reading', 'hatsuon'],
-                    line.split(',')))
+                    ['' if i == '*' else i for i in line.split(',')]))
             except Exception as e:
                 print(e)
             result.append(part)
