@@ -444,6 +444,31 @@ class Tatoeba(object):
 
 
 
+class KanjiVGParts(object):
+
+    def __init__(self):
+
+        with open('data/kanjivg_parts.json', 'r', encoding='utf-8') as f:
+            self.kanji = {k: set(p) for k, p in json.load(f).items()}
+
+
+    def get_parts(self, kanji):
+
+        return list(self.kanji[kanji])
+
+
+    def get_combinations(self, parts):
+
+        combinations = []
+
+        for k in self.kanji:
+            if parts.issubset(self.kanji[k]):
+                combinations.append(k)
+
+        return combinations
+
+
+
 class MecabHandler(web.RequestHandler):
 
     def post(self):
@@ -484,6 +509,26 @@ class TatoebaHandler(web.RequestHandler):
 
 
 
+class KanjiVGPartsHandler(web.RequestHandler):
+
+    def get(self):
+        self.set_header('Cache-Control', 'max-age=3600')
+        self.set_header('Content-Type', 'application/json')
+        query = self.get_query_argument('query').strip()
+        self.write(json.dumps(kvgparts.get_parts(query)))
+
+
+
+class KanjiVGCombinationsHandler(web.RequestHandler):
+
+    def get(self):
+        self.set_header('Cache-Control', 'max-age=3600')
+        self.set_header('Content-Type', 'application/json')
+        query = self.get_query_argument('query').strip().split(',')
+        self.write(json.dumps(kvgparts.get_combinations(set(query))))
+
+
+
 def get_app():
 
     return web.Application([
@@ -491,6 +536,8 @@ def get_app():
         (r'/jmdict_e', JMdict_eHandler),
         (r'/kanjidic2', Kanjidic2Handler),
         (r'/tatoeba', TatoebaHandler),
+        (r'/kvgparts', KanjiVGPartsHandler),
+        (r'/kvgcombinations', KanjiVGCombinationsHandler),
         (r'/(.*)', web.StaticFileHandler,
             {'path': 'client', 'default_filename': 'index.html'}),
     ])
@@ -502,6 +549,7 @@ if __name__ == '__main__':
     jmdict_e = JMdict_e()
     kanjidic2 = Kanjidic2()
     tatoeba = Tatoeba()
+    kvgparts = KanjiVGParts()
     app = get_app()
     app.listen(9874)
     main_loop = ioloop.IOLoop.instance()
