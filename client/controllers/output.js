@@ -32,8 +32,13 @@ angular.module('mecab-translate')
 
     var getKanjiVGParts = function(kanji) {
         $scope.selectedKanjivgParts = [];
+        $scope.kanjivgCombinations = [];
+        $scope.kanjivgKanji = kanji;
         KanjiVGParts.getParts(kanji, function(parts) {
             $scope.kanjivgParts = parts;
+        });
+        KanjiVGParts.getCombinations([$scope.kanjivgKanji], function(combinations) {
+            $scope.kanjivgCombinations = combinations;
         });
     }
 
@@ -44,7 +49,7 @@ angular.module('mecab-translate')
                 parts.push($scope.kanjivgParts[i]);
             }
         }
-        KanjiVGParts.getCombinations(parts, function(combinations) {
+        KanjiVGParts.getCombinations(parts.length ? parts : [$scope.kanjivgKanji], function(combinations) {
             $scope.kanjivgCombinations = combinations;
         });
     }
