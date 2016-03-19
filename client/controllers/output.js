@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, Helpers) {
+.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
@@ -30,10 +30,30 @@ angular.module('mecab-translate')
         Kanjidic2.get(kanji);
     }
 
+    var getKanjiVGParts = function(kanji) {
+        $scope.selectedKanjivgParts = [];
+        KanjiVGParts.getParts(kanji, function(parts) {
+            $scope.kanjivgParts = parts;
+        });
+    }
+
+    $scope.getKanjiVGCombinations = function() {
+        var parts = [];
+        for (i in $scope.kanjivgParts) {
+            if ($scope.selectedKanjivgParts[i]) {
+                parts.push($scope.kanjivgParts[i]);
+            }
+        }
+        KanjiVGParts.getCombinations(parts, function(combinations) {
+            $scope.kanjivgCombinations = combinations;
+        });
+    }
+
     $scope.setKanjivgChar = function(kanji) {
         if (kanji && kanji.length == 1) {
             var url = 'kanji/' + ('00000' + kanji.charCodeAt(0).toString(16)).slice(-5) + '.svg';
             Helpers.ifExists(url, function() {
+                getKanjiVGParts(kanji);
                 $scope.kanjivgUrl = url;
             });
         }

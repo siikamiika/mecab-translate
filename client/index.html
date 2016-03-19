@@ -99,6 +99,17 @@
                     <td>{{kanjidicInfo.stroke_count}}</td>
                 </tr>
             </table>
+            <form ng-if="kanjivgParts">
+                <label ng-repeat="part in kanjivgParts track by $index">
+                    <input
+                        type="checkbox"
+                        ng-model="selectedKanjivgParts[$index]"
+                        value="{{part}}"
+                        ng-click="getKanjiVGCombinations()"
+                    > {{part}}
+                </label>
+            </form>
+            {{kanjivgCombinations.join(', ')}}
         </div>
     </div>
     <!-- Translation -->
@@ -192,6 +203,7 @@
 <script src="services/kanjidic2.js"></script>
 <script src="services/kanjivg.js"></script>
 <script src="services/tatoeba.js"></script>
+<script src="services/kanjivgparts.js"></script>
 <script src="services/helpers.js"></script>
 </body>
 </html>
