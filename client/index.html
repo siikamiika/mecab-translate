@@ -27,91 +27,83 @@
             </div>
         </div>
         <div>
-            <table ng-if="word.pos" class="mecab-info">
-                <tr>
-                    <td><b>Pos</b></td>
-                    <td>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}</td>
-                </tr>
-                <tr>
-                    <td><b>Infl.</b></td>
-                    <td>{{word.inflection_type}}, {{word.inflection_form}}</td>
-                </tr>
-                <tr>
-                    <td><b>Lemma</b></td>
-                    <td>{{word.lemma}}</td>
-                </tr>
-                <tr>
-                    <td><b>Reading</b></td>
-                    <td>{{word.reading}}</td>
-                </tr>
-            </table>
-            <object
-                id="kanjivg"
-                type="image/svg+xml"
-                height="200px"
-                width="200px"
-                ng-init="kanjivgUrl = 'kanji/0002e.svg'"
-                ng-show="kanjivgUrl !== 'kanji/0002e.svg'"
-                ng-attr-data="{{kanjivgUrl}}"></object>
-            <table ng-if="kanjidicInfo.literal" class="kanjidic-info">
-                <tr>
-                    <td><b>Kanji</b></td>
-                    <td>{{kanjidicInfo.literal}}</td>
-                </tr>
-                <tr>
-                    <td><b>Meaning</b></td>
-                    <td>
-                        <span ng-repeat="meaning in kanjidicInfo.meaning">
-                            <span class="important">{{meaning}}</span><span ng-if="!$last">, </span>
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Kun</b></td>
-                    <td>
-                        <span ng-repeat="kun in kanjidicInfo.kun">
-                            <span class="important">{{kun}}</span><span ng-if="!$last">, </span>
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>On</b></td>
-                    <td>
-                        <span ng-repeat="on in kanjidicInfo.on">
-                            <span class="important">{{on}}</span><span ng-if="!$last">, </span>
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Nanori</b></td>
-                    <td>
-                        <span ng-repeat="nanori in kanjidicInfo.nanori">
-                            <span class="important">{{nanori}}</span><span ng-if="!$last">, </span>
-                        </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>Freq.</b></td>
-                    <td>{{kanjidicInfo.freq}}</td>
-                </tr>
-                <tr>
-                    <td><b>Strokes</b></td>
-                    <td>{{kanjidicInfo.stroke_count}}</td>
-                </tr>
-            </table>
-            <form ng-if="kanjivgParts">
-                <label ng-repeat="part in kanjivgParts track by $index">
-                    <input
-                        type="checkbox"
-                        ng-model="selectedKanjivgParts[$index]"
-                        value="{{part}}"
-                        ng-click="getKanjiVGCombinations()"
-                    > {{part}}
-                </label>
-            </form>
-            {{kanjivgCombinations.join(', ')}}
+            <div ng-if="word.pos" class="mecab-info">
+                <b>Pos: </b>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}
+                <b>Infl.: </b>{{word.inflection_type}}, {{word.inflection_form}}
+                <b>Lemma: </b>{{word.lemma}}
+                <b>Reading: </b>{{word.reading}}
+            </div>
+            <hr>
+            <div>
+                <object
+                    id="kanjivg"
+                    type="image/svg+xml"
+                    height="200px"
+                    width="200px"
+                    ng-init="kanjivgUrl = 'kanji/0002e.svg'"
+                    ng-show="kanjivgUrl !== 'kanji/0002e.svg'"
+                    ng-attr-data="{{kanjivgUrl}}"></object>
+                <table ng-if="kanjidicInfo.literal" class="kanjidic-info">
+                    <tr>
+                        <td><b>Kanji</b></td>
+                        <td>{{kanjidicInfo.literal}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Meaning</b></td>
+                        <td>
+                            <span ng-repeat="meaning in kanjidicInfo.meaning">
+                                <span class="important">{{meaning}}</span><span ng-if="!$last">, </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Kun</b></td>
+                        <td>
+                            <span ng-repeat="kun in kanjidicInfo.kun">
+                                <span class="important">{{kun}}</span><span ng-if="!$last">, </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>On</b></td>
+                        <td>
+                            <span ng-repeat="on in kanjidicInfo.on">
+                                <span class="important">{{on}}</span><span ng-if="!$last">, </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Nanori</b></td>
+                        <td>
+                            <span ng-repeat="nanori in kanjidicInfo.nanori">
+                                <span class="important">{{nanori}}</span><span ng-if="!$last">, </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Freq.</b></td>
+                        <td>{{kanjidicInfo.freq}}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Strokes</b></td>
+                        <td>{{kanjidicInfo.stroke_count}}</td>
+                    </tr>
+                </table>
+                <form ng-if="kanjivgParts">
+                    <label ng-repeat="part in kanjivgParts track by $index">
+                        <input
+                            type="checkbox"
+                            ng-model="selectedKanjivgParts[$index]"
+                            value="{{part}}"
+                            ng-click="getKanjiVGCombinations()"
+                        > {{part}}
+                    </label>
+                </form>
+                <span ng-repeat="k in kanjivgCombinations"><span class="clickable" ng-click="setKanjivgChar(k); getKanjidic2(k)">{{k}}</span><span ng-if="!$last">, </span></span>
+            </div>
         </div>
     </div>
+    <hr>
     <!-- Translation -->
     <div ng-controller="Translation">
         <div ng-if="shorterEntries">

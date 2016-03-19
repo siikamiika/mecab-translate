@@ -34,10 +34,6 @@ ul {
     color: #999;
 }
 
-.mecab-info {
-    display: inline-block;
-}
-
 .kanjidic-info {
     display: inline-block;
     max-width: 400px;
