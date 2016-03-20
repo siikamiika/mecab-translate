@@ -465,7 +465,7 @@ class KanjiVGParts(object):
             if parts.issubset(self.kanji[k]):
                 combinations.append(k)
 
-        combinations.sort(key=lambda k: kanjidic2.get(k)['freq'] or 2500)
+        combinations.sort(key=lambda k: (kanjidic2.get(k) or dict()).get('freq') or 2500)
 
         return combinations
 
