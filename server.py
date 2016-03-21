@@ -9,6 +9,7 @@ import re
 from queue import Queue
 from threading import Thread
 import time
+import os
 
 class Mecab(object):
 
@@ -448,8 +449,8 @@ class KanjiVGParts(object):
 
     def __init__(self):
 
-        with open('data/kanjivg_parts.json', 'r', encoding='utf-8') as f:
-            self.kanji = {k: set(p) for k, p in json.load(f).items()}
+        self.kanji = dict()
+        self._parse()
 
 
     def get_parts(self, kanji):
@@ -468,6 +469,43 @@ class KanjiVGParts(object):
         combinations.sort(key=lambda k: (kanjidic2.get(k) or dict()).get('freq') or 2500)
 
         return combinations
+
+
+    def _parse(self):
+
+        print('parsing KanjiVG parts...')
+        start = time.time()
+
+        KANJIVG = 'client/kanji'
+        NS = {
+            'svg': 'http://www.w3.org/2000/svg',
+            'kvg': 'http://kanjivg.tagaini.net'
+        }
+
+        def get_parts(group):
+
+            parts = []
+            for g in group.findall('svg:g', NS):
+                element = g.attrib.get('{'+NS['kvg']+'}element')
+                if element:
+                    parts.append(element)
+                else:
+                    parts += get_parts(g)
+            return parts
+
+        def get_info(f):
+
+            kanji = ET.parse(f).getroot().find('svg:g', NS).find('svg:g', NS)
+            char = kanji.attrib.get('{'+NS['kvg']+'}element')
+            parts = get_parts(kanji)
+            return char, parts
+
+        for f in os.listdir(KANJIVG):
+            char, parts = get_info(os.path.join(KANJIVG, f))
+            if char:
+                self.kanji[char] = set(parts)
+
+        print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
 
