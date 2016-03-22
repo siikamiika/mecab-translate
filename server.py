@@ -455,7 +455,7 @@ class KanjiVGParts(object):
 
     def get_parts(self, kanji):
 
-        return list(self.kanji[kanji])
+        return list(self.kanji.get(kanji) or [])
 
 
     def get_combinations(self, parts):
