@@ -26,10 +26,8 @@ angular.module('mecab-translate')
             outlines.setAttribute('stroke-width', 24);
             outlines.setAttribute('style', 'opacity: 0;');
             part.appendChild(outlines);
-            var kanjiPart = part.getAttribute('kvg:original');
-            if (!kanjiPart) {
-                kanjiPart = part.getAttribute('kvg:element');
-            }
+            var originalKanjiPart = part.getAttribute('kvg:original');
+            var kanjiPart = part.getAttribute('kvg:element');
             part.onclick = function() {
                 setKanjivgChar(kanjiPart);
                 Kanjidic2.get(kanjiPart);
@@ -38,7 +36,7 @@ angular.module('mecab-translate')
                 parts.forEach(function(_part) {
                     _part.setAttribute('stroke', 'gray');
                 });
-                Kanjidic2.get(kanjiPart);
+                Kanjidic2.get(originalKanjiPart || kanjiPart);
             }
             part.onmouseleave = function() {
                 parts.forEach(function(_part) {
