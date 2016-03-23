@@ -60,6 +60,7 @@ angular.module('mecab-translate')
             Helpers.ifExists(url, function() {
                 getKanjiVGParts(kanji);
                 $scope.kanjivgUrl = url;
+                $scope.kanji = kanji;
             });
         }
     }

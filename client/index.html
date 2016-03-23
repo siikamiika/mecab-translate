@@ -96,10 +96,15 @@
                             ng-model="selectedKanjivgParts[$index]"
                             value="{{part}}"
                             ng-click="getKanjiVGCombinations()"
-                        > {{part}}
+                        > <span ng-mouseenter="getKanjidic2(part)" ng-mouseleave="getKanjidic2(kanji)">{{part}}</span>
                     </label>
                 </form>
-                <span ng-repeat="k in kanjivgCombinations"><span class="clickable" ng-click="setKanjivgChar(k); getKanjidic2(k)">{{k}}</span><span ng-if="!$last">, </span></span>
+                <span
+                    ng-repeat="k in kanjivgCombinations"
+                    class="clickable"
+                    ng-click="setKanjivgChar(k); getKanjidic2(k)"
+                    ng-mouseenter="getKanjidic2(k)"
+                    ng-mouseleave="getKanjidic2(kanji)">{{k}} </span>
             </div>
         </div>
     </div>
