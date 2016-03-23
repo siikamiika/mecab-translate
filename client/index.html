@@ -82,7 +82,7 @@
                     </tr>
                     <tr>
                         <td><b>Freq.</b></td>
-                        <td>{{kanjidicInfo.freq}}</td>
+                        <td ng-style="{'color': blend([255,0,0], [0,0,0], (kanjidicInfo.freq || 2500)/2500)}">{{kanjidicInfo.freq}}</td>
                     </tr>
                     <tr>
                         <td><b>Strokes</b></td>
@@ -102,9 +102,10 @@
                 <span
                     ng-repeat="k in kanjivgCombinations"
                     class="clickable"
-                    ng-click="setKanjivgChar(k); getKanjidic2(k)"
-                    ng-mouseenter="getKanjidic2(k)"
-                    ng-mouseleave="getKanjidic2(kanji)">{{k}} </span>
+                    ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500), 'font-size': (1.25 - (k[1]/2500) * 0.25) * 100 + '%' }"
+                    ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0])"
+                    ng-mouseenter="getKanjidic2(k[0])"
+                    ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>
             </div>
         </div>
     </div>

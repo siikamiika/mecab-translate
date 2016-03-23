@@ -3,6 +3,8 @@ angular.module('mecab-translate')
 
     $scope.posClass = Helpers.posClass;
 
+    $scope.blend = Helpers.blend;
+
     Mecab.setOutput(function(output) {
         $scope.lines = output;
     });

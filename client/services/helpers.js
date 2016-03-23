@@ -95,7 +95,22 @@ angular.module('mecab-translate')
             'spec1',
             'spec2',
             'gai1'
-        ]
+        ],
+        blend: function(color1, color2, weight) {
+            var outputColor = [];
+
+            function channel(a, b) {
+                return Math.round((a + (b - a) * weight));
+            }
+
+            for (var i = 0; i < 3; i++) {
+                outputColor.push(channel(color1[i], color2[i]));
+            }
+
+            return '#' + outputColor.map(function(channel) {
+                return ('00' + Math.max(Math.min(channel, 255), 0).toString(16)).slice(-2);
+            }).join('');
+        }
     }
 
 });
