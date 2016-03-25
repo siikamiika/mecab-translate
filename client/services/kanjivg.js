@@ -19,6 +19,12 @@ angular.module('mecab-translate')
 
     var kanjivg = document.getElementById('kanjivg');
 
+    var mouseOver = null;
+
+    var getMouseOver = function() {
+        return mouseOver;
+    }
+
     var activateKanjivgPart = function (parts, color, original) {
         parts.forEach(function(part) {
             if (!part.isTop) {
@@ -39,7 +45,9 @@ angular.module('mecab-translate')
                 parts.forEach(function(_part) {
                     _part.setAttribute('stroke', 'gray');
                 });
-                Kanjidic2.get(originalKanjiPart || kanjiPart);
+                var val = originalKanjiPart || kanjiPart;
+                mouseOver = val;
+                Kanjidic2.get(val, getMouseOver);
             }
             part.onmouseleave = function() {
                 parts.forEach(function(_part) {
@@ -50,7 +58,8 @@ angular.module('mecab-translate')
                         _part.removeAttribute('stroke');
                     }
                 });
-                Kanjidic2.get(original);
+                mouseOver = original;
+                Kanjidic2.get(original, getMouseOver);
             }
         });
     }
