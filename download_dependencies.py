@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from urllib.request import urlopen
 import gzip
 from zipfile import ZipFile
