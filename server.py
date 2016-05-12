@@ -10,6 +10,9 @@ from queue import Queue
 from threading import Thread
 import time
 import os
+from os.path import dirname, realpath
+
+os.chdir(dirname(realpath(__file__)))
 
 class Mecab(object):
 
