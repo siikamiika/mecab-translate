@@ -18,7 +18,14 @@ class Mecab(object):
 
     def __init__(self):
 
-        self.process = Popen(["mecab"], stdout=PIPE, stdin=PIPE, bufsize=1)
+        mecab_args = []
+        try:
+            with open('mecab.conf') as f:
+                for l in f.read().splitlines():
+                    mecab_args += l.split()
+        except FileNotFoundError:
+            pass
+        self.process = Popen(["mecab"] + mecab_args, stdout=PIPE, stdin=PIPE, bufsize=1)
         self.output = Queue()
         self.t = Thread(target=self._handle_stdout)
         self.t.daemon = True
