@@ -14,7 +14,7 @@
     <!-- Analyzed output -->
     <div ng-controller="Output" ng-mouseup="translateSelection()">
         <div id="output">
-            <div ng-repeat="line in lines">
+            <div ng-repeat="line in lines" ng-mouseenter="showTTS = true" ng-mouseleave="showTTS = false">
                 <span
                     class="clickable word"
                     ng-repeat="word in line"
@@ -24,6 +24,7 @@
                         class="character"
                         ng-repeat="char in word.literal track by $index"
                         ng-click="setKanjivgChar(char); getKanjidic2(char)">{{char}}</span></span>
+                <button ng-show="showTTS" ng-click="TTS(line, true)">TTS</button>
             </div>
         </div>
         <hr>

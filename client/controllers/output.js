@@ -67,7 +67,12 @@ angular.module('mecab-translate')
         }
     }
 
-    $scope.TTS = function(text) {
+    $scope.TTS = function(text, line) {
+        if (line) {
+            text = text.map(function(w) {
+                return w.literal;
+            }).join('');
+        }
         ResponsiveVoice.TTS(text);
     }
 
