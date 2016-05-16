@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, Helpers) {
+.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, ResponsiveVoice, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
@@ -65,6 +65,10 @@ angular.module('mecab-translate')
                 $scope.kanji = kanji;
             });
         }
+    }
+
+    $scope.TTS = function(text) {
+        ResponsiveVoice.TTS(text);
     }
 
     KanjiVG.setOutput($scope.setKanjivgChar);
