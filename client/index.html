@@ -115,7 +115,7 @@
     <hr>
     <!-- Translation -->
     <div ng-controller="Translation">
-        <div ng-if="shorterEntries">
+        <div ng-if="shorterEntries" class="warning">
             No exact matches! Did you mean...
         </div>
         <ul>
@@ -189,7 +189,7 @@
             </li>
         </ul>
         <div>
-            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More ({{longerEntries.length}})</button>
+            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with query ({{longerEntries.length}})</button>
             <div ng-repeat="entry in longerEntryListing"><span class="clickable" ng-click="translate(entry)">{{entry}}</span></div>
         </div>
     </div>

@@ -13,6 +13,10 @@ ul {
     white-space: nowrap;
 }
 
+.warning {
+    color: red;
+}
+
 .reference {
     text-decoration: underline;
     white-space: nowrap;
