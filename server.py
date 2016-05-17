@@ -81,17 +81,15 @@ class Dictionary(object):
         index = self._search_dict(key)
 
         if index is None:
+            # shorter
             shorter = key[:-1]
             while shorter:
-                index = self._search_dict(shorter)
-                if index is not None:
-                    results['shorter'] = self.dictionary[index][1]
+                shorter_index = self._search_dict(shorter)
+                if shorter_index is not None:
+                    results['shorter'] = self.dictionary[shorter_index][1]
                     break
                 shorter = shorter[:-1]
-        else:
-            results['exact'] = self.dictionary[index][1]
-
-        if index is None:
+            # prepare for longer
             index = self._search_dict(key, False)
             while True:
                 if index >= 0:
@@ -101,12 +99,17 @@ class Dictionary(object):
                 if not entry[0][0] == key[0]:
                     break
                 index -= 1
+        else:
+            results['exact'] = self.dictionary[index][1]
+
 
         while True:
             index += 1
             if index >= len(self.dictionary):
                 break
             entry = self.dictionary[index]
+            if entry[0] < key:
+                continue
             if entry[0].startswith(key):
                 results['longer'].append(entry[0])
             else:
