@@ -13,12 +13,11 @@ angular.module('mecab-translate')
         $scope.kanjidicInfo = output;
     });
 
-    $scope.showInfo = function(word) {
-        $scope.word = word;
-    }
-
-    $scope.translate = function(lemma) {
-        JMdict_e.translate(lemma);
+    $scope.showWordInfo = function(word) {
+        if (!window.getSelection().toString()) {
+            $scope.word = word;
+            JMdict_e.translate(word.lemma || word.literal);
+        }
     }
 
     $scope.translateSelection = function() {

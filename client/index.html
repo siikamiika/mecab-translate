@@ -20,7 +20,7 @@
                     ng-repeat="word in line"
                     ng-class="posClass(word.pos)"
                     ng-attr-title="{{posClass(word.pos)}}"
-                    ng-click="showInfo(word); translate(word.lemma || word.literal)"><span
+                    ng-click="showWordInfo(word)"><span
                         class="character"
                         ng-repeat="char in word.literal track by $index"
                         ng-click="setKanjivgChar(char); getKanjidic2(char)">{{char}}</span></span>
