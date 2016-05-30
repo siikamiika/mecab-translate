@@ -11,6 +11,7 @@ from threading import Thread
 import time
 import os
 from os.path import dirname, realpath
+voices = []
 if os.name == 'nt':
     try:
         import win32com.client
@@ -20,7 +21,6 @@ if os.name == 'nt':
         voices = [voices.Item(i) for i in range(voices.Count)]
         tts.Rate = -2
     except Exception as e:
-        voices = []
         print(e)
         print('SAPI5 initialization failed. Please install pywin32.')
 
