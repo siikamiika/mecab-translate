@@ -17,7 +17,7 @@ if os.name == 'nt':
         import pythoncom
         tts = win32com.client.Dispatch("SAPI.SpVoice")
         tts.Voice = tts.GetVoices('Name=VW Misaki').Item(0)
-        tts.Rate = 0.5
+        tts.Rate = -2
     except Exception as e:
         print(e)
         print('SAPI5 initialization failed. Please install pywin32 and VW Misaki.')
