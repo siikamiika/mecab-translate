@@ -22,7 +22,7 @@ class TTS(object):
 
 
     def _init_sapi(self):
-        self.voices = []
+        self.voice_choices = []
         if os.name == 'nt':
             try:
                 import win32com.client
