@@ -15,7 +15,7 @@
     <div ng-controller="Output" ng-mouseup="translateSelection()">
         <select ng-model="ttsProvider">
             <option value="responsivevoice">ResponsiveVoice (internet connection required)</option>
-            <option value="tts">SAPI5</option>
+            <option ng-repeat="v in voices" value="tts.{{v.id}}">{{v.desc}}</option>
             <option value="remotetts">Remote SAPI5 on localhost port 9871</option>
         </select>
         <div id="output">

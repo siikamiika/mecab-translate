@@ -7,6 +7,10 @@ angular.module('mecab-translate')
 
     $scope.ttsProvider = 'responsivevoice';
 
+    Tts.getVoices(function(data) {
+        $scope.voices = data;
+    });
+
     Mecab.setOutput(function(output) {
         $scope.lines = output;
     });
@@ -76,7 +80,11 @@ angular.module('mecab-translate')
         }
         if ($scope.ttsProvider == 'responsivevoice') {
             ResponsiveVoice.TTS(text);
-        } else if ($scope.ttsProvider == 'tts') {
+        } else if ($scope.ttsProvider.startsWith('tts')) {
+            var id = parseInt($scope.ttsProvider.split('.')[1]);
+            if (Tts.getVoiceId() != id) {
+                Tts.setVoice(id);
+            }
             Tts.TTS(text);
         } else if ($scope.ttsProvider == 'remotetts') {
             RemoteTts.TTS(text);

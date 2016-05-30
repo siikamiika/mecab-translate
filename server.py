@@ -16,11 +16,13 @@ if os.name == 'nt':
         import win32com.client
         import pythoncom
         tts = win32com.client.Dispatch("SAPI.SpVoice")
-        tts.Voice = tts.GetVoices('Name=VW Misaki').Item(0)
+        voices = tts.GetVoices()
+        voices = [voices.Item(i) for i in range(voices.Count)]
         tts.Rate = -2
     except Exception as e:
+        voices = []
         print(e)
-        print('SAPI5 initialization failed. Please install pywin32 and VW Misaki.')
+        print('SAPI5 initialization failed. Please install pywin32.')
 
 os.chdir(dirname(realpath(__file__)))
 
@@ -594,7 +596,17 @@ class KanjiVGCombinationsHandler(web.RequestHandler):
         query = self.get_query_argument('query').strip().split(',')
         self.write(json.dumps(kvgparts.get_combinations(set(query))))
 
+
+
 class TTSHandler(web.RequestHandler):
+
+    def get(self):
+        voice_id = int(self.get_query_argument('voice_id', -1))
+        if voice_id == -1:
+            choices = [dict(desc=v.GetDescription(), id=i) for i, v in enumerate(voices)]
+            self.write(json.dumps(choices))
+        else:
+            tts.Voice = voices[voice_id]
 
     def post(self):
         text = json.loads(self.request.body.decode('utf-8'))
