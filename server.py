@@ -11,20 +11,49 @@ from threading import Thread
 import time
 import os
 from os.path import dirname, realpath
-voices = []
-if os.name == 'nt':
-    try:
-        import win32com.client
-        import pythoncom
-        tts = win32com.client.Dispatch("SAPI.SpVoice")
-        voices = tts.GetVoices()
-        voices = [voices.Item(i) for i in range(voices.Count)]
-        tts.Rate = -2
-    except Exception as e:
-        print(e)
-        print('SAPI5 initialization failed. Please install pywin32.')
 
 os.chdir(dirname(realpath(__file__)))
+
+
+class TTS(object):
+
+    def __init__(self):
+        self._init_sapi()
+
+
+    def _init_sapi(self):
+        self.voices = []
+        if os.name == 'nt':
+            try:
+                import win32com.client
+                self.tts = win32com.client.Dispatch("SAPI.SpVoice")
+                self.voices = self.tts.GetVoices()
+                self.voices = [self.voices.Item(i) for i in range(self.voices.Count)]
+                self.voice_choices = [dict(desc=v.GetDescription(), id=i) for i, v in enumerate(self.voices)]
+                self.tts.Rate = -2
+            except Exception as e:
+                print(e)
+                print('SAPI5 initialization failed. To use system TTS, please install pywin32.')
+
+
+    def speak(self, text):
+        def speak(text):
+            import pythoncom
+            pythoncom.CoInitialize()
+            self.tts.Skip("Sentence", 2**31 - 1)
+            self.tts.speak(text, 1)
+        Thread(target=speak, args=(text,)).start()
+
+
+    def get_voice_choices(self):
+        self._init_sapi()
+        return self.voice_choices
+
+
+    def set_voice(self, voice_id):
+        self.tts.Voice = self.voices[voice_id]
+
+
 
 class Mecab(object):
 
@@ -603,19 +632,13 @@ class TTSHandler(web.RequestHandler):
     def get(self):
         voice_id = int(self.get_query_argument('voice_id', -1))
         if voice_id == -1:
-            choices = [dict(desc=v.GetDescription(), id=i) for i, v in enumerate(voices)]
-            self.write(json.dumps(choices))
+            self.write(json.dumps(tts.get_voice_choices()))
         else:
-            tts.Voice = voices[voice_id]
+            tts.set_voice(voice_id)
 
     def post(self):
         text = json.loads(self.request.body.decode('utf-8'))
-        def speak(text):
-            pythoncom.CoInitialize()
-            tts.Skip("Sentence", 2**31 - 1)
-            tts.speak(text, 1)
-        Thread(target=speak, args=(text,)).start()
-
+        tts.speak(text)
 
 
 def get_app():
@@ -640,6 +663,7 @@ if __name__ == '__main__':
     kanjidic2 = Kanjidic2()
     tatoeba = Tatoeba()
     kvgparts = KanjiVGParts()
+    tts = TTS()
     app = get_app()
     app.listen(9874)
     main_loop = ioloop.IOLoop.instance()
