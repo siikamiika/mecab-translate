@@ -5,7 +5,7 @@ angular.module('mecab-translate')
 
     $scope.blend = Helpers.blend;
 
-    $scope.ttsProvider = 'responsivevoice';
+    $scope.ttsProvider = localStorage.ttsProvider || 'responsivevoice';
 
     Tts.getVoices(function(data) {
         $scope.voices = data;
@@ -81,15 +81,21 @@ angular.module('mecab-translate')
         if ($scope.ttsProvider == 'responsivevoice') {
             ResponsiveVoice.TTS(text);
         } else if ($scope.ttsProvider.startsWith('tts')) {
-            var id = parseInt($scope.ttsProvider.split('.')[1]);
-            if (Tts.getVoiceId() != id) {
-                Tts.setVoice(id);
-            }
             Tts.TTS(text);
         } else if ($scope.ttsProvider == 'remotetts') {
             RemoteTts.TTS(text);
         }
     }
+
+    $scope.updateTts = function() {
+        localStorage.ttsProvider = $scope.ttsProvider;
+        var provider = $scope.ttsProvider.split('.');
+        if (provider.length == 2 && provider[0] == 'tts' && Tts.getVoiceId() != parseInt(provider[1])) {
+            Tts.setVoice(parseInt(provider[1]));
+        }
+    }
+
+    $scope.updateTts();
 
     KanjiVG.setOutput($scope.setKanjivgChar);
 
