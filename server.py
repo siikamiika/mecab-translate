@@ -11,6 +11,16 @@ from threading import Thread
 import time
 import os
 from os.path import dirname, realpath
+if os.name == 'nt':
+    try:
+        import win32com.client
+        import pythoncom
+        tts = win32com.client.Dispatch("SAPI.SpVoice")
+        tts.Voice = tts.GetVoices('Name=VW Misaki').Item(0)
+        tts.Rate = 0.5
+    except Exception as e:
+        print(e)
+        print('SAPI5 initialization failed. Please install pywin32 and VW Misaki.')
 
 os.chdir(dirname(realpath(__file__)))
 
@@ -584,6 +594,16 @@ class KanjiVGCombinationsHandler(web.RequestHandler):
         query = self.get_query_argument('query').strip().split(',')
         self.write(json.dumps(kvgparts.get_combinations(set(query))))
 
+class TTSHandler(web.RequestHandler):
+
+    def post(self):
+        text = json.loads(self.request.body.decode('utf-8'))
+        def speak(text):
+            pythoncom.CoInitialize()
+            tts.Skip("Sentence", 2**31 - 1)
+            tts.speak(text, 1)
+        Thread(target=speak, args=(text,)).start()
+
 
 
 def get_app():
@@ -595,6 +615,7 @@ def get_app():
         (r'/tatoeba', TatoebaHandler),
         (r'/kvgparts', KanjiVGPartsHandler),
         (r'/kvgcombinations', KanjiVGCombinationsHandler),
+        (r'/tts', TTSHandler),
         (r'/(.*)', web.StaticFileHandler,
             {'path': 'client', 'default_filename': 'index.html'}),
     ])

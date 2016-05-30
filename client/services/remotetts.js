@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.factory('VoiceText', function($http) {
+.factory('RemoteTts', function($http) {
 
     return {
         TTS: function(text) {

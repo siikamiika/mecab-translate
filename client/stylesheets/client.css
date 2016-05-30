@@ -7,6 +7,10 @@ ul {
     list-style-type: none;
 }
 
+#text-input {
+    width: 100%;
+}
+
 .important {
     border-style: dotted;
     border-width: 1px;

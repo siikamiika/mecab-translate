@@ -1,9 +1,11 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, ResponsiveVoice, VoiceText, Helpers) {
+.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, ResponsiveVoice, RemoteTts, Tts, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
     $scope.blend = Helpers.blend;
+
+    $scope.ttsProvider = 'responsivevoice';
 
     Mecab.setOutput(function(output) {
         $scope.lines = output;
@@ -72,8 +74,13 @@ angular.module('mecab-translate')
                 return w.literal;
             }).join('');
         }
-        //ResponsiveVoice.TTS(text);
-        VoiceText.TTS(text);
+        if ($scope.ttsProvider == 'responsivevoice') {
+            ResponsiveVoice.TTS(text);
+        } else if ($scope.ttsProvider == 'tts') {
+            Tts.TTS(text);
+        } else if ($scope.ttsProvider == 'remotetts') {
+            RemoteTts.TTS(text);
+        }
     }
 
     KanjiVG.setOutput($scope.setKanjivgChar);
