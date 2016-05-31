@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 
-from tornado import web, ioloop
+from tornado import websocket, web, ioloop
 from tornado.log import enable_pretty_logging; enable_pretty_logging()
 from subprocess import PIPE, Popen
 import json
 import xml.etree.ElementTree as ET
 import re
-from queue import Queue
+from queue import Queue, Empty
 from threading import Thread
 import time
 import os
 from os.path import dirname, realpath
+if os.name == 'nt':
+    try:
+        import win32com.client
+        import pythoncom
+    except:
+        pass
 
 os.chdir(dirname(realpath(__file__)))
 
@@ -18,40 +24,88 @@ os.chdir(dirname(realpath(__file__)))
 class TTS(object):
 
     def __init__(self):
-        self._init_sapi()
-
-
-    def _init_sapi(self):
+        self.clients = []
         self.voice_choices = []
-        if os.name == 'nt':
+        self.queue = Queue()
+        def background():
+            if os.name != 'nt':
+                return
             try:
-                import win32com.client
+                pythoncom.CoInitialize()
                 self.tts = win32com.client.Dispatch("SAPI.SpVoice")
                 self.voices = self.tts.GetVoices()
                 self.voices = [self.voices.Item(i) for i in range(self.voices.Count)]
                 self.voice_choices = [dict(desc=v.GetDescription(), id=i) for i, v in enumerate(self.voices)]
-                self.tts.Rate = -2
+                self.tts.Rate = -5
+                self.event_sink = win32com.client.WithEvents(self.tts, TTSEventSink)
+                self.event_sink.setTTS(self)
             except Exception as e:
                 print(e)
                 print('SAPI5 initialization failed. To use system TTS, please install pywin32.')
+            while True:
+                self._speak(self.queue.get(True))
+        Thread(target=background).start()
+
+
+    def _speak(self, text):
+        self._speaking = True
+        def speak(text):
+            pythoncom.CoInitialize()
+            self.tts.Skip("Sentence", 2**31 - 1)
+            self.tts.Speak(text, 1)
+        Thread(target=speak, args=(text,)).start()
+        self._pump()
 
 
     def speak(self, text):
-        def speak(text):
-            import pythoncom
-            pythoncom.CoInitialize()
-            self.tts.Skip("Sentence", 2**31 - 1)
-            self.tts.speak(text, 1)
-        Thread(target=speak, args=(text,)).start()
+        if self.queue.empty():
+            self.queue.put(text)
+        else:
+            try:
+                self.queue.get(False)
+            except Empty:
+                pass
+            self.queue.put(text)
 
 
     def get_voice_choices(self):
-        self._init_sapi()
         return self.voice_choices
 
 
     def set_voice(self, voice_id):
         self.tts.Voice = self.voices[voice_id]
+
+
+    def handle_event(self, event, *args):
+        if event == 'end':
+            self._speaking = False
+            for c in self.clients:
+                c.write_message(json.dumps(dict(type=event)))
+        elif event == 'word':
+            for c in self.clients:
+                c.write_message(json.dumps(dict(type=event, char_pos=args[0], length=args[1])))
+
+
+    def _pump(self):
+        while self._speaking:
+            pythoncom.PumpWaitingMessages()
+            time.sleep(0.05)
+
+
+
+class TTSEventSink(object):
+
+    def __init__(self):
+        self.tts = None
+
+    def setTTS(self, tts):
+        self.tts = tts
+
+    def OnWord(self, stream_id, stream_pos, char_pos, length):
+        self.tts.handle_event('word', char_pos, length)
+
+    def OnEndStream(self, stream, pos):
+        self.tts.handle_event('end')
 
 
 
@@ -641,6 +695,19 @@ class TTSHandler(web.RequestHandler):
         tts.speak(text)
 
 
+
+class TTSEventHandler(websocket.WebSocketHandler):
+
+    def open(self):
+        if self not in tts.clients:
+            tts.clients.append(self)
+
+    def on_close(self):
+        if self in tts.clients:
+            tts.clients.remove(self)
+
+
+
 def get_app():
 
     return web.Application([
@@ -651,6 +718,7 @@ def get_app():
         (r'/kvgparts', KanjiVGPartsHandler),
         (r'/kvgcombinations', KanjiVGCombinationsHandler),
         (r'/tts', TTSHandler),
+        (r'/tts_events', TTSEventHandler),
         (r'/(.*)', web.StaticFileHandler,
             {'path': 'client', 'default_filename': 'index.html'}),
     ])
