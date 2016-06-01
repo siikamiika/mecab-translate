@@ -20,7 +20,7 @@ if os.name == 'nt':
         import win32com.client
         import pythoncom
     except:
-        pass
+        print('SAPI5 initialization failed. To use system TTS, please install pywin32.')
 
 os.chdir(dirname(realpath(__file__)))
 
@@ -31,21 +31,17 @@ class TTS(object):
         self.clients = []
         self.voice_choices = []
         self.queue = Queue()
+        if os.name != 'nt':
+            return
         def background():
-            if os.name != 'nt':
-                return
-            try:
-                pythoncom.CoInitialize()
-                self.tts = win32com.client.Dispatch("SAPI.SpVoice")
-                self.voices = self.tts.GetVoices()
-                self.voices = [self.voices.Item(i) for i in range(self.voices.Count)]
-                self.voice_choices = [dict(desc=v.GetDescription(), id=i) for i, v in enumerate(self.voices)]
-                self.tts.Rate = -5
-                self.event_sink = win32com.client.WithEvents(self.tts, TTSEventSink)
-                self.event_sink.setTTS(self)
-            except Exception as e:
-                print(e)
-                print('SAPI5 initialization failed. To use system TTS, please install pywin32.')
+            pythoncom.CoInitialize()
+            self.tts = win32com.client.Dispatch("SAPI.SpVoice")
+            self.voices = self.tts.GetVoices()
+            self.voices = [self.voices.Item(i) for i in range(self.voices.Count)]
+            self.voice_choices = [dict(desc=v.GetDescription(), id=i) for i, v in enumerate(self.voices)]
+            self.tts.Rate = -5
+            self.event_sink = win32com.client.WithEvents(self.tts, TTSEventSink)
+            self.event_sink.setTTS(self)
             while True:
                 self._speak(self.queue.get(True))
         Thread(target=background).start()
@@ -53,11 +49,8 @@ class TTS(object):
 
     def _speak(self, text):
         self._speaking = True
-        def speak(text):
-            pythoncom.CoInitialize()
-            self.tts.Skip("Sentence", 2**31 - 1)
-            self.tts.Speak(text, 1)
-        Thread(target=speak, args=(text,)).start()
+        self.tts.Skip("Sentence", 2**31 - 1)
+        self.tts.Speak(text, 1)
         self._pump()
 
 
