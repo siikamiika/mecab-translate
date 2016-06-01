@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 import sys
 if sys.version_info[0] == 3:
-	from urllib.request import urlopen
-	from io import BytesIO
-	StringIO = BytesIO
+    from urllib.request import urlopen
+    from io import BytesIO as StringIO
 elif sys.version_info[0] == 2:
-	from urllib2 import urlopen
-	from StringIO import StringIO
+    from urllib2 import urlopen
+    from StringIO import StringIO
 import zlib
 from zipfile import ZipFile
 import os

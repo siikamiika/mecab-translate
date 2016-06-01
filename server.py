@@ -12,9 +12,9 @@ import os
 from os.path import dirname, realpath, splitext
 import sys
 if sys.version_info[0] == 3:
-	from queue import Queue, Empty
+    from queue import Queue, Empty
 elif sys.version_info[0] == 2:
-	from Queue import Queue, Empty
+    from Queue import Queue, Empty
 if os.name == 'nt':
     try:
         import win32com.client
@@ -717,15 +717,15 @@ class TTSEventHandler(websocket.WebSocketHandler):
 
 class StaticFileHandler(web.StaticFileHandler):
 
-	def get_content_type(self):
-		types = {
-			'.html': 'text/html',
-			'.svg': 'image/svg+xml',
-			'.js': 'application/javascript',
-			'.css': 'text/css',
-		}
-		return (types.get(os.path.splitext(self.absolute_path)[1]) or
-			'application/octet-stream')
+    def get_content_type(self):
+        types = {
+            '.html': 'text/html',
+            '.svg': 'image/svg+xml',
+            '.js': 'application/javascript',
+            '.css': 'text/css',
+        }
+        return (types.get(os.path.splitext(self.absolute_path)[1]) or
+            'application/octet-stream')
 
 
 
