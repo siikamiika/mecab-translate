@@ -6,11 +6,15 @@ from subprocess import PIPE, Popen
 import json
 import xml.etree.ElementTree as ET
 import re
-from queue import Queue, Empty
 from threading import Thread
 import time
 import os
 from os.path import dirname, realpath
+import sys
+if sys.version_info[0] == 3:
+	from queue import Queue, Empty
+elif sys.version_info[0] == 2:
+	from Queue import Queue, Empty
 if os.name == 'nt':
     try:
         import win32com.client
@@ -122,7 +126,7 @@ class Mecab(object):
             with open('mecab.conf') as f:
                 for l in f.read().splitlines():
                     mecab_args += l.split()
-        except FileNotFoundError:
+        except:
             pass
         self.process = Popen(["mecab"] + mecab_args, stdout=PIPE, stdin=PIPE, bufsize=1)
         self.output = Queue()
@@ -157,7 +161,7 @@ class Mecab(object):
     def _handle_stdout(self):
 
         for line in iter(self.process.stdout.readline, b''):
-            self.output.put(line.decode().strip())
+            self.output.put(line.decode('utf-8').strip())
         self.process.stdout.close()
 
 

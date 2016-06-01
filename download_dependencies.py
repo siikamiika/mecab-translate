@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
-from urllib.request import urlopen
-import gzip
+import sys
+if sys.version_info[0] == 3:
+	from urllib.request import urlopen
+	from io import BytesIO
+	StringIO = BytesIO
+elif sys.version_info[0] == 2:
+	from urllib2 import urlopen
+	from StringIO import StringIO
+import zlib
 from zipfile import ZipFile
-from io import BytesIO
 import os
 
 JMDICT = 'http://ftp.monash.edu.au/pub/nihongo/JMdict_e.gz'
@@ -16,7 +22,7 @@ def download(url, destination, compression=None):
 
     try:
         os.makedirs(destination)
-    except FileExistsError:
+    except:
         pass
 
     print('Downloading', url)
@@ -24,7 +30,7 @@ def download(url, destination, compression=None):
 
 
     if compression == 'zip':
-        data = ZipFile(BytesIO(data))
+        data = ZipFile(StringIO(data))
         for f in data.infolist():
             data.extract(f, path=destination)
 
@@ -32,7 +38,7 @@ def download(url, destination, compression=None):
         filename = os.path.split(url)[-1]
         if compression == 'gz':
             filename = os.path.splitext(filename)[0]
-            data = gzip.decompress(data)
+            data = zlib.decompress(data, 16+zlib.MAX_WBITS)
 
         with open(os.path.join(destination, filename), 'wb') as f:
             f.write(data)
