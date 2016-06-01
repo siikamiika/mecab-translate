@@ -87,7 +87,11 @@ class TTS(object):
 
 
     def _pump(self):
+        skipped = False
         while self._speaking:
+            if not skipped and not self.queue.empty():
+                self.tts.Skip("Sentence", 2**31 - 1)
+                skipped = True
             pythoncom.PumpWaitingMessages()
             time.sleep(0.05)
 
