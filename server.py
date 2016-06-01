@@ -9,7 +9,7 @@ import re
 from threading import Thread
 import time
 import os
-from os.path import dirname, realpath
+from os.path import dirname, realpath, splitext
 import sys
 if sys.version_info[0] == 3:
 	from queue import Queue, Empty
@@ -715,6 +715,19 @@ class TTSEventHandler(websocket.WebSocketHandler):
             tts.clients.remove(self)
 
 
+class StaticFileHandler(web.StaticFileHandler):
+
+	def get_content_type(self):
+		types = {
+			'.html': 'text/html',
+			'.svg': 'image/svg+xml',
+			'.js': 'application/javascript',
+			'.css': 'text/css',
+		}
+		return (types.get(os.path.splitext(self.absolute_path)[1]) or
+			'application/octet-stream')
+
+
 
 def get_app():
 
@@ -727,7 +740,7 @@ def get_app():
         (r'/kvgcombinations', KanjiVGCombinationsHandler),
         (r'/tts', TTSHandler),
         (r'/tts_events', TTSEventHandler),
-        (r'/(.*)', web.StaticFileHandler,
+        (r'/(.*)', StaticFileHandler,
             {'path': 'client', 'default_filename': 'index.html'}),
     ])
 
