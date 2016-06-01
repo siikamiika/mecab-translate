@@ -31,7 +31,7 @@ class TTS(object):
         self.clients = []
         self.voice_choices = []
         self.queue = Queue()
-        if os.name != 'nt':
+        if os.name != 'nt' or 'win32com' not in globals():
             return
         def background():
             pythoncom.CoInitialize()
