@@ -33,8 +33,13 @@ angular.module('mecab-translate')
         }
     }
 
+    $scope.getKanjivgCombinationMouseover = function() {
+        return $scope.kanjivgCombinationMouseover;
+    }
+
     $scope.getKanjidic2 = function(kanji) {
-        Kanjidic2.get(kanji);
+        $scope.kanjivgCombinationMouseover = kanji;
+        Kanjidic2.get(kanji, $scope.getKanjivgCombinationMouseover);
     }
 
     var getKanjiVGParts = function(kanji) {
