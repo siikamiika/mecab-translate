@@ -22,6 +22,9 @@ if os.name == 'nt':
     except:
         print('SAPI5 initialization failed. To use system TTS, please install pywin32.')
 
+INT32_MAX = 2**31 - 1
+SVSFlagsAsync = 1
+
 os.chdir(dirname(realpath(__file__)))
 
 
@@ -31,67 +34,60 @@ class TTS(object):
         self.clients = []
         self.voice_choices = []
         self.queue = Queue()
-        if os.name != 'nt' or 'win32com' not in globals():
+        if 'win32com' not in globals():
             return
-        def background():
-            pythoncom.CoInitialize()
-            self.tts = win32com.client.Dispatch("SAPI.SpVoice")
-            self.voices = self.tts.GetVoices()
-            self.voices = [self.voices.Item(i) for i in range(self.voices.Count)]
-            self.voice_choices = [dict(desc=v.GetDescription(), id=i) for i, v in enumerate(self.voices)]
-            self.tts.Rate = -5
-            self.event_sink = win32com.client.WithEvents(self.tts, TTSEventSink)
-            self.event_sink.setTTS(self)
-            while True:
-                self._speak(self.queue.get(True))
-        Thread(target=background).start()
+        Thread(target=self._background).start()
 
+    def _background(self):
+        pythoncom.CoInitialize()
+        self.tts = win32com.client.Dispatch("SAPI.SpVoice")
+        self.voices = self.tts.GetVoices()
+        self.voices = [self.voices.Item(i) for i in range(self.voices.Count)]
+        self.voice_choices = [dict(desc=v.GetDescription(), id=i) for i, v in enumerate(self.voices)]
+        self.tts.Rate = -5
+        self.event_sink = win32com.client.WithEvents(self.tts, TTSEventSink)
+        self.event_sink.setTTS(self)
+        while True:
+            self._speak(self.queue.get(True))
 
     def _speak(self, text):
         self._speaking = True
-        self.tts.Skip("Sentence", 2**31 - 1)
-        self.tts.Speak(text, 1)
+        self.tts.Skip("Sentence", INT32_MAX)
+        self.tts.Speak(text, SVSFlagsAsync)
         self._pump()
 
-
     def speak(self, text):
-        if self.queue.empty():
-            self.queue.put(text)
-        else:
+        while True:
             try:
                 self.queue.get(False)
             except Empty:
-                pass
-            self.queue.put(text)
-
+                break
+        self.queue.put(text)
 
     def get_voice_choices(self):
         return self.voice_choices
 
-
     def set_voice(self, voice_id):
         self.tts.Voice = self.voices[voice_id]
 
-
     def handle_event(self, event, *args):
+        msg = dict(type=event)
         if event == 'end':
             self._speaking = False
-            for c in self.clients:
-                c.write_message(json.dumps(dict(type=event)))
         elif event == 'word':
-            for c in self.clients:
-                c.write_message(json.dumps(dict(type=event, char_pos=args[0], length=args[1])))
-
+            msg.update(dict(char_pos=args[0], length=args[1]))
+        msg = json.dumps(msg)
+        for c in self.clients:
+            c.write_message(msg)
 
     def _pump(self):
         skipped = False
         while self._speaking:
             if not skipped and not self.queue.empty():
-                self.tts.Skip("Sentence", 2**31 - 1)
+                self.tts.Skip("Sentence", INT32_MAX)
                 skipped = True
             pythoncom.PumpWaitingMessages()
             time.sleep(0.05)
-
 
 
 class TTSEventSink(object):
@@ -109,11 +105,9 @@ class TTSEventSink(object):
         self.tts.handle_event('end')
 
 
-
 class Mecab(object):
 
     def __init__(self):
-
         mecab_args = []
         try:
             with open('mecab.conf') as f:
@@ -127,9 +121,7 @@ class Mecab(object):
         self.t.daemon = True
         self.t.start()
 
-
     def analyze(self, text):
-
         self.process.stdin.write((text + '\n').encode('utf-8'))
         self.process.stdin.flush()
 
@@ -150,25 +142,19 @@ class Mecab(object):
             result.append(part)
         return result
 
-
     def _handle_stdout(self):
-
         for line in iter(self.process.stdout.readline, b''):
             self.output.put(line.decode('utf-8').strip())
         self.process.stdout.close()
 
 
-
 class Dictionary(object):
 
     def __init__(self, dictionary):
-
         self.dictionary = list(dictionary.items())
         self.dictionary.sort(key=lambda e: e[0])
 
-
     def get(self, key):
-
         results = dict(exact=None, shorter=None, longer=[])
 
         if not key:
@@ -198,7 +184,6 @@ class Dictionary(object):
         else:
             results['exact'] = self.dictionary[index][1]
 
-
         while True:
             index += 1
             if index >= len(self.dictionary):
@@ -213,9 +198,7 @@ class Dictionary(object):
 
         return results
 
-
     def _search_dict(self, key, exact=True):
-
         imax = len(self.dictionary) - 1
         imin = 0
 
@@ -236,11 +219,9 @@ class Dictionary(object):
             return imin
 
 
-
 class JMdict_e(object):
 
     def __init__(self):
-
         self.dictfile = open('data/JMdict_e', 'rb')
         self.temp_dictionary = dict()
         self.entities = dict()
@@ -248,9 +229,7 @@ class JMdict_e(object):
         self.dictionary = Dictionary(self.temp_dictionary)
         del self.temp_dictionary
 
-
     def get(self, word):
-
         res = self.dictionary.get(word)
 
         if res['exact']:
@@ -260,9 +239,7 @@ class JMdict_e(object):
 
         return res
 
-
     def _entry(self, entry):
-
         ent = self.entities
 
         entry_obj = dict(words=[], readings=[], translations=[])
@@ -326,9 +303,7 @@ class JMdict_e(object):
 
         return entry_obj
 
-
     def _parse(self):
-
         print('parsing JMdict_e...')
         start = time.time()
 
@@ -375,18 +350,14 @@ class JMdict_e(object):
         print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
-
 class Kanjidic2(object):
 
     def __init__(self):
-
         self.dicfile = open('data/kanjidic2.xml', 'rb')
         self.dic = dict()
         self._parse()
 
-
     def get(self, kanji):
-
         dic_entry = self.dic.get(kanji)
         if not dic_entry:
             return
@@ -434,9 +405,7 @@ class Kanjidic2(object):
 
         return entry
 
-
     def _parse(self):
-
         print('parsing kanjidic2...')
         start = time.time()
 
@@ -464,18 +433,14 @@ class Kanjidic2(object):
         print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
-
 class Tatoeba(object):
 
     def __init__(self):
-
         self.datafile = open('data/wwwjdic.csv', 'rb')
         self.dictionary = dict()
         self._parse()
 
-
     def get(self, headwords, readings):
-
         for hw in headwords:
             entries = self.dictionary.get(hw)
             headword = hw
@@ -506,9 +471,7 @@ class Tatoeba(object):
             for entry in filter(matches, entries)
         ]
 
-
     def _entry(self, file_pos):
-
         file_pos, length = file_pos
 
         self.datafile.seek(file_pos)
@@ -518,9 +481,7 @@ class Tatoeba(object):
 
         return dict(jpn=jpn, eng=eng)
 
-
     def _parse(self):
-
         print('parsing wwwjdic.csv...')
         start = time.time()
 
@@ -553,22 +514,16 @@ class Tatoeba(object):
         print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
-
 class KanjiVGParts(object):
 
     def __init__(self):
-
         self.kanji = dict()
         self._parse()
 
-
     def get_parts(self, kanji):
-
         return list(self.kanji.get(kanji) or [])
 
-
     def get_combinations(self, parts):
-
         combinations = []
 
         for k in self.kanji:
@@ -583,9 +538,7 @@ class KanjiVGParts(object):
 
         return combinations
 
-
     def _parse(self):
-
         print('parsing KanjiVG parts...')
         start = time.time()
 
@@ -596,7 +549,6 @@ class KanjiVGParts(object):
         }
 
         def get_parts(group):
-
             parts = []
             for g in group.findall('svg:g', NS):
                 element = g.attrib.get('{'+NS['kvg']+'}element')
@@ -607,7 +559,6 @@ class KanjiVGParts(object):
             return parts
 
         def get_info(f):
-
             kanji = ET.parse(f).getroot().find('svg:g', NS).find('svg:g', NS)
             char = kanji.attrib.get('{'+NS['kvg']+'}element')
             parts = get_parts(kanji)
@@ -621,13 +572,11 @@ class KanjiVGParts(object):
         print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
-
 class MecabHandler(web.RequestHandler):
 
     def post(self):
         data = json.loads(self.request.body.decode('utf-8')).strip()
         self.write(json.dumps([mecab.analyze(line) for line in data.splitlines()]))
-
 
 
 class JMdict_eHandler(web.RequestHandler):
@@ -640,7 +589,6 @@ class JMdict_eHandler(web.RequestHandler):
         self.write(json.dumps(response))
 
 
-
 class Kanjidic2Handler(web.RequestHandler):
 
     def get(self):
@@ -648,7 +596,6 @@ class Kanjidic2Handler(web.RequestHandler):
         self.set_header('Content-Type', 'application/json')
         query = self.get_query_argument('query').strip()
         self.write(json.dumps(kanjidic2.get(query)))
-
 
 
 class TatoebaHandler(web.RequestHandler):
@@ -661,7 +608,6 @@ class TatoebaHandler(web.RequestHandler):
         self.write(json.dumps(tatoeba.get(query, readings)))
 
 
-
 class KanjiVGPartsHandler(web.RequestHandler):
 
     def get(self):
@@ -671,7 +617,6 @@ class KanjiVGPartsHandler(web.RequestHandler):
         self.write(json.dumps(kvgparts.get_parts(query)))
 
 
-
 class KanjiVGCombinationsHandler(web.RequestHandler):
 
     def get(self):
@@ -679,7 +624,6 @@ class KanjiVGCombinationsHandler(web.RequestHandler):
         self.set_header('Content-Type', 'application/json')
         query = self.get_query_argument('query').strip().split(',')
         self.write(json.dumps(kvgparts.get_combinations(set(query))))
-
 
 
 class TTSHandler(web.RequestHandler):
@@ -694,7 +638,6 @@ class TTSHandler(web.RequestHandler):
     def post(self):
         text = json.loads(self.request.body.decode('utf-8'))
         tts.speak(text)
-
 
 
 class TTSEventHandler(websocket.WebSocketHandler):
@@ -721,7 +664,6 @@ class StaticFileHandler(web.StaticFileHandler):
             'application/octet-stream')
 
 
-
 def get_app():
 
     return web.Application([
@@ -736,7 +678,6 @@ def get_app():
         (r'/(.*)', StaticFileHandler,
             {'path': 'client', 'default_filename': 'index.html'}),
     ])
-
 
 
 if __name__ == '__main__':
