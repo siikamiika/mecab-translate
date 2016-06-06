@@ -28,8 +28,13 @@ angular.module('mecab-translate')
 
     $scope.translateSelection = function() {
         var selection = window.getSelection().toString();
+        if ($scope.lastSelection == selection)
+            return;
+        else
+            $scope.lastSelection = selection;
         if (selection) {
             JMdict_e.translate(selection);
+            $scope.TTS(selection);
         }
     }
 
