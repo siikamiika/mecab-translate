@@ -9,7 +9,7 @@ ul {
 }
 
 #text-input {
-    width: 100%;
+    width: 90%;
 }
 
 .important {
@@ -85,6 +85,19 @@ ul {
 .line {
     width: 80%;
     display: inline-block;
+}
+
+.hide {
+    visibility: hidden;
+}
+
+.tts-button {
+    vertical-align: top;
+    display: inline-block;
+}
+
+.bg-highlight {
+    background-color: #f9f9f9;
 }
 
 

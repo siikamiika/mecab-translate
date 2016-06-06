@@ -19,7 +19,15 @@
             <option value="remotetts">Remote SAPI5 on localhost port 9871</option>
         </select>
         <div id="output">
-            <div ng-repeat="line in lines track by $index" ng-mouseenter="showTTS = true" ng-mouseleave="showTTS = false" ng-init="ttsRow = $index">
+            <div
+                ng-class="mouseInside ? 'bg-highlight' : ''"
+                ng-repeat="line in lines track by $index"
+                ng-mouseenter="mouseInside = true"
+                ng-mouseleave="mouseInside = false"
+                ng-init="ttsRow = $index">
+                <div class="tts-button" ng-class="mouseInside ? '' : 'hide'">
+                    <button ng-click="TTS(line, true); updateRow(ttsRow)">TTS</button>
+                </div>
                 <div class="line" ng-class="'row-' + $index">
                     <span
                         class="clickable word"
@@ -30,9 +38,6 @@
                             class="character"
                             ng-repeat="char in word.literal track by $index"
                             ng-click="setKanjivgChar(char); getKanjidic2(char)">{{char}}</span></span>
-                </div>
-                <div style="display: inline-block;">
-                    <button ng-show="showTTS" ng-click="TTS(line, true); updateRow(ttsRow)">TTS</button>
                 </div>
             </div>
         </div>
