@@ -81,6 +81,11 @@ ul {
     font-size: 36px;
 }
 
+.line {
+    width: 80%;
+    display: inline-block;
+}
+
 
 .noun, .proper-noun, .pronoun {
     border-bottom: 3px solid #A0FFA0;
