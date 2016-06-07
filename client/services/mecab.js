@@ -16,7 +16,6 @@ angular.module('mecab-translate')
                 //    history.length = historyIndex + 1;
                 history.push(val);
                 historyIndex = history.length - 1;
-                console.log(history)
             }
             $http.post('/mecab', angular.toJson(val))
             .then(function success(data) {
