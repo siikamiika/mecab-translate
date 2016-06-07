@@ -32,7 +32,11 @@ angular.module('mecab-translate')
             if (newValue > -1 && newValue < history.length) {
                 historyIndex = newValue;
                 this.analyze(history[historyIndex], true);
+                this.input.value = history[historyIndex];
             }
+        },
+        setInput: function(textarea) {
+            this.input = textarea;
         }
     }
 
