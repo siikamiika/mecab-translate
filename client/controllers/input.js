@@ -5,4 +5,8 @@ angular.module('mecab-translate')
         Mecab.analyze($scope.textInput);
     }
 
+    $scope.analyzeHistory = function(offset) {
+        Mecab.analyzeHistory(offset);
+    }
+
 });

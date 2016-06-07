@@ -100,6 +100,9 @@ ul {
     background-color: #f9f9f9;
 }
 
+.medium-size {
+    font-size: 20px;
+}
 
 .noun, .proper-noun, .pronoun {
     border-bottom: 3px solid #A0FFA0;

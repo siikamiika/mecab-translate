@@ -10,6 +10,10 @@
     <!-- Text input box -->
     <div ng-controller="Input">
         <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
+        <div id="input-history">
+            <button class="medium-size" ng-click="analyzeHistory(-1)">&#8678;</button>
+            <button class="medium-size" ng-click="analyzeHistory(1)">&#8680;</button>
+        </div>
     </div>
     <!-- Analyzed output -->
     <div ng-controller="Output" ng-mouseup="translateSelection()">
