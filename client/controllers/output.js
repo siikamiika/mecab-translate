@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, ResponsiveVoice, RemoteTts, Tts, TtsEvents, Helpers) {
+.controller('Output', function($scope, $rootScope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, ResponsiveVoice, RemoteTts, Tts, TtsEvents, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
@@ -145,6 +145,188 @@ angular.module('mecab-translate')
         }
 
     });
+
+    var outputNavigation = [0,0];
+    var outputElements;
+    var outputFocusedFlag = false;
+
+    $scope.outputFocused = function() {
+        outputFocusedFlag = true;
+        outputElements = [];
+        var lines = document.querySelectorAll('.output-line');
+        for (var i = 0; i < lines.length; i++) {
+            outputElements.push(getWords(lines[i]));
+        }
+        function getWords(line) {
+            line = line.querySelectorAll('.word');
+            var words = [];
+            for (var i = 0; i < line.length; i++) {
+                words.push(line[i]);
+            }
+            return words;
+        }
+        if (outputElements.length < outputNavigation[0] + 1) {
+            outputNavigation = [0,0];
+        }
+        focusWord();
+    }
+
+    function focusWord() {
+        if (outputElements[outputNavigation[0]].length == 0) {
+            return;
+        } else if (outputElements[outputNavigation[0]].length <= outputNavigation[1]) {
+            outputNavigation[1] = outputElements[outputNavigation[0]].length - 1;
+        }
+        outputElements[outputNavigation[0]][outputNavigation[1]].focus();
+    }
+
+    $rootScope.$on('navigate-left', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            var newValue = outputNavigation[1] - 1;
+            if (newValue > -1) {
+                outputNavigation[1] = newValue;
+            } else if (outputNavigation[0] > 0) {
+                outputNavigation[0]--;
+                outputNavigation[1] = outputElements[outputNavigation[0]].length - 1;
+            }
+            focusWord();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('navigate-right', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            var newValue = outputNavigation[1] + 1;
+            if (newValue < outputElements[outputNavigation[0]].length) {
+                outputNavigation[1] = newValue;
+            } else if (outputElements.length > outputNavigation[0] + 1) {
+                outputNavigation[0]++;
+                outputNavigation[1] = 0;
+            }
+            focusWord();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('navigate-up', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            var newValue = outputNavigation[0] - 1;
+            if (newValue > -1)
+                outputNavigation[0] = newValue;
+            focusWord();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('navigate-down', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            var newValue = outputNavigation[0] + 1;
+            if (newValue < outputElements.length)
+                outputNavigation[0] = newValue;
+            focusWord();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('key-e', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            var txt = outputElements[outputNavigation[0]][outputNavigation[1]].textContent;
+            $scope.TTS(txt);
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('key-e-special', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            var el = outputElements[outputNavigation[0]][outputNavigation[1]];
+            el.parentElement.parentElement.querySelector('button').click();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('key-f', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            outputElements[outputNavigation[0]][outputNavigation[1]].click();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('key-q', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            outputNavigation = [0,0];
+            focusWord();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('key-1', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            outputNavigation[1] = 0;
+            focusWord();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('key-2', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            outputNavigation[1] = outputElements[outputNavigation[0]].length - 1;
+            focusWord();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('key-u', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            var txt = outputElements[outputNavigation[0]][outputNavigation[1]].textContent;
+            $scope.TTS(txt);
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('key-i', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            var el = outputElements[outputNavigation[0]][outputNavigation[1]];
+            el.parentElement.parentElement.querySelector('button').click();
+        } else {
+            
+        }
+    });
+
+    $rootScope.$on('key-o', function(e) {
+        if (outputFocusedFlag) {
+            e.preventDefault();
+            outputElements[outputNavigation[0]][outputNavigation[1]].click();
+        } else {
+            
+        }
+    });
+
+    //$scope.kanjivgFocused = function() {
+    //    console.log('kanjivgFocused');
+    //}
 
     KanjiVG.setOutput($scope.setKanjivgChar);
 

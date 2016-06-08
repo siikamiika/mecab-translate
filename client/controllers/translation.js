@@ -75,4 +75,8 @@ angular.module('mecab-translate')
         KanjiVG.setKanjivgChar(kanji);
     }
 
+    $scope.translationsFocused = function() {
+        console.log('translationsFocused')
+    }
+
 });

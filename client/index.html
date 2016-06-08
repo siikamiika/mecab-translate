@@ -22,8 +22,10 @@
             <option ng-repeat="v in voices" value="tts.{{v.id}}">{{v.desc}}</option>
             <option value="remotetts">Remote SAPI5 on localhost port 9871</option>
         </select>
-        <div id="output">
+        <div ng-focus="outputFocused()" tabindex="-1" id="output">
             <div
+                tabindex="-1"
+                class="output-line"
                 ng-class="mouseInside ? 'bg-highlight' : ''"
                 ng-repeat="line in lines track by $index"
                 ng-mouseenter="mouseInside = true"
@@ -34,6 +36,7 @@
                 </div>
                 <div class="line" ng-class="'row-' + $index">
                     <span
+                        tabindex="-1"
                         class="clickable word"
                         ng-repeat="word in line"
                         ng-class="posClass(word.pos)"
@@ -131,7 +134,7 @@
     </div>
     <hr>
     <!-- Translation -->
-    <div ng-controller="Translation">
+    <div ng-focus="translationsFocused()" tabindex="-1" id="translation-element" ng-controller="Translation">
         <div ng-if="shorterEntries" class="warning">
             No exact matches! Did you mean...
         </div>
