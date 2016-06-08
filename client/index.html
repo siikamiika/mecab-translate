@@ -6,13 +6,13 @@
     <link href="stylesheets/client.css" rel="stylesheet" type="text/css">
     <script src="vendor/angular.min.js"></script>
 </head>
-<body>
+<body keypress-events>
     <!-- Text input box -->
     <div ng-controller="Input">
         <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
         <div id="input-history">
-            <button class="medium-size" ng-click="analyzeHistory(-1)">&#8678;</button>
-            <button class="medium-size" ng-click="analyzeHistory(1)">&#8680;</button>
+            <button title="Alt+1" id="input-history-back" class="medium-size" ng-click="analyzeHistory(-1)" disabled>&#8678;</button>
+            <button title="Alt+2" id="input-history-forward" class="medium-size" ng-click="analyzeHistory(1)" disabled>&#8680;</button>
         </div>
     </div>
     <!-- Analyzed output -->

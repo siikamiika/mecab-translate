@@ -17,6 +17,16 @@ angular.module('mecab-translate')
                 history.push(val);
                 historyIndex = history.length - 1;
             }
+            if (historyIndex == 0) {
+                this.back.disabled = true;
+            } else {
+                this.back.disabled = false;
+            }
+            if (historyIndex == history.length - 1) {
+                this.forward.disabled = true;
+            } else {
+                this.forward.disabled = false;
+            }
             $http.post('/mecab', angular.toJson(val))
             .then(function success(data) {
                 this.output(data.data);
@@ -27,7 +37,7 @@ angular.module('mecab-translate')
         setOutput: function(fn) {
             this.output = fn;
         },
-        analyzeHistory(offset) {
+        analyzeHistory: function(offset) {
             var newValue = historyIndex + offset;
             if (newValue > -1 && newValue < history.length) {
                 historyIndex = newValue;
@@ -37,6 +47,10 @@ angular.module('mecab-translate')
         },
         setInput: function(textarea) {
             this.input = textarea;
+        },
+        setButtons: function(back, forward) {
+            this.back = back;
+            this.forward = forward;
         }
     }
 
