@@ -208,7 +208,7 @@
         <hr>
         <!-- add more -->
         <div>
-            <button ng-if="!phraseExampleButtonClicked && query" ng-click="getPhraseExamples()">Examples for {{query}}</button>
+            <button ng-if="!phraseExampleButtonClicked &amp;&amp; query" ng-click="getPhraseExamples()">Examples for {{query}}</button>
             <ul>
                 <li ng-repeat="example in phraseExamples">
                     <div ng-if="example.message">{{example.message}}</div>
@@ -224,7 +224,7 @@
                 ng-click="getPhraseExamples(true, true)"
             >Previous 20</button>
             <button
-                ng-if="phraseExampleButtonClicked && phraseExamples.length >= 5"
+                ng-if="phraseExampleButtonClicked &amp;&amp; phraseExamples.length >= 5"
                 ng-click="getPhraseExamples(true)"
                 >{{phraseExamples.length == 5 ? 'More' : 'Next 20'}}</button>
         </div>
