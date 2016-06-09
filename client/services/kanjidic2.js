@@ -1,6 +1,8 @@
 angular.module('mecab-translate')
 .factory('Kanjidic2', function($http) {
 
+    var output;
+
     return {
         get: function(val, mouseover) {
             $http({
@@ -9,16 +11,16 @@ angular.module('mecab-translate')
                 params: {query: val}
             }).then(function success(data) {
                 if (!mouseover || mouseover() == val) {
-                    this.output(data.data);
+                    output(data.data);
                 }
-            }.bind(this), function error(data) {
+            }, function error(data) {
                 if (!mouseover || mouseover() == val) {
-                    this.output({});
+                    output({});
                 }
-            }.bind(this));
+            });
         },
         setOutput: function(fn) {
-            this.output = fn;
+            output = fn;
         }
     }
 

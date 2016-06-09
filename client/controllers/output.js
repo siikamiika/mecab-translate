@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, ResponsiveVoice, RemoteTts, Tts, TtsEvents, Helpers) {
+.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, ResponsiveVoice, RemoteTts, Tts, TtsEvents, Phrase, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
@@ -23,6 +23,7 @@ angular.module('mecab-translate')
         if (!window.getSelection().toString()) {
             $scope.word = word;
             JMdict_e.translate(word.lemma || word.literal);
+            Phrase.customOutput([]);
         }
     }
 
@@ -35,6 +36,7 @@ angular.module('mecab-translate')
         if (selection) {
             JMdict_e.translate(selection);
             $scope.TTS(selection);
+            Phrase.customOutput([]);
         }
     }
 

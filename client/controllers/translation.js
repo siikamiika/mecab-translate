@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Translation', function($scope, JMdict_e, Tatoeba, Kanjidic2, KanjiVG, Helpers) {
+.controller('Translation', function($scope, JMdict_e, Tatoeba, Phrase, Kanjidic2, KanjiVG, Helpers) {
 
     $scope.isCommon = function(word) {
         return Helpers.intersection(Helpers.commonPriority, word.pri).length;
@@ -48,6 +48,9 @@ angular.module('mecab-translate')
     }
 
     JMdict_e.setOutput(function(output) {
+        $scope.query = JMdict_e.getLast();
+        $scope.phraseExampleButtonClicked = false;
+        $scope.phraseExampleStart = 0;
         $scope.longerEntryListing = [];
         $scope.shorterEntries = output.shorter;
         $scope.longerEntries = output.longer;
@@ -58,6 +61,34 @@ angular.module('mecab-translate')
             $scope.setEntries(output.exact || []);
         }
     });
+
+    Phrase.setOutput(function(output) {
+        output.forEach(function(example) {
+            if (!example.jpn)
+                return;
+            example.jpn = example.jpn.split(new RegExp('('+$scope.query+')', 'g')).map(function(part) {
+                return part;
+            });
+        });
+        $scope.phraseExamples = output;
+    });
+
+    $scope.phraseExampleButtonClicked = false;
+    $scope.phraseExampleStart = 0;
+
+    $scope.getPhraseExamples = function(more, previous) {
+        Phrase.customOutput([{message: 'Searching...'}]);
+        if (previous) {
+            $scope.phraseExampleStart -= 20;
+            Phrase.search($scope.query, 20, $scope.phraseExampleStart, false);
+        } else if (more) {
+            Phrase.search($scope.query, 20, $scope.phraseExampleStart, false);
+            $scope.phraseExampleStart += 20;
+        } else {
+            Phrase.search($scope.query, 5, 0, true);
+        }
+        $scope.phraseExampleButtonClicked = true;
+    }
 
     $scope.translate = function(text) {
         JMdict_e.translate(text);

@@ -11,6 +11,7 @@ import time
 import os
 from os.path import dirname, realpath, splitext
 import sys
+import random
 if sys.version_info[0] == 3:
     from queue import Queue, Empty
 elif sys.version_info[0] == 2:
@@ -438,7 +439,28 @@ class Tatoeba(object):
     def __init__(self):
         self.datafile = open('data/wwwjdic.csv', 'rb')
         self.dictionary = dict()
+        self.lines = []
         self._parse()
+
+    def search_phrase(self, phrase, max, start, shuffle):
+        lines = list(self.lines)
+        if shuffle:
+            random.shuffle(lines)
+
+        examples = []
+        counter = 0
+        while counter < start + max and lines:
+            file_pos, length = lines.pop(0)
+            self.datafile.seek(file_pos)
+            line = self.datafile.read(length).decode('utf-8')
+
+            jpn, eng = line.split('\t')[2:4]
+            if phrase in jpn:
+                if counter >= start:
+                    examples.append(dict(jpn=jpn, eng=eng))
+                counter += 1
+
+        return examples
 
     def get(self, headwords, readings):
         for hw in headwords:
@@ -495,6 +517,7 @@ class Tatoeba(object):
             length = len(line)
             file_pos = self.datafile.tell() - length
             file_pos = (file_pos, length)
+            self.lines.append(file_pos)
 
             indices = line[line.rfind(b'\t') + 1:].decode('utf-8').split()
 
@@ -607,6 +630,17 @@ class TatoebaHandler(web.RequestHandler):
         readings = self.get_query_argument('readings', default='').split(',')
         self.write(json.dumps(tatoeba.get(query, readings)))
 
+class PhraseHandler(web.RequestHandler):
+
+    def get(self):
+        self.set_header('Cache-Control', 'max-age=0')
+        self.set_header('Content-Type', 'application/json')
+        query = self.get_query_argument('query').strip()
+        max = int(self.get_query_argument('max', default=5))
+        start = int(self.get_query_argument('start', default=0))
+        shuffle = True if self.get_query_argument(
+            'shuffle', default='yes') == 'yes' else False
+        self.write(json.dumps(tatoeba.search_phrase(query, max, start, shuffle)))
 
 class KanjiVGPartsHandler(web.RequestHandler):
 
@@ -671,6 +705,7 @@ def get_app():
         (r'/jmdict_e', JMdict_eHandler),
         (r'/kanjidic2', Kanjidic2Handler),
         (r'/tatoeba', TatoebaHandler),
+        (r'/phrase', PhraseHandler),
         (r'/kvgparts', KanjiVGPartsHandler),
         (r'/kvgcombinations', KanjiVGCombinationsHandler),
         (r'/tts', TTSHandler),
