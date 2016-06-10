@@ -51,7 +51,7 @@
                 <b>Pos: </b>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}
                 <b>Infl.: </b>{{word.inflection_type}}, {{word.inflection_form}}
                 <b>Lemma: </b>{{word.lemma}}
-                <b>Reading: </b><button ng-if="word.hatsuon" ng-click="TTS(word.hatsuon)">{{word.reading}}</button>
+                <b>Reading: </b><button ng-if="word.reading" ng-click="TTS(word.hatsuon || word.reading)">{{word.reading}}</button>
             </div>
             <hr>
             <div>

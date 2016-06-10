@@ -1,0 +1,17 @@
+; f[0]:  pos1　動詞                   名詞
+; f[1]:  pos2　一般                   普通名詞
+; f[2]:  pos3　＊                     サ変可能
+; f[3]:  pos4　＊                     ＊
+; f[4]:  cType　五段-ラ行              ＊
+; f[5]:  cForm　連用形-促音便          ＊
+; f[6]:  lForm　サエギル                 テスト
+; f[7]:  lemma　遮る                    テスト-test
+; f[8]:  orth　遮っ                      
+; f[9]:  pron　サエギッ                   
+; f[10]: orthBase　遮る                
+; f[11]: pronBase　サエギル               
+; f[12]: goshu　和
+; f[13]: iType　＊
+; f[14]: iForm　＊
+; f[15]: fType　＊
+; f[16]: fForm　＊

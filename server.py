@@ -29,6 +29,23 @@ SVSFlagsAsync = 1
 os.chdir(dirname(realpath(__file__)))
 
 
+class Config(object):
+
+    config = dict()
+    try:
+        with open('mecab-translate.conf') as f:
+            for l in f.read().splitlines():
+                c = [t.strip() for t in l.split('=', 1)]
+                if len(c) == 2:
+                    config[c[0]] = c[1]
+    except:
+        pass
+
+    @staticmethod
+    def get(variable):
+        return Config.config.get(variable)
+
+
 class TTS(object):
 
     def __init__(self):
@@ -108,15 +125,23 @@ class TTSEventSink(object):
 
 class Mecab(object):
 
+    IPADIC = ['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
+        'inflection_form', 'lemma', 'reading', 'hatsuon']
+
+    UNIDIC = ['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
+        'inflection_form', '_', 'lemma', '_', 'reading']
+
     def __init__(self):
-        mecab_args = []
-        try:
-            with open('mecab.conf') as f:
-                for l in f.read().splitlines():
-                    mecab_args += l.split()
-        except:
-            pass
-        self.process = Popen(["mecab"] + mecab_args, stdout=PIPE, stdin=PIPE, bufsize=1)
+        self.dictionary_format = Mecab.IPADIC
+        dic_f = Config.get('mecab_dictionary_format')
+        if dic_f == 'unidic':
+            self.dictionary_format = Mecab.UNIDIC
+        elif dic_f and dic_f != 'ipadic':
+            print('unknown mecab_dictionary_format: {}'.format(dic_f))
+        args = ['mecab']
+        if Config.get('mecab_dictionary'):
+            args += ['-d', Config.get('mecab_dictionary')]
+        self.process = Popen(args, stdout=PIPE, stdin=PIPE, bufsize=1)
         self.output = Queue()
         self.t = Thread(target=self._handle_stdout)
         self.t.daemon = True
@@ -135,8 +160,7 @@ class Mecab(object):
             try:
                 part = dict()
                 part['literal'], line = line.split('\t')
-                part.update(zip(['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
-                    'inflection_form', 'lemma', 'reading', 'hatsuon'],
+                part.update(zip(self.dictionary_format,
                     ['' if i == '*' else i for i in line.split(',')]))
             except Exception as e:
                 print(e)

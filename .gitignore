@@ -4,4 +4,4 @@ __pycache__/
 client/vendor/
 data/
 client/kanji/
-mecab.conf
+mecab-translate.conf
