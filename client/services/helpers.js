@@ -24,17 +24,58 @@ angular.module('mecab-translate')
         KEIYOUSHI: '形容詞'
     }
 
+    var mecabToEdictPos = {};
+    mecabToEdictPos[mecabPos.JOSHI] = ['prt', 'aux'];
+    mecabToEdictPos[mecabPos.JODOUSHI] = ['aux-v'];
+    mecabToEdictPos[mecabPos.SETSUBIJI] = ['suf'];
+    mecabToEdictPos[mecabPos.SETTOUJI] = ['pref'];
+
+    var HIRAGANA_START = 0x3041;
+    var HIRAGANA_END = 0x3096;
+    var KATAKANA_START = 0x30A1;
+    var KATAKANA_END = 0x30FA;
+
+    var between = function(n, a, b) {
+        return n >= a && n <= b;
+    }
+
+    var isHira = function(c) {
+        return between(c.charCodeAt(0), HIRAGANA_START, HIRAGANA_END);
+    }
+
+    var isKata = function(c) {
+        return between(c.charCodeAt(0), KATAKANA_START, KATAKANA_END);
+    }
+
     return {
-        commonSort: function(a, b) {
-            if ((a.common && b.common) || (!a.common && !b.common)) {
-                return 0;
-            }
-            else if (b.common) {
-                return 1;
-            }
-            else {
-                return -1;
-            }
+        mecabToEdictPos: function(pos) {
+            return mecabToEdictPos[pos];
+        },
+        kataToHira: function(kata) {
+            var hira = [];
+            kata.split('').forEach(function(k) {
+                if (isKata(k)) {
+                    var code = k.charCodeAt(0);
+                    code += HIRAGANA_START - KATAKANA_START;
+                    hira.push(String.fromCharCode(code));
+                } else {
+                    hira.push(k);
+                }
+            });
+            return hira.join('');
+        },
+        hiraToKata: function(hira) {
+            var kata = [];
+            hira.split('').forEach(function(h) {
+                if (isHira(h)) {
+                    var code = h.charCodeAt(0);
+                    code += HIRAGANA_START - KATAKANA_START;
+                    kata.push(String.fromCharCode(code));
+                } else {
+                    kata.push(h);
+                }
+            });
+            return kata.join('');
         },
         posClass: function(pos) {
             switch(pos) {

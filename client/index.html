@@ -208,7 +208,7 @@
         <hr>
         <!-- add more -->
         <div>
-            <button ng-if="!phraseExampleButtonClicked &amp;&amp; query" ng-click="getPhraseExamples()">Examples for {{query}}</button>
+            <button ng-if="!phraseExampleButtonClicked &amp;&amp; query" ng-click="getPhraseExamples()">Examples for {{query.lemma ? query.lemma : query}}</button>
             <ul>
                 <li ng-repeat="example in phraseExamples">
                     <div ng-if="example.message">{{example.message}}</div>
@@ -230,7 +230,7 @@
         </div>
         <hr>
         <div>
-            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{query}} ({{longerEntries.length}})</button>
+            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{query.lemma ? query.lemma : query}} ({{longerEntries.length}})</button>
             <div ng-repeat="entry in longerEntryListing"><span class="clickable" ng-click="translate(entry)">{{entry}}</span></div>
         </div>
     </div>

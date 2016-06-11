@@ -22,7 +22,7 @@ angular.module('mecab-translate')
     $scope.showWordInfo = function(word) {
         if (!window.getSelection().toString()) {
             $scope.word = word;
-            JMdict_e.translate((word.lemma||'').split('-')[0] || word.literal);
+            JMdict_e.translate(word, true);
             Phrase.customOutput([]);
         }
     }

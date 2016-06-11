@@ -5,12 +5,14 @@ angular.module('mecab-translate')
     var last;
 
     return {
-        translate: function(val) {
-            last = val;
+        translate: function(word, lemma) {
+            last = word;
+            if (lemma)
+                word = (word.lemma||'').split('-')[0] || word.literal;
             $http({
                 method: 'GET',
                 url: '/jmdict_e',
-                params: {query: val}
+                params: {query: word}
             }).then(function success(data) {
                 output(data.data);
             }, function error(data) {

@@ -37,7 +37,71 @@ angular.module('mecab-translate')
                 entry.common = common;
             });
 
-            return Helpers.commonSort(a, b);
+            var commonSort = function (a, b) {
+                if ((a.common && b.common) || (!a.common && !b.common)) {
+                    return 0;
+                }
+                else if (b.common) {
+                    return 1;
+                }
+                else {
+                    return -1;
+                }
+            }
+
+            var posSort = function (a, b) {
+                if (!$scope.query.pos) {
+                    return commonSort(a, b);
+                }
+                var pos = Helpers.mecabToEdictPos($scope.query.pos) || [];
+                var aPos = Helpers.intersection(pos, [].concat.apply([], a.translations.map(function(t){
+                    return t.pos.map(function(p) {
+                        return p[0];
+                    });
+                }))).length;
+                var bPos = Helpers.intersection(pos, [].concat.apply([], b.translations.map(function(t){
+                    return t.pos.map(function(p) {
+                        return p[0];
+                    });
+                }))).length;
+                if ((aPos && bPos) || (!aPos && !bPos)) {
+                    return readingSort(a, b);
+                }
+                else if (bPos) {
+                    return 1;
+                }
+                else {
+                    return -1;
+                }
+            }
+
+            var readingSort = function(a, b) {
+                if (!$scope.query.lemma_reading) {
+                    return commonSort(a, b);
+                }
+                var lemmaReadingHira = Helpers.kataToHira($scope.query.lemma_reading);
+                var aReadings = a.readings.map(function(r) {
+                    return r.text;
+                });
+                var bReadings = b.readings.map(function(r) {
+                    return r.text;
+                });
+
+                a.hasReading = aReadings.indexOf(lemmaReadingHira) >= 0 || aReadings.indexOf($scope.query.lemma_reading) >= 0;
+                b.hasReading = bReadings.indexOf(lemmaReadingHira) >= 0|| bReadings.indexOf($scope.query.lemma_reading) >= 0;
+
+                if ((a.hasReading && b.hasReading) || (!a.hasReading && !b.hasReading)) {
+                    return commonSort(a, b);
+                }
+                else if (b.hasReading) {
+                    return 1;
+                }
+                else {
+                    return -1;
+                }
+            }
+
+            return posSort(a, b);
 
         });
     }
