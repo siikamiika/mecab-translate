@@ -5,6 +5,10 @@ angular.module('mecab-translate')
         return Helpers.intersection(Helpers.commonPriority, word.pri).length;
     }
 
+    $scope.queryAsString = function() {
+        return $scope.query.lemma || $scope.query.literal || $scope.query;
+    }
+
     $scope.setEntries = function(entries) {
 
         entries.forEach(function(entry) {
@@ -130,7 +134,7 @@ angular.module('mecab-translate')
         output.forEach(function(example) {
             if (!example.jpn)
                 return;
-            example.jpn = example.jpn.split(new RegExp('('+$scope.query+')', 'g')).map(function(part) {
+            example.jpn = example.jpn.split(new RegExp('('+$scope.queryAsString()+')', 'g')).map(function(part) {
                 return part;
             });
         });
@@ -142,14 +146,15 @@ angular.module('mecab-translate')
 
     $scope.getPhraseExamples = function(more, previous) {
         Phrase.customOutput([{message: 'Searching...'}]);
+        var q = $scope.queryAsString();
         if (previous) {
             $scope.phraseExampleStart -= 20;
-            Phrase.search($scope.query, 20, $scope.phraseExampleStart, false);
+            Phrase.search(q, 20, $scope.phraseExampleStart, false);
         } else if (more) {
-            Phrase.search($scope.query, 20, $scope.phraseExampleStart, false);
+            Phrase.search(q, 20, $scope.phraseExampleStart, false);
             $scope.phraseExampleStart += 20;
         } else {
-            Phrase.search($scope.query, 5, 0, true);
+            Phrase.search(q, 5, 0, true);
         }
         $scope.phraseExampleButtonClicked = true;
     }

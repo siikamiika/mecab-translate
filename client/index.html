@@ -208,12 +208,12 @@
         <hr>
         <!-- add more -->
         <div>
-            <button ng-if="!phraseExampleButtonClicked &amp;&amp; query" ng-click="getPhraseExamples()">Examples for {{query.lemma ? query.lemma : query}}</button>
+            <button ng-if="!phraseExampleButtonClicked &amp;&amp; query" ng-click="getPhraseExamples()">Examples for {{queryAsString()}}</button>
             <ul>
                 <li ng-repeat="example in phraseExamples">
                     <div ng-if="example.message">{{example.message}}</div>
                     <div style="font-size: 24px;">
-                        <span ng-repeat="part in example.jpn track by $index" ng-style="{'color': part == query ? 'red' : ''}">{{part}}</span>
+                        <span ng-repeat="part in example.jpn track by $index" ng-style="{'color': part == queryAsString() ? 'red' : ''}">{{part}}</span>
                     </div>
                     <div>{{example.eng}}</div>
                     <hr ng-if="!$last">
