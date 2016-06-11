@@ -9,8 +9,10 @@ angular.module('mecab-translate')
         KAZU: '数',
         JOSHI: '助詞',
         SETTOUSHI: '接頭詞',
+        SETTOUJI: '接頭辞',
         DOUSHI: '動詞',
         KIGOU: '記号',
+        HOJOKIGOU: '補助記号',
         FIRAA: 'フィラー',
         SONOTA: 'その他',
         KANDOUSHI: '感動詞',
@@ -18,6 +20,7 @@ angular.module('mecab-translate')
         SETSUZOKUSHI: '接続詞',
         FUKUSHI: '副詞',
         SETSUZOKUJOSHI: '接続助詞',
+        SETSUBIJI: '接尾辞',
         KEIYOUSHI: '形容詞'
     }
 
@@ -46,15 +49,19 @@ angular.module('mecab-translate')
                 case mecabPos.KAZU:
                     return 'number';
                 case mecabPos.JOSHI:
-                    return 'postposition';
+                    return 'particle';
                 case mecabPos.SETTOUSHI:
+                    return 'prefix';
+                case mecabPos.SETTOUJI:
                     return 'prefix';
                 case mecabPos.DOUSHI:
                     return 'verb';
                 case mecabPos.KIGOU:
-                    return 'other';
+                    return 'symbol';
+                case mecabPos.HOJOKIGOU:
+                    return 'symbol';
                 case mecabPos.FIRAA:
-                    return 'other';
+                    return 'filler';
                 case mecabPos.SONOTA:
                     return 'other';
                 case mecabPos.KANDOUSHI:
@@ -67,6 +74,8 @@ angular.module('mecab-translate')
                     return 'adverb';
                 case mecabPos.SETSUZOKUJOSHI:
                     return 'postposition';
+                case mecabPos.SETSUBIJI:
+                    return 'suffix';
                 case mecabPos.KEIYOUSHI:
                     return 'adjective';
                 default:

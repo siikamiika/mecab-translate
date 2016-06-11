@@ -112,6 +112,10 @@ ul {
     border-bottom: 3px solid #8090FF;
 }
 
+.particle {
+    border-bottom: 3px solid #8090FF;
+}
+
 .prefix, .suffix {
     border-bottom: 3px solid #A0B0FF;
 }
