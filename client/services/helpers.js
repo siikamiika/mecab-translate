@@ -21,14 +21,16 @@ angular.module('mecab-translate')
         FUKUSHI: '副詞',
         SETSUZOKUJOSHI: '接続助詞',
         SETSUBIJI: '接尾辞',
-        KEIYOUSHI: '形容詞'
+        KEIYOUSHI: '形容詞',
+        KEIJOUSHI: '形状詞'
     }
 
     var mecabToEdictPos = {};
     mecabToEdictPos[mecabPos.JOSHI] = ['prt', 'aux'];
     mecabToEdictPos[mecabPos.JODOUSHI] = ['aux-v'];
-    mecabToEdictPos[mecabPos.SETSUBIJI] = ['suf'];
+    mecabToEdictPos[mecabPos.SETSUBIJI] = ['suf', 'n-suf'];
     mecabToEdictPos[mecabPos.SETTOUJI] = ['pref'];
+    mecabToEdictPos[mecabPos.SETTOUSHI] = ['pref'];
 
     var HIRAGANA_START = 0x3041;
     var HIRAGANA_END = 0x3096;
@@ -118,6 +120,8 @@ angular.module('mecab-translate')
                 case mecabPos.SETSUBIJI:
                     return 'suffix';
                 case mecabPos.KEIYOUSHI:
+                    return 'adjective';
+                case mecabPos.KEIJOUSHI:
                     return 'adjective';
                 default:
                     return 'other';
