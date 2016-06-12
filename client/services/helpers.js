@@ -31,6 +31,7 @@ angular.module('mecab-translate')
     mecabToEdictPos[mecabPos.SETSUBIJI] = ['suf', 'n-suf'];
     mecabToEdictPos[mecabPos.SETTOUJI] = ['pref'];
     mecabToEdictPos[mecabPos.SETTOUSHI] = ['pref'];
+    mecabToEdictPos[mecabPos.KANDOUSHI] = ['int'];
 
     var HIRAGANA_START = 0x3041;
     var HIRAGANA_END = 0x3096;

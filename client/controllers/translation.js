@@ -55,7 +55,7 @@ angular.module('mecab-translate')
 
             var posSort = function (a, b) {
                 if (!$scope.query.pos) {
-                    return commonSort(a, b);
+                    return 0;
                 }
                 var pos = Helpers.mecabToEdictPos($scope.query.pos) || [];
                 var aPos = Helpers.intersection(pos, [].concat.apply([], a.translations.map(function(t){
@@ -69,7 +69,7 @@ angular.module('mecab-translate')
                     });
                 }))).length;
                 if ((aPos && bPos) || (!aPos && !bPos)) {
-                    return readingSort(a, b);
+                    return 0;
                 }
                 else if (bPos) {
                     return 1;
@@ -81,7 +81,7 @@ angular.module('mecab-translate')
 
             var readingSort = function(a, b) {
                 if (!$scope.query.lemma_reading) {
-                    return commonSort(a, b);
+                    return 0;
                 }
                 var lemmaReadingHira = Helpers.kataToHira($scope.query.lemma_reading);
                 var aReadings = a.readings.map(function(r) {
@@ -91,13 +91,13 @@ angular.module('mecab-translate')
                     return r.text;
                 });
 
-                a.hasReading = aReadings.indexOf(lemmaReadingHira) >= 0 || aReadings.indexOf($scope.query.lemma_reading) >= 0;
-                b.hasReading = bReadings.indexOf(lemmaReadingHira) >= 0|| bReadings.indexOf($scope.query.lemma_reading) >= 0;
+                aHasReading = aReadings.indexOf(lemmaReadingHira) >= 0 || aReadings.indexOf($scope.query.lemma_reading) >= 0;
+                bHasReading = bReadings.indexOf(lemmaReadingHira) >= 0|| bReadings.indexOf($scope.query.lemma_reading) >= 0;
 
-                if ((a.hasReading && b.hasReading) || (!a.hasReading && !b.hasReading)) {
-                    return commonSort(a, b);
+                if ((aHasReading && bHasReading) || (!aHasReading && !bHasReading)) {
+                    return 0;
                 }
-                else if (b.hasReading) {
+                else if (bHasReading) {
                     return 1;
                 }
                 else {
@@ -105,7 +105,7 @@ angular.module('mecab-translate')
                 }
             }
 
-            return posSort(a, b);
+            return readingSort(a, b) || posSort(a, b) || commonSort(a, b);
 
         });
     }
