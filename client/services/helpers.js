@@ -27,7 +27,7 @@ angular.module('mecab-translate')
 
     var mecabToEdictPos = {};
     mecabToEdictPos[mecabPos.JOSHI] = ['prt', 'aux'];
-    mecabToEdictPos[mecabPos.JODOUSHI] = ['aux-v'];
+    mecabToEdictPos[mecabPos.JODOUSHI] = ['aux-v', 'aux-adj'];
     mecabToEdictPos[mecabPos.SETSUBIJI] = ['suf', 'n-suf'];
     mecabToEdictPos[mecabPos.SETTOUJI] = ['pref'];
     mecabToEdictPos[mecabPos.SETTOUSHI] = ['pref'];
