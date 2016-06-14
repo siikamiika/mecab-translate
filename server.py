@@ -9,13 +9,15 @@ import re
 from threading import Thread
 import time
 import os
-from os.path import dirname, realpath, splitext
+from os.path import dirname, realpath, splitext, isfile
 import sys
 import random
 if sys.version_info[0] == 3:
     from queue import Queue, Empty
+    import pickle
 elif sys.version_info[0] == 2:
     from Queue import Queue, Empty
+    import cPickle as pickle
 if os.name == 'nt':
     try:
         import win32com.client
@@ -27,6 +29,10 @@ INT32_MAX = 2**31 - 1
 SVSFlagsAsync = 1
 
 os.chdir(dirname(realpath(__file__)))
+try:
+    os.makedirs('data/cache')
+except:
+    pass
 
 
 class Config(object):
@@ -563,9 +569,20 @@ class Tatoeba(object):
 
 class KanjiVGParts(object):
 
+    CACHE = 'data/cache/kanjivgparts.pickle'
+
     def __init__(self):
-        self.kanji = dict()
-        self._parse()
+        if isfile(KanjiVGParts.CACHE):
+            print('loading KanjiVG parts from cache...')
+            start = time.time()
+            with open(KanjiVGParts.CACHE, 'rb') as f:
+                self.kanji = pickle.load(f)
+            print('    loaded in {:.2f} s'.format(time.time() - start))
+        else:
+            self.kanji = dict()
+            self._parse()
+            with open(KanjiVGParts.CACHE, 'wb') as f:
+                pickle.dump(self.kanji, f, pickle.HIGHEST_PROTOCOL)
 
     def get_parts(self, kanji):
         return list(self.kanji.get(kanji) or [])
