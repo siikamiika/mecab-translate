@@ -5,11 +5,6 @@ angular.module('mecab-translate')
 
     $scope.blend = Helpers.blend;
 
-    $scope.ttsProvider = Config.get('tts-provider');
-    Config.listen('tts-provider', function(val) {
-        $scope.ttsProvider = val;
-    });
-
     $scope.showMecabInfo = Config.get('show-mecab-info');
     Config.listen('show-mecab-info', function(val) {
         $scope.showMecabInfo = val;
@@ -23,10 +18,6 @@ angular.module('mecab-translate')
     $scope.showKanjiPartBrowser = Config.get('show-kanji-part-browser');
     Config.listen('show-kanji-part-browser', function(val) {
         $scope.showKanjiPartBrowser = val;
-    });
-
-    Tts.getVoices(function(data) {
-        $scope.voices = data;
     });
 
     Mecab.setOutput(function(output) {
