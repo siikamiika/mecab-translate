@@ -7,21 +7,44 @@
     <script src="vendor/angular.min.js"></script>
 </head>
 <body keypress-events>
+    <!-- Config menu -->
+    <div style="position: fixed; top: 0px; left: 0px; z-index: 1;" ng-controller="ConfigMenu">
+        <div class="clickable" id="config-button" ng-click="toggleShowConfigMenu()" style="display: inline-block;" ng-click="">&#9881;</div>
+        <div ng-show="showConfigMenu" style="background-color: white;">
+            <div>
+                <select ng-model="ttsProvider" ng-change="updateTts()">
+                    <option value="responsivevoice">ResponsiveVoice (internet connection required)</option>
+                    <option ng-repeat="v in voices" value="tts.{{v.id}}">{{v.desc}}</option>
+                    <option value="remotetts">Remote SAPI5 on localhost port 9871</option>
+                </select>
+            </div>
+            <div>
+                <label><input type="checkbox" ng-model="showHistoryNavigationButtons" ng-click="checkbox()">Show history navigation buttons (hotkeys always available)</label>
+            </div>
+            <div>
+                <label><input type="checkbox" ng-model="showTextInput" ng-click="checkbox()">Show text input area</label>
+            </div>
+            <div>
+                <label><input type="checkbox" ng-model="showMecabInfo" ng-click="checkbox()">Show mecab info</label>
+            </div>
+            <div>
+                <label><input type="checkbox" ng-model="showKanjiInfo" ng-click="checkbox()">Show kanji info</label>
+            </div>
+            <div>
+                <label><input type="checkbox" ng-model="showKanjiPartBrowser" ng-click="checkbox()">Show kanji part browser</label>
+            </div>
+        </div>
+    </div>
     <!-- Text input box -->
     <div ng-controller="Input">
-        <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
-        <div id="input-history">
-            <button title="Alt+1" id="input-history-back" class="medium-size" ng-click="analyzeHistory(-1)" disabled>&#8678;</button>
-            <button title="Alt+2" id="input-history-forward" class="medium-size" ng-click="analyzeHistory(1)" disabled>&#8680;</button>
+        <textarea ng-show="showTextInput" ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
+        <div id="input-history" ng-show="showButtons">
+            <button title="Alt+1" id="input-history-back" ng-click="analyzeHistory(-1)" disabled>&#8678;</button>
+            <button title="Alt+2" id="input-history-forward" ng-click="analyzeHistory(1)" disabled>&#8680;</button>
         </div>
     </div>
     <!-- Analyzed output -->
     <div ng-controller="Output" ng-mouseup="translateSelection()">
-        <select ng-model="ttsProvider" ng-change="updateTts()">
-            <option value="responsivevoice">ResponsiveVoice (internet connection required)</option>
-            <option ng-repeat="v in voices" value="tts.{{v.id}}">{{v.desc}}</option>
-            <option value="remotetts">Remote SAPI5 on localhost port 9871</option>
-        </select>
         <div id="output">
             <div
                 ng-class="mouseInside ? 'bg-highlight' : ''"
@@ -44,17 +67,17 @@
                             ng-click="setKanjivgChar(char); getKanjidic2(char)">{{char}}</span></span>
                 </div>
             </div>
+            <hr>
         </div>
-        <hr>
         <div>
-            <div ng-if="word.pos" class="mecab-info">
+            <div ng-show="showMecabInfo" ng-if="word.pos" class="mecab-info">
                 <b>Pos: </b>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}
                 <b>Infl.: </b>{{word.inflection_type}}, {{word.inflection_form}}
                 <b>Lemma: </b>{{word.lemma}}
                 <b>Reading: </b><button ng-if="word.reading" ng-click="TTS(word.hatsuon || word.reading)">{{word.reading}}</button>
+                <hr>
             </div>
-            <hr>
-            <div>
+            <div ng-show="showKanjiInfo">
                 <object
                     id="kanjivg"
                     type="image/svg+xml"
@@ -109,27 +132,29 @@
                         <td>{{kanjidicInfo.stroke_count}}</td>
                     </tr>
                 </table>
-                <form ng-if="kanjivgParts">
-                    <label ng-repeat="part in kanjivgParts track by $index">
-                        <input
-                            type="checkbox"
-                            ng-model="selectedKanjivgParts[$index]"
-                            value="{{part}}"
-                            ng-click="getKanjiVGCombinations()"
-                        > <span ng-mouseenter="getKanjidic2(part)" ng-mouseleave="getKanjidic2(kanji)">{{part}}</span>
-                    </label>
-                </form>
-                <span
-                    ng-repeat="k in kanjivgCombinations"
-                    class="clickable"
-                    ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500), 'font-size': (1.25 - (k[1]/2500) * 0.25) * 100 + '%' }"
-                    ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0])"
-                    ng-mouseenter="getKanjidic2(k[0])"
-                    ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>
+                <div ng-show="showKanjiPartBrowser">
+                    <form ng-if="kanjivgParts">
+                        <label ng-repeat="part in kanjivgParts track by $index">
+                            <input
+                                type="checkbox"
+                                ng-model="selectedKanjivgParts[$index]"
+                                value="{{part}}"
+                                ng-click="getKanjiVGCombinations()"
+                            > <span ng-mouseenter="getKanjidic2(part)" ng-mouseleave="getKanjidic2(kanji)">{{part}}</span>
+                        </label>
+                    </form>
+                    <span
+                        ng-repeat="k in kanjivgCombinations"
+                        class="clickable"
+                        ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500), 'font-size': (1.25 - (k[1]/2500) * 0.25) * 100 + '%' }"
+                        ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0])"
+                        ng-mouseenter="getKanjidic2(k[0])"
+                        ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>
+                </div>
+                <hr>
             </div>
         </div>
     </div>
-    <hr>
     <!-- Translation -->
     <div ng-controller="Translation">
         <div ng-if="shorterEntries" class="warning">
@@ -239,6 +264,7 @@
 <script src="controllers/input.js"></script>
 <script src="controllers/output.js"></script>
 <script src="controllers/translation.js"></script>
+<script src="controllers/configmenu.js"></script>
 
 <script src="services/mecab.js"></script>
 <script src="services/jmdict_e.js"></script>
@@ -251,6 +277,7 @@
 <script src="services/remotetts.js"></script>
 <script src="services/tts.js"></script>
 <script src="services/tts_events.js"></script>
+<script src="services/config.js"></script>
 <script src="services/helpers.js"></script>
 </body>
 </html>

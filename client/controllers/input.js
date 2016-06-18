@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Input', function($scope, $rootScope, Mecab) {
+.controller('Input', function($scope, $rootScope, Mecab, Config) {
 
     var input = document.getElementById('text-input');
     var back = document.getElementById('input-history-back');
@@ -7,6 +7,16 @@ angular.module('mecab-translate')
 
     Mecab.setInput(input);
     Mecab.setButtons(back, forward);
+
+    $scope.showButtons = Config.get('show-history-navigation-buttons');
+    Config.listen('show-history-navigation-buttons', function(val) {
+        $scope.showButtons = val;
+    });
+
+    $scope.showTextInput = Config.get('show-text-input');
+    Config.listen('show-text-input', function(val) {
+        $scope.showTextInput = val;
+    });
 
     $scope.analyze = function() {
         Mecab.analyze($scope.textInput);

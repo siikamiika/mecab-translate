@@ -12,8 +12,12 @@ ul {
     width: 90%;
 }
 
+#config-button {
+    opacity: 0.4;
+}
+
 .important {
-    border-style: dotted;
+    border-bottom-style: dotted;
     border-width: 1px;
     white-space: nowrap;
 }
@@ -83,7 +87,7 @@ ul {
 }
 
 .line {
-    width: 80%;
+    width: 90%;
     display: inline-block;
 }
 
@@ -98,10 +102,6 @@ ul {
 
 .bg-highlight {
     background-color: #f9f9f9;
-}
-
-.medium-size {
-    font-size: 20px;
 }
 
 .noun, .proper-noun, .pronoun {

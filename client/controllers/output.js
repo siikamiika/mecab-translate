@@ -1,11 +1,29 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, ResponsiveVoice, RemoteTts, Tts, TtsEvents, Phrase, Helpers) {
+.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, ResponsiveVoice, RemoteTts, Tts, TtsEvents, Phrase, Config, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
     $scope.blend = Helpers.blend;
 
-    $scope.ttsProvider = localStorage.ttsProvider || 'responsivevoice';
+    $scope.ttsProvider = Config.get('tts-provider');
+    Config.listen('tts-provider', function(val) {
+        $scope.ttsProvider = val;
+    });
+
+    $scope.showMecabInfo = Config.get('show-mecab-info');
+    Config.listen('show-mecab-info', function(val) {
+        $scope.showMecabInfo = val;
+    });
+
+    $scope.showKanjiInfo = Config.get('show-kanji-info');
+    Config.listen('show-kanji-info', function(val) {
+        $scope.showKanjiInfo = val;
+    });
+
+    $scope.showKanjiPartBrowser = Config.get('show-kanji-part-browser');
+    Config.listen('show-kanji-part-browser', function(val) {
+        $scope.showKanjiPartBrowser = val;
+    });
 
     Tts.getVoices(function(data) {
         $scope.voices = data;
@@ -92,24 +110,14 @@ angular.module('mecab-translate')
         } else {
             $scope.ttsRow = -1;
         }
-        if ($scope.ttsProvider == 'responsivevoice') {
+        if (Config.get('tts-provider') == 'responsivevoice') {
             ResponsiveVoice.TTS(text);
-        } else if ($scope.ttsProvider.startsWith('tts')) {
+        } else if (Config.get('tts-provider').startsWith('tts')) {
             Tts.TTS(text);
-        } else if ($scope.ttsProvider == 'remotetts') {
+        } else if (Config.get('tts-provider') == 'remotetts') {
             RemoteTts.TTS(text);
         }
     }
-
-    $scope.updateTts = function() {
-        localStorage.ttsProvider = $scope.ttsProvider;
-        var provider = $scope.ttsProvider.split('.');
-        if (provider.length == 2 && provider[0] == 'tts' && Tts.getVoiceId() != parseInt(provider[1])) {
-            Tts.setVoice(parseInt(provider[1]));
-        }
-    }
-
-    $scope.updateTts();
 
     $scope.updateRow = function(row) {
         $scope.ttsRow = row;
