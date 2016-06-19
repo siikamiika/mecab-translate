@@ -40,18 +40,15 @@
         <div ng-show="showTextInput">
             <form ng-init="inputMode = 'parser'">
                 <label><input type="radio" ng-model="inputMode" value="parser">Text parser</label>
-                <label><input type="radio" ng-model="inputMode" value="regex">Word lookup</label>
+                <label><input type="radio" ng-model="inputMode" value="wildcard">Word lookup</label>
             </form>
             <div ng-show="inputMode == 'parser'">
                 <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
             </div>
-            <div ng-show="inputMode == 'regex'">
-                <form ng-submit="translateRegex(regexSearch)">
-                    <input type="text" ng-model="regexSearch">
+            <div ng-show="inputMode == 'wildcard'">
+                <form ng-submit="translateWildcard(wildcardSearch)">
+                    <input type="text" ng-model="wildcardSearch">
                     <input type="submit">
-                </form>
-                <form ng-init="regexMode = 'regex'">
-                    <label><input type="radio" ng-model="regexMode" value="regex">full regex</label>
                 </form>
             </div>
         </div>
@@ -248,7 +245,9 @@
             </li>
         </ul>
         <ul>
-            <li ng-click="translate(r)" style="font-size: 20px;" class="clickable" ng-repeat="r in regexResults">{{r}}</li>
+            <li ng-repeat="r in regexResults">
+                <div ng-click="translate(r)" style="font-size: 20px; display: inline-block;" class="clickable">{{r}}</div>
+            </li>
         </ul>
         <hr>
         <div>

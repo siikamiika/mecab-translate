@@ -54,6 +54,20 @@ angular.module('mecab-translate')
     }
 
     return {
+        wildcardToRegex: function(wildcard) {
+            var regex = '';
+            for (i in wildcard) {
+                if (wildcard[i] == '*') {
+                    regex += '.*?';
+                } else if (wildcard[i] == '?') {
+                    regex += '.';
+                } else {
+                    regex += wildcard[i];
+                }
+            }
+            regex += '$';
+            return regex;
+        },
         mecabToEdictPos: function(pos) {
             return mecabToEdictPos[pos];
         },
