@@ -120,6 +120,7 @@ angular.module('mecab-translate')
         $scope.phraseExampleButtonClicked = false;
         $scope.phraseExampleStart = 0;
         $scope.longerEntryListing = [];
+        $scope.regexResults = [];
         $scope.shorterEntries = output.shorter;
         $scope.longerEntries = output.longer;
         if (output.shorter) {
@@ -127,6 +128,9 @@ angular.module('mecab-translate')
         }
         else {
             $scope.setEntries(output.exact || []);
+        }
+        if (output.regex) {
+            $scope.regexResults = output.regex;
         }
     });
 

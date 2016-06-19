@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Input', function($scope, $rootScope, Mecab, Config) {
+.controller('Input', function($scope, $rootScope, Mecab, JMdict_e, Config) {
 
     var input = document.getElementById('text-input');
     var back = document.getElementById('input-history-back');
@@ -24,6 +24,10 @@ angular.module('mecab-translate')
 
     $scope.analyzeHistory = function(offset) {
         Mecab.analyzeHistory(offset);
+    }
+
+    $scope.translateRegex = function(query) {
+        JMdict_e.translate(query, false, true);
     }
 
     $rootScope.$on('input-history-back', function() {

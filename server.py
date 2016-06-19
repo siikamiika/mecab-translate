@@ -185,6 +185,17 @@ class Dictionary(object):
         self.dictionary = list(dictionary.items())
         self.dictionary.sort(key=lambda e: e[0])
 
+    def regex_search(self, query):
+        results = dict(exact=None, shorter=None, longer=[], regex=[])
+
+        pattern = re.compile(query)
+
+        for w in self.dictionary:
+            if pattern.match(w[0]):
+                results['regex'].append(w[0])
+
+        return results
+
     def get(self, key):
         results = dict(exact=None, shorter=None, longer=[])
 
@@ -260,7 +271,11 @@ class JMdict_e(object):
         self.dictionary = Dictionary(self.temp_dictionary)
         del self.temp_dictionary
 
-    def get(self, word):
+    def get(self, word, regex=False):
+
+        if regex:
+            return self.dictionary.regex_search(word)
+
         res = self.dictionary.get(word)
 
         if res['exact']:
@@ -649,7 +664,8 @@ class JMdict_eHandler(web.RequestHandler):
         self.set_header('Cache-Control', 'max-age=3600')
         self.set_header('Content-Type', 'application/json')
         query = self.get_query_argument('query').strip()
-        response = jmdict_e.get(query)
+        regex = True if self.get_query_argument('regex', default='no') == 'yes' else False
+        response = jmdict_e.get(query, regex)
         self.write(json.dumps(response))
 
 
