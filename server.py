@@ -610,7 +610,7 @@ class KanjiVGParts(object):
                 combinations.append(k)
 
         combinations = list(map(
-            lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2500),
+            lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2501),
             combinations))
 
         combinations.sort(key=lambda k: k[1])
@@ -647,6 +647,32 @@ class KanjiVGParts(object):
             char, parts = get_info(os.path.join(KANJIVG, f))
             if char:
                 self.kanji[char] = set(parts)
+
+        print('    parsed in {:.2f} s'.format(time.time() - start))
+
+
+class KanjiSimilars(object):
+
+    def __init__(self):
+        self.file = 'data/kanji.tgz_similars.ut8'
+        self._parse()
+
+    def get(self, kanji):
+        return self.similars.get(kanji) or []
+
+    def _parse(self):
+        print('parsing kanji.tgz_similars.ut8...')
+        start = time.time()
+
+        self.similars = dict()
+        with open(self.file, 'rb') as f:
+            lines = f.read().decode('utf-8').splitlines()
+        for l in lines:
+            l = [k for k in l.split('/') if k.strip()]
+            self.similars[l[0]] = list(map(
+                lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2501),
+                l[1:])) if len(l) > 1 else []
+            self.similars[l[0]].sort(key=lambda k: k[1])
 
         print('    parsed in {:.2f} s'.format(time.time() - start))
 
@@ -717,6 +743,15 @@ class KanjiVGCombinationsHandler(web.RequestHandler):
         self.write(json.dumps(kvgparts.get_combinations(set(query))))
 
 
+class KanjiSimilarsHandler(web.RequestHandler):
+
+    def get(self):
+        self.set_header('Cache-Control', 'max-age=3600')
+        self.set_header('Content-Type', 'application/json')
+        query = self.get_query_argument('query').strip()
+        self.write(json.dumps(kanjisimilars.get(query)))
+
+
 class TTSHandler(web.RequestHandler):
 
     def get(self):
@@ -765,6 +800,7 @@ def get_app():
         (r'/phrase', PhraseHandler),
         (r'/kvgparts', KanjiVGPartsHandler),
         (r'/kvgcombinations', KanjiVGCombinationsHandler),
+        (r'/kanjisimilars', KanjiSimilarsHandler),
         (r'/tts', TTSHandler),
         (r'/tts_events', TTSEventHandler),
         (r'/(.*)', StaticFileHandler,
@@ -778,6 +814,7 @@ if __name__ == '__main__':
     kanjidic2 = Kanjidic2()
     tatoeba = Tatoeba()
     kvgparts = KanjiVGParts()
+    kanjisimilars = KanjiSimilars()
     tts = TTS()
     app = get_app()
     app.listen(9874)

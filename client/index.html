@@ -37,7 +37,10 @@
             </div>
             <h4>styles</h4>
             <div>
-                <label><input type="text" ng-model="kanjivgCombinationSize" ng-change="textChange('kanjivg-combination-size', kanjivgCombinationSize)">KanjiVG combination listing size</label>
+                <label><input type="text" ng-model="kanjiPartBrowserSize" ng-change="textChange('kanji-part-browser-size', kanjiPartBrowserSize)">Kanji part browser size</label>
+            </div>
+            <div>
+                <label><input type="text" ng-model="similarKanjiSize" ng-change="textChange('similar-kanji-size', similarKanjiSize)">Similar kanji size</label>
             </div>
         </div>
     </div>
@@ -45,7 +48,7 @@
     <div ng-controller="Input">
         <div ng-show="showTextInput">
             <form ng-init="inputMode = 'parser'">
-                <label><input type="radio" ng-model="inputMode" value="parser">Text parser</label>
+                <label><input type="radio" ng-model="inputMode" value="parser">MeCab</label>
                 <label><input type="radio" ng-model="inputMode" value="wildcard">Word lookup</label>
             </form>
             <div ng-show="inputMode == 'parser'">
@@ -120,18 +123,18 @@
                         </td>
                     </tr>
                     <tr>
-                        <td><b>Kun</b></td>
-                        <td>
-                            <span ng-repeat="kun in kanjidicInfo.kun">
-                                <span class="important">{{kun}}</span><span ng-if="!$last">, </span>
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
                         <td><b>On</b></td>
                         <td>
                             <span ng-repeat="on in kanjidicInfo.on">
                                 <span class="important">{{on}}</span><span ng-if="!$last">, </span>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><b>Kun</b></td>
+                        <td>
+                            <span ng-repeat="kun in kanjidicInfo.kun">
+                                <span class="important">{{kun}}</span><span ng-if="!$last">, </span>
                             </span>
                         </td>
                     </tr>
@@ -151,8 +154,21 @@
                         <td><b>Strokes</b></td>
                         <td>{{kanjidicInfo.stroke_count}}</td>
                     </tr>
+                    <tr>
+                        <td><b>Similar</b></td>
+                        <td ng-style="{'font-size': similarKanjiSize + 'px'}">
+                            <span
+                                class="clickable"
+                                ng-repeat="k in similarKanji"
+                                ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
+                                ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0])"
+                                ng-mouseenter="getKanjidic2(k[0])"
+                                ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>
+                                <span>&nbsp;</span>
+                        </td>
+                    </tr>
                 </table>
-                <div ng-show="showKanjiPartBrowser">
+                <div ng-show="showKanjiPartBrowser" ng-style="{'font-size': kanjiPartBrowserSize + 'px'}">
                     <form ng-if="kanjivgParts">
                         <label ng-repeat="part in kanjivgParts track by $index">
                             <input
@@ -160,16 +176,18 @@
                                 ng-model="selectedKanjivgParts[$index]"
                                 value="{{part}}"
                                 ng-click="getKanjiVGCombinations()"
-                            > <span ng-mouseenter="getKanjidic2(part)" ng-mouseleave="getKanjidic2(kanji)">{{part}}</span>
+                            > <span
+                                ng-mouseenter="getKanjidic2(part); getSimilarKanji(part)"
+                                ng-mouseleave="getKanjidic2(kanji); getSimilarKanji(kanji)">{{part}}</span>
                         </label>
                     </form>
                     <span
                         ng-repeat="k in kanjivgCombinations"
                         class="clickable"
-                        ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500), 'font-size': kanjivgCombinationSize + 'px'}"
+                        ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
                         ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0])"
-                        ng-mouseenter="getKanjidic2(k[0])"
-                        ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>
+                        ng-mouseenter="getKanjidic2(k[0]); getSimilarKanji(k[0])"
+                        ng-mouseleave="getKanjidic2(kanji); getSimilarKanji(kanji)">{{k[0]}} </span>
                 </div>
                 <hr>
             </div>
@@ -297,6 +315,7 @@
 <script src="services/tatoeba.js"></script>
 <script src="services/phrase.js"></script>
 <script src="services/kanjivgparts.js"></script>
+<script src="services/similarkanji.js"></script>
 <script src="services/responsivevoice.js"></script>
 <script src="services/remotetts.js"></script>
 <script src="services/tts.js"></script>

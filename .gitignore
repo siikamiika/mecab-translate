@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 client/vendor/
-data/
+data/*
+!data/kanji.tgz_similars.ut8
 client/kanji/
 mecab-translate.conf

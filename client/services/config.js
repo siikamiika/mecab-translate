@@ -8,7 +8,8 @@ angular.module('mecab-translate')
     config['show-mecab-info'] = true;
     config['show-kanji-info'] = true;
     config['show-kanji-part-browser'] = true;
-    config['kanjivg-combination-size'] = 20;
+    config['kanji-part-browser-size'] = 20;
+    config['similar-kanji-size'] = 20;
 
     var configListeners = {};
 

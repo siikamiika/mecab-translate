@@ -18,7 +18,8 @@ angular.module('mecab-translate')
         Config.set('show-kanji-part-browser', $scope.showKanjiPartBrowser);
     }
 
-    $scope.kanjivgCombinationSize = Config.get('kanjivg-combination-size');
+    $scope.kanjiPartBrowserSize = Config.get('kanji-part-browser-size');
+    $scope.similarKanjiSize = Config.get('similar-kanji-size');
     $scope.textChange = function(key, value) {
         Config.set(key, value);
     }
