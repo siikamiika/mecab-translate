@@ -22,7 +22,6 @@ angular.module('mecab-translate')
     $scope.textChange = function(key, value) {
         Config.set(key, value);
     }
-    Config.set('kanjivg-combination-size', $scope.kanjivgCombinationSize);
 
     $scope.ttsProvider = Config.get('tts-provider');
 
