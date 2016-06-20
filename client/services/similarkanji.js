@@ -2,16 +2,23 @@ angular.module('mecab-translate')
 .factory('SimilarKanji', function($http) {
 
     return {
-        get: function(kanji, cb) {
+        get: function(kanji, mouseover) {
             $http({
                 method: 'GET',
                 url: '/kanjisimilars',
                 params: {query: kanji}
             }).then(function success(data) {
-                cb(data.data);
+                if (!mouseover || mouseover() == kanji) {
+                    output(data.data);
+                }
             }, function error(data) {
-                cb([]);
+                if (!mouseover || mouseover() == kanji) {
+                    output([]);
+                }
             })
+        },
+        setOutput: function(fn) {
+            output = fn;
         }
     }
 

@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.factory('KanjiVG', function(Kanjidic2) {
+.factory('KanjiVG', function(Kanjidic2, SimilarKanji) {
 
     var setKanjivgChar;
 
@@ -40,6 +40,7 @@ angular.module('mecab-translate')
             part.onclick = function() {
                 setKanjivgChar(kanjiPart);
                 Kanjidic2.get(kanjiPart);
+                SimilarKanji.get(kanjiPart);
             }
             part.onmouseenter = function() {
                 parts.forEach(function(_part) {
@@ -48,6 +49,7 @@ angular.module('mecab-translate')
                 var val = originalKanjiPart || kanjiPart;
                 mouseOver = val;
                 Kanjidic2.get(val, getMouseOver);
+                SimilarKanji.get(val, getMouseOver);
             }
             part.onmouseleave = function() {
                 parts.forEach(function(_part) {
@@ -60,6 +62,7 @@ angular.module('mecab-translate')
                 });
                 mouseOver = original;
                 Kanjidic2.get(original, getMouseOver);
+                SimilarKanji.get(original, getMouseOver);
             }
         });
     }

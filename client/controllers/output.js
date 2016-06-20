@@ -33,6 +33,10 @@ angular.module('mecab-translate')
         $scope.kanjidicInfo = output;
     });
 
+    SimilarKanji.setOutput(function(output) {
+        $scope.similarKanji = output;
+    });
+
     $scope.showWordInfo = function(word) {
         if (!window.getSelection().toString()) {
             $scope.word = word;
@@ -54,13 +58,13 @@ angular.module('mecab-translate')
         }
     }
 
-    $scope.getKanjivgCombinationMouseover = function() {
-        return $scope.kanjivgCombinationMouseover;
+    $scope.getKanjiMouseover = function() {
+        return $scope.kanjiMouseover;
     }
 
     $scope.getKanjidic2 = function(kanji) {
-        $scope.kanjivgCombinationMouseover = kanji;
-        Kanjidic2.get(kanji, $scope.getKanjivgCombinationMouseover);
+        $scope.kanjiMouseover = kanji;
+        Kanjidic2.get(kanji, $scope.getKanjiMouseover);
     }
 
     var getKanjiVGParts = function(kanji) {
@@ -76,9 +80,7 @@ angular.module('mecab-translate')
     }
 
     $scope.getSimilarKanji = function(kanji) {
-        SimilarKanji.get(kanji, function(similar) {
-            $scope.similarKanji = similar;
-        });
+        SimilarKanji.get(kanji, $scope.getKanjiMouseover);
     }
 
     $scope.getKanjiVGCombinations = function() {
