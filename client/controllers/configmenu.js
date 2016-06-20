@@ -18,6 +18,12 @@ angular.module('mecab-translate')
         Config.set('show-kanji-part-browser', $scope.showKanjiPartBrowser);
     }
 
+    $scope.kanjivgCombinationSize = Config.get('kanjivg-combination-size');
+    $scope.textChange = function(key, value) {
+        Config.set(key, value);
+    }
+    Config.set('kanjivg-combination-size', $scope.kanjivgCombinationSize);
+
     $scope.ttsProvider = Config.get('tts-provider');
 
     Tts.getVoices(function(data) {

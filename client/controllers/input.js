@@ -8,12 +8,10 @@ angular.module('mecab-translate')
     Mecab.setInput(input);
     Mecab.setButtons(back, forward);
 
-    $scope.showButtons = Config.get('show-history-navigation-buttons');
     Config.listen('show-history-navigation-buttons', function(val) {
         $scope.showButtons = val;
     });
 
-    $scope.showTextInput = Config.get('show-text-input');
     Config.listen('show-text-input', function(val) {
         $scope.showTextInput = val;
     });

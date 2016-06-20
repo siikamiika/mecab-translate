@@ -11,6 +11,7 @@
     <div style="position: fixed; top: 0px; left: 0px; z-index: 1;" ng-controller="ConfigMenu">
         <div class="clickable" id="config-button" ng-click="toggleShowConfigMenu()" style="display: inline-block;" ng-click="">&#9881;</div>
         <div ng-show="showConfigMenu" style="background-color: white;">
+            <h4>TTS</h4>
             <div>
                 <select ng-model="ttsProvider" ng-change="updateTts()">
                     <option value="responsivevoice">ResponsiveVoice (internet connection required)</option>
@@ -18,6 +19,7 @@
                     <option value="remotetts">Remote SAPI5 on localhost port 9871</option>
                 </select>
             </div>
+            <h4>show/hide</h4>
             <div>
                 <label><input type="checkbox" ng-model="showHistoryNavigationButtons" ng-click="checkbox()">Show history navigation buttons (hotkeys always available)</label>
             </div>
@@ -32,6 +34,10 @@
             </div>
             <div>
                 <label><input type="checkbox" ng-model="showKanjiPartBrowser" ng-click="checkbox()">Show kanji part browser</label>
+            </div>
+            <h4>styles</h4>
+            <div>
+                <label><input type="text" ng-model="kanjivgCombinationSize" ng-change="textChange('kanjivg-combination-size', kanjivgCombinationSize)">KanjiVG combination listing size</label>
             </div>
         </div>
     </div>
@@ -103,7 +109,7 @@
                 <table ng-if="kanjidicInfo.literal" class="kanjidic-info">
                     <tr>
                         <td><b>Kanji</b></td>
-                        <td>{{kanjidicInfo.literal}}</td>
+                        <td style="font-size: 28px;">{{kanjidicInfo.literal}}</td>
                     </tr>
                     <tr>
                         <td><b>Meaning</b></td>
@@ -160,7 +166,7 @@
                     <span
                         ng-repeat="k in kanjivgCombinations"
                         class="clickable"
-                        ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500), 'font-size': (1.25 - (k[1]/2500) * 0.25) * 100 + '%' }"
+                        ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500), 'font-size': kanjivgCombinationSize + 'px'}"
                         ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0])"
                         ng-mouseenter="getKanjidic2(k[0])"
                         ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>

@@ -5,19 +5,20 @@ angular.module('mecab-translate')
 
     $scope.blend = Helpers.blend;
 
-    $scope.showMecabInfo = Config.get('show-mecab-info');
     Config.listen('show-mecab-info', function(val) {
         $scope.showMecabInfo = val;
     });
 
-    $scope.showKanjiInfo = Config.get('show-kanji-info');
     Config.listen('show-kanji-info', function(val) {
         $scope.showKanjiInfo = val;
     });
 
-    $scope.showKanjiPartBrowser = Config.get('show-kanji-part-browser');
     Config.listen('show-kanji-part-browser', function(val) {
         $scope.showKanjiPartBrowser = val;
+    });
+
+    Config.listen('kanjivg-combination-size', function(val) {
+        $scope.kanjivgCombinationSize = val;
     });
 
     Mecab.setOutput(function(output) {
