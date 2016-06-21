@@ -58,9 +58,21 @@
                 <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
             </div>
             <div ng-show="inputMode == 'wildcard'">
-                <form ng-submit="translateWildcard(wildcardSearch)">
+                <form ng-submit="translateWildcard(wildcardSearch, wildcardMode)">
                     <input type="text" ng-model="wildcardSearch">
                     <input type="submit">
+                </form>
+                <form ng-init="lookupSelected = true">
+                    <label><input type="checkbox" ng-model="lookupSelected">Update with selected text</label>
+                </form>
+                <form ng-init="wildcardMode = 'plain'">
+                    <label><input type="radio" ng-model="wildcardMode" value="plain">plain</label>
+                    <label><input type="radio" ng-model="wildcardMode" value="startswith">startswith*</label>
+                    <label><input type="radio" ng-model="wildcardMode" value="endswith">*endswith</label>
+                    <label><input type="radio" ng-model="wildcardMode" value="anywhere">*anywhere*</label>
+                    <label><input type="radio" ng-model="wildcardMode" value="middle">+middle+</label>
+                    <label><input type="radio" ng-model="wildcardMode" value="okurigana">送<span class="unobtrusive">り</span>仮名</label>
+                    <div class="unobtrusive">All modes support wildcards (*, ?, +)</div>
                 </form>
             </div>
         </div>
@@ -70,7 +82,7 @@
         </div>
     </div>
     <!-- Analyzed output -->
-    <div ng-controller="Output" ng-mouseup="translateSelection()">
+    <div ng-controller="Output" ng-mouseup="translateSelection(); updateWordLookup();">
         <div id="output">
             <div
                 ng-class="mouseInside ? 'bg-highlight' : ''"
@@ -323,6 +335,7 @@
 <script src="services/remotetts.js"></script>
 <script src="services/tts.js"></script>
 <script src="services/tts_events.js"></script>
+<script src="services/eventbridge.js"></script>
 <script src="services/config.js"></script>
 <script src="services/helpers.js"></script>
 </body>

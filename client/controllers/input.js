@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Input', function($scope, $rootScope, Mecab, JMdict_e, Config, Helpers) {
+.controller('Input', function($scope, $rootScope, Mecab, JMdict_e, EventBridge, Config, Helpers) {
 
     var input = document.getElementById('text-input');
     var back = document.getElementById('input-history-back');
@@ -24,9 +24,29 @@ angular.module('mecab-translate')
         Mecab.analyzeHistory(offset);
     }
 
-    $scope.translateWildcard = function(query) {
-        JMdict_e.translate(Helpers.wildcardToRegex(query), false, true);
+    $scope.translateWildcard = function(query, mode) {
+        query = (function() {
+            switch (mode) {
+                case 'plain': return query;
+                case 'startswith': return query + '*';
+                case 'endswith': return '*' + query;
+                case 'anywhere': return '*' + query + '*';
+                case 'middle': return '+' + query + '+';
+                case 'okurigana': return Helpers.okuriganaRegex(query);
+                default: return query;
+            }
+        })();
+        if (mode != 'okurigana') {
+            query = Helpers.wildcardToRegex(query);
+        }
+        JMdict_e.translate(query, false, true);
     }
+
+    EventBridge.addEventListener('text-selected', function(text) {
+        if ($scope.lookupSelected) {
+            $scope.wildcardSearch = text;
+        }
+    });
 
     $rootScope.$on('input-history-back', function() {
         Mecab.analyzeHistory(-1);

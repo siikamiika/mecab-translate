@@ -40,6 +40,8 @@ angular.module('mecab-translate')
     var HIRAGANA_END = 0x3096;
     var KATAKANA_START = 0x30A1;
     var KATAKANA_END = 0x30FA;
+    var CJK_IDEO_START = 0x4e00;
+    var CJK_IDEO_END = 0x9faf;
 
     var between = function(n, a, b) {
         return n >= a && n <= b;
@@ -53,14 +55,31 @@ angular.module('mecab-translate')
         return between(c.charCodeAt(0), KATAKANA_START, KATAKANA_END);
     }
 
+    var isKanji = function(c) {
+        return between(c.charCodeAt(0), CJK_IDEO_START, CJK_IDEO_END);
+    }
+
     return {
+        okuriganaRegex: function(str) {
+            var output = '';
+            for (i in str) {
+                if (isKanji(str[i])) {
+                    output += str[i] + '.*?';
+                } else if (i == 0) {
+                    output += '.+?';
+                }
+            }
+            return output == '*' ? '' : output;
+        },
         wildcardToRegex: function(wildcard) {
             var regex = '';
             for (i in wildcard) {
-                if (wildcard[i] == '*') {
+                if (['*', '＊'].indexOf(wildcard[i]) != -1) {
                     regex += '.*?';
-                } else if (wildcard[i] == '?') {
+                } else if (['?', '？'].indexOf(wildcard[i]) != -1) {
                     regex += '.';
+                } else if (['+', '＋'].indexOf(wildcard[i]) != -1) {
+                    regex += '.+?';
                 } else {
                     regex += wildcard[i];
                 }
