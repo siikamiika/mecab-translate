@@ -658,7 +658,11 @@ class KanjiSimilars(object):
         self._parse()
 
     def get(self, kanji):
-        return self.similars.get(kanji) or []
+        similar = list(map(
+            lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2501),
+            self.similars.get(kanji) or []))
+        similar.sort(key=lambda k: k[1])
+        return similar
 
     def _parse(self):
         print('parsing kanji.tgz_similars.ut8...')
@@ -669,10 +673,7 @@ class KanjiSimilars(object):
             lines = f.read().decode('utf-8').splitlines()
         for l in lines:
             l = [k for k in l.split('/') if k.strip()]
-            self.similars[l[0]] = list(map(
-                lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2501),
-                l[1:])) if len(l) > 1 else []
-            self.similars[l[0]].sort(key=lambda k: k[1])
+            self.similars[l[0]] = l[1:]
 
         print('    parsed in {:.2f} s'.format(time.time() - start))
 
