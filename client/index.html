@@ -2,6 +2,7 @@
 <html ng-app="mecab-translate">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mecab-translate</title>
     <link href="stylesheets/client.css" rel="stylesheet" type="text/css">
     <script src="vendor/angular.min.js"></script>
@@ -10,7 +11,7 @@
     <!-- Config menu -->
     <div style="position: fixed; top: 0px; left: 0px; z-index: 1;" ng-controller="ConfigMenu">
         <div class="clickable" id="config-button" ng-click="toggleShowConfigMenu()" style="display: inline-block;" ng-click="">&#9881;</div>
-        <div ng-show="showConfigMenu" style="background-color: white;">
+        <div ng-show="showConfigMenu" style="background-color: white; width: 300px; height: 300px; overflow: scroll;">
             <h4>TTS</h4>
             <div>
                 <select ng-model="ttsProvider" ng-change="updateTts()">
@@ -37,10 +38,12 @@
             </div>
             <h4>styles</h4>
             <div>
-                <label><input type="text" ng-model="kanjiPartBrowserSize" ng-change="textChange('kanji-part-browser-size', kanjiPartBrowserSize)">Kanji part browser size</label>
+                <div>Kanji part browser size</div>
+                <input type="text" ng-model="kanjiPartBrowserSize" ng-change="textChange('kanji-part-browser-size', kanjiPartBrowserSize)">
             </div>
             <div>
-                <label><input type="text" ng-model="similarKanjiSize" ng-change="textChange('similar-kanji-size', similarKanjiSize)">Similar kanji size</label>
+                <div>Similar kanji size</div>
+                <input type="text" ng-model="similarKanjiSize" ng-change="textChange('similar-kanji-size', similarKanjiSize)">
             </div>
         </div>
     </div>
