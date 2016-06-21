@@ -69,7 +69,7 @@ angular.module('mecab-translate')
                     output += '.+?';
                 }
             }
-            return output == '*' ? '' : output;
+            return output == '.+?' ? '' : output;
         },
         wildcardToRegex: function(wildcard) {
             var regex = '';

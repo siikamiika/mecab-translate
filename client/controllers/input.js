@@ -39,7 +39,7 @@ angular.module('mecab-translate')
         if (mode != 'okurigana') {
             query = Helpers.wildcardToRegex(query);
         }
-        JMdict_e.translate(query, false, true);
+        JMdict_e.translate(query || '$', false, true);
     }
 
     EventBridge.addEventListener('text-selected', function(text) {
