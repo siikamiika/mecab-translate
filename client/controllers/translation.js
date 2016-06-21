@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Translation', function($scope, JMdict_e, Tatoeba, Phrase, Kanjidic2, KanjiVG, Helpers) {
+.controller('Translation', function($scope, JMdict_e, Tatoeba, Phrase, Kanjidic2, SimilarKanji, KanjiVG, Helpers) {
 
     $scope.isCommon = function(word) {
         return Helpers.intersection(Helpers.commonPriority, word.pri).length;
@@ -173,6 +173,10 @@ angular.module('mecab-translate')
 
     $scope.getKanjidic2 = function(kanji) {
         Kanjidic2.get(kanji);
+    }
+
+    $scope.getSimilarKanji = function(kanji) {
+        SimilarKanji.get(kanji);
     }
 
     $scope.setKanjivgChar = function(kanji) {
