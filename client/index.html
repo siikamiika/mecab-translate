@@ -61,9 +61,7 @@
                 <form ng-submit="translateWildcard(wildcardSearch, wildcardMode)">
                     <input type="text" ng-model="wildcardSearch">
                     <input type="submit">
-                </form>
-                <form ng-init="lookupSelected = true">
-                    <label><input type="checkbox" ng-model="lookupSelected">Update with selected text</label>
+                    <label ng-init="lookupSelected = true"><input type="checkbox" ng-model="lookupSelected">Update with selected text</label>
                 </form>
                 <form ng-init="wildcardMode = 'plain'">
                     <label><input type="radio" ng-model="wildcardMode" value="plain">plain</label>
@@ -72,7 +70,6 @@
                     <label><input type="radio" ng-model="wildcardMode" value="anywhere">*anywhere*</label>
                     <label><input type="radio" ng-model="wildcardMode" value="middle">+middle+</label>
                     <label><input type="radio" ng-model="wildcardMode" value="okurigana">送<span class="unobtrusive">り</span>仮名</label>
-                    <div class="unobtrusive">All modes support wildcards (*, ?, +)</div>
                 </form>
             </div>
         </div>
