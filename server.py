@@ -19,6 +19,7 @@ if sys.version_info[0] == 3:
 elif sys.version_info[0] == 2:
     from Queue import Queue, Empty
     import cPickle as pickle
+    chr = unichr
 if os.name == 'nt':
     try:
         import win32com.client
@@ -353,7 +354,7 @@ class JMdict_e(object):
             for i, e in enumerate([a, b]):
                 for r in e['readings']:
                     if kata_to_hira(r['text']) == reading:
-                        reading_match[i] == True
+                        reading_match[i] = True
                         break
             if reading_match[0] == reading_match[1]:
                 return 0
