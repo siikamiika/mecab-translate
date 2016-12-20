@@ -287,7 +287,7 @@
         </ul>
         <hr>
         <div>
-            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{queryAsString()}} ({{longerEntries.length}})</button>
+            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{(query.lemma.split('-') || [''])[0] || query.literal || query}} ({{longerEntries.length}})</button>
             <div ng-repeat="entry in longerEntryListing"><span class="clickable" ng-click="translate(entry)">{{entry}}</span></div>
         </div>
     </div>
@@ -302,7 +302,6 @@
 <script src="services/jmdict_e.js"></script>
 <script src="services/kanjidic2.js"></script>
 <script src="services/kanjivg.js"></script>
-<script src="services/tatoeba.js"></script>
 <script src="services/kanjivgparts.js"></script>
 <script src="services/similarkanji.js"></script>
 <script src="services/responsivevoice.js"></script>

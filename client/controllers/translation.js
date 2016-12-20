@@ -1,10 +1,6 @@
 angular.module('mecab-translate')
 .controller('Translation', function($scope, JMdict_e, Kanjidic2, SimilarKanji, KanjiVG, Helpers) {
 
-    $scope.queryAsString = function() {
-        return $scope.query.lemma.split('-')[0] || $scope.query.literal || $scope.query;
-    }
-
     $scope.setEntries = function(entries) {
         $scope.entries = entries;
     }
