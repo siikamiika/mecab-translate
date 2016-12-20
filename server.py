@@ -368,6 +368,9 @@ class JMdict_e(object):
 
         entry_obj = dict(words=[], readings=[], translations=[], common=False)
 
+        tatoeba_words = []
+        tatoeba_readings = []
+
         position, length = entry
 
         self.dictfile.seek(position)
@@ -379,6 +382,7 @@ class JMdict_e(object):
         for k_ele in entry.iter('k_ele'):
             word = dict(inf=[], pri=[])
             word['text'] = k_ele.find('keb').text
+            tatoeba_words.append(word['text'])
 
             for ke_inf in k_ele.iter('ke_inf'):
                 word['inf'].append([ke_inf.text, ent[ke_inf.text]])
@@ -393,6 +397,7 @@ class JMdict_e(object):
         for r_ele in entry.iter('r_ele'):
             reading = dict(inf=[], pri=[], restr=[], nokanji=False)
             reading['text'] = r_ele.find('reb').text
+            tatoeba_readings.append(reading['text'])
 
             for re_inf in r_ele.iter('re_inf'):
                 reading['inf'].append([re_inf.text, ent[re_inf.text]])
@@ -408,7 +413,10 @@ class JMdict_e(object):
 
             entry_obj['readings'].append(reading)
 
-        for sense in entry.iter('sense'):
+        tatoeba_matches = tatoeba.get(tatoeba_words, tatoeba_readings)
+        tatoeba_matches = dict((m['sense'] - 1 if m['sense'] != 0 else 0, m) for m in tatoeba_matches)
+
+        for i, sense in enumerate(entry.iter('sense')):
             def _get_tags(name):
                 return [t.text for t in sense.iter(name)]
 
@@ -428,6 +436,14 @@ class JMdict_e(object):
                     for ls in sense.iter('lsource')],
                 dial=[[dial, ent[dial]] for dial in _get_tags('dial')],
             )
+
+            if tatoeba_matches.get(i):
+                f = tatoeba_matches[i]['form']
+                j = tatoeba_matches[i]['jpn']
+                translation['example'] = dict(
+                    jpn=[dict(form=p == f, text=p) for p in re.split(r'({})'.format(re.escape(f)), j)],
+                    eng=tatoeba_matches[i]['eng']
+                )
 
             entry_obj['translations'].append(translation)
 
@@ -771,16 +787,6 @@ class Kanjidic2Handler(web.RequestHandler):
         self.write(json.dumps(kanjidic2.get(query)))
 
 
-class TatoebaHandler(web.RequestHandler):
-
-    def get(self):
-        self.set_header('Cache-Control', 'max-age=3600')
-        self.set_header('Content-Type', 'application/json')
-        query = self.get_query_argument('query').strip().split(',')
-        readings = self.get_query_argument('readings', default='').split(',')
-        self.write(json.dumps(tatoeba.get(query, readings)))
-
-
 class KanjiVGPartsHandler(web.RequestHandler):
 
     def get(self):
@@ -852,7 +858,6 @@ def get_app():
         (r'/mecab', MecabHandler),
         (r'/jmdict_e', JMdict_eHandler),
         (r'/kanjidic2', Kanjidic2Handler),
-        (r'/tatoeba', TatoebaHandler),
         (r'/kvgparts', KanjiVGPartsHandler),
         (r'/kvgcombinations', KanjiVGCombinationsHandler),
         (r'/kanjisimilars', KanjiSimilarsHandler),

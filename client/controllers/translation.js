@@ -1,25 +1,12 @@
 angular.module('mecab-translate')
-.controller('Translation', function($scope, JMdict_e, Tatoeba, Kanjidic2, SimilarKanji, KanjiVG, Helpers) {
+.controller('Translation', function($scope, JMdict_e, Kanjidic2, SimilarKanji, KanjiVG, Helpers) {
 
     $scope.queryAsString = function() {
         return $scope.query.lemma.split('-')[0] || $scope.query.literal || $scope.query;
     }
 
     $scope.setEntries = function(entries) {
-
-        entries.forEach(function(entry) {
-            Tatoeba.demonstrate((entry.words.length ? entry.words : entry.readings), entry.readings, function(examples) {
-                examples.forEach(function(example) {
-                    example.jpn = example.jpn.split(new RegExp('('+example.form+')', 'g')).map(function(part) {
-                        return {form: (part == example.form), text: part};
-                    });
-                    entry.translations[example.sense == 0 ? 0 : example.sense - 1].example = example;
-                });
-            });
-        });
-
         $scope.entries = entries;
-
     }
 
     $scope.showLongerEntries = function() {
