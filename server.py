@@ -441,7 +441,7 @@ class JMdict_e(object):
                 f = tatoeba_matches[i]['form']
                 j = tatoeba_matches[i]['jpn']
                 translation['example'] = dict(
-                    jpn=[dict(form=p == f, text=p) for p in re.split(r'({})'.format(re.escape(f)), j)],
+                    jpn=[dict(form=p == f, text=p) for p in re.split(u'({})'.format(re.escape(f)), j)],
                     eng=tatoeba_matches[i]['eng']
                 )
 
