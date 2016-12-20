@@ -12,6 +12,7 @@ import os
 from os.path import dirname, realpath, splitext, isfile
 import sys
 import random
+from functools import cmp_to_key
 if sys.version_info[0] == 3:
     from queue import Queue, Empty
     import pickle
@@ -33,6 +34,36 @@ try:
     os.makedirs('data/cache')
 except:
     pass
+
+
+HIRAGANA_START = 0x3041
+HIRAGANA_END = 0x3096
+KATAKANA_START = 0x30A1
+KATAKANA_END = 0x30FA
+CJK_IDEO_START = 0x4e00
+CJK_IDEO_END = 0x9faf
+
+def kata_to_hira(kata):
+    hira = []
+    for k in kata:
+        if KATAKANA_START <= ord(k) <= KATAKANA_END:
+            code = ord(k)
+            code += HIRAGANA_START - KATAKANA_START
+            hira.append(chr(code))
+        else:
+            hira.append(k)
+    return ''.join(hira)
+
+def hira_to_kata(hira):
+    kata = []
+    for h in hira:
+        if HIRAGANA_START <= ord(h) <= HIRAGANA_END:
+            code = ord(h)
+            code += KATAKANA_START - HIRAGANA_START
+            kata.append(chr(code))
+        else:
+            kata.append(h)
+    return ''.join(kata)
 
 
 class Config(object):
@@ -263,6 +294,8 @@ class Dictionary(object):
 
 class JMdict_e(object):
 
+    COMMON_PRIORITY = ['news1', 'ichi1', 'spec1', 'spec2', 'gai1']
+
     def __init__(self):
         self.dictfile = open('data/JMdict_e', 'rb')
         self.temp_dictionary = dict()
@@ -271,24 +304,68 @@ class JMdict_e(object):
         self.dictionary = Dictionary(self.temp_dictionary)
         del self.temp_dictionary
 
-    def get(self, word, regex=False):
+    def get(self, word, reading=None, pos=None, regex=False):
 
         if regex:
             return self.dictionary.regex_search(word)
 
+        self._sort_reading = reading
+        self._sort_pos = set(pos) if pos else None
+
         res = self.dictionary.get(word)
 
+        key = cmp_to_key(self._sort)
+
         if res['exact']:
-            res['exact'] = [self._entry(e) for e in res['exact']]
+            res['exact'] = sorted([self._entry(e) for e in res['exact']], key=key)
         if res['shorter']:
-            res['shorter'] = [self._entry(e) for e in res['shorter']]
+            res['shorter'] = sorted([self._entry(e) for e in res['shorter']], key=key)
 
         return res
+
+    def _sort(self, a, b):
+        def common_sort(a, b):
+            common = [False, False]
+            for i, e in enumerate([a, b]):
+                common[i] = e['common']
+            if common[0] == common[1]:
+                return 0
+            return common[1] or -1
+
+        def pos_sort(a, b):
+            if not self._sort_pos:
+                return 0
+            pos_match = [False, False]
+            for i, e in enumerate([a, b]):
+                for t in e['translations']:
+                    if self._sort_pos.intersection(set([p[0] for p in t['pos']])):
+                        pos_match[i] = True
+                        break
+            if pos_match[0] == pos_match[1]:
+                return 0
+            return pos_match[1] or -1
+
+        def reading_sort(a, b):
+            if not self._sort_reading:
+                return 0
+            reading = kata_to_hira(self._sort_reading)
+            reading_match = [False, False]
+            for i, e in enumerate([a, b]):
+                for r in e['readings']:
+                    if kata_to_hira(r['text']) == reading:
+                        reading_match[i] == True
+                        break
+            if reading_match[0] == reading_match[1]:
+                return 0
+            return reading_match[1] or -1
+
+        return reading_sort(a, b) or pos_sort(a, b) or common_sort(a, b)
+
 
     def _entry(self, entry):
         ent = self.entities
 
-        entry_obj = dict(words=[], readings=[], translations=[])
+        entry_obj = dict(words=[], readings=[], translations=[], common=False)
 
         position, length = entry
 
@@ -305,6 +382,9 @@ class JMdict_e(object):
             for ke_inf in k_ele.iter('ke_inf'):
                 word['inf'].append([ke_inf.text, ent[ke_inf.text]])
             for ke_pri in k_ele.iter('ke_pri'):
+                if ke_pri.text in self.COMMON_PRIORITY:
+                    entry_obj['common'] = True
+                    word['common'] = True
                 word['pri'].append(ke_pri.text)
 
             entry_obj['words'].append(word)
@@ -316,6 +396,9 @@ class JMdict_e(object):
             for re_inf in r_ele.iter('re_inf'):
                 reading['inf'].append([re_inf.text, ent[re_inf.text]])
             for re_pri in r_ele.iter('re_pri'):
+                if re_pri.text in self.COMMON_PRIORITY:
+                    entry_obj['common'] = True
+                    reading['common'] = True
                 reading['pri'].append(re_pri.text)
             for re_restr in r_ele.iter('re_restr'):
                 reading['restr'].append(re_restr.text)
@@ -486,26 +569,6 @@ class Tatoeba(object):
         self.dictionary = dict()
         self.lines = []
         self._parse()
-
-    def search_phrase(self, phrase, max, start, shuffle):
-        lines = list(self.lines)
-        if shuffle:
-            random.shuffle(lines)
-
-        examples = []
-        counter = 0
-        while counter < start + max and lines:
-            file_pos, length = lines.pop(0)
-            self.datafile.seek(file_pos)
-            line = self.datafile.read(length).decode('utf-8')
-
-            jpn, eng = line.split('\t')[2:4]
-            if phrase in jpn:
-                if counter >= start:
-                    examples.append(dict(jpn=jpn, eng=eng))
-                counter += 1
-
-        return examples
 
     def get(self, headwords, readings):
         for hw in headwords:
@@ -692,7 +755,9 @@ class JMdict_eHandler(web.RequestHandler):
         self.set_header('Content-Type', 'application/json')
         query = self.get_query_argument('query').strip()
         regex = True if self.get_query_argument('regex', default='no') == 'yes' else False
-        response = jmdict_e.get(query, regex)
+        reading = self.get_query_argument('reading', default=None)
+        pos = self.get_query_argument('pos', default='').split(',')
+        response = jmdict_e.get(query, reading=reading, pos=pos, regex=regex)
         self.write(json.dumps(response))
 
 
@@ -714,17 +779,6 @@ class TatoebaHandler(web.RequestHandler):
         readings = self.get_query_argument('readings', default='').split(',')
         self.write(json.dumps(tatoeba.get(query, readings)))
 
-class PhraseHandler(web.RequestHandler):
-
-    def get(self):
-        self.set_header('Cache-Control', 'max-age=0')
-        self.set_header('Content-Type', 'application/json')
-        query = self.get_query_argument('query').strip()
-        max = int(self.get_query_argument('max', default=5))
-        start = int(self.get_query_argument('start', default=0))
-        shuffle = True if self.get_query_argument(
-            'shuffle', default='yes') == 'yes' else False
-        self.write(json.dumps(tatoeba.search_phrase(query, max, start, shuffle)))
 
 class KanjiVGPartsHandler(web.RequestHandler):
 
@@ -798,7 +852,6 @@ def get_app():
         (r'/jmdict_e', JMdict_eHandler),
         (r'/kanjidic2', Kanjidic2Handler),
         (r'/tatoeba', TatoebaHandler),
-        (r'/phrase', PhraseHandler),
         (r'/kvgparts', KanjiVGPartsHandler),
         (r'/kvgcombinations', KanjiVGCombinationsHandler),
         (r'/kanjisimilars', KanjiSimilarsHandler),

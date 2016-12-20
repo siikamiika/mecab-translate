@@ -1,12 +1,8 @@
 angular.module('mecab-translate')
-.controller('Translation', function($scope, JMdict_e, Tatoeba, Phrase, Kanjidic2, SimilarKanji, KanjiVG, Helpers) {
-
-    $scope.isCommon = function(word) {
-        return Helpers.intersection(Helpers.commonPriority, word.pri).length;
-    }
+.controller('Translation', function($scope, JMdict_e, Tatoeba, Kanjidic2, SimilarKanji, KanjiVG, Helpers) {
 
     $scope.queryAsString = function() {
-        return $scope.query.lemma || $scope.query.literal || $scope.query;
+        return $scope.query.lemma.split('-')[0] || $scope.query.literal || $scope.query;
     }
 
     $scope.setEntries = function(entries) {
@@ -22,92 +18,8 @@ angular.module('mecab-translate')
             });
         });
 
-        $scope.entries = entries.sort(function(a, b) {
+        $scope.entries = entries;
 
-            [a, b].forEach(function(entry) {
-                var common = false;
-                for (var i in entry.words) {
-                    if ($scope.isCommon(entry.words[i])) {
-                        common = true;
-                        break;
-                    }
-                }
-                for (var i in entry.readings) {
-                    if ($scope.isCommon(entry.readings[i])) {
-                        common = true;
-                        break;
-                    }
-                }
-                entry.common = common;
-            });
-
-            var commonSort = function (a, b) {
-                if ((a.common && b.common) || (!a.common && !b.common)) {
-                    return 0;
-                }
-                else if (b.common) {
-                    return 1;
-                }
-                else {
-                    return -1;
-                }
-            }
-
-            var posSort = function (a, b) {
-                if (!$scope.query.pos) {
-                    return 0;
-                }
-                var pos = Helpers.mecabToEdictPos($scope.query.pos) || [];
-                var aPos = Helpers.intersection(pos, [].concat.apply([], a.translations.map(function(t){
-                    return t.pos.map(function(p) {
-                        return p[0];
-                    });
-                }))).length;
-                var bPos = Helpers.intersection(pos, [].concat.apply([], b.translations.map(function(t){
-                    return t.pos.map(function(p) {
-                        return p[0];
-                    });
-                }))).length;
-                if ((aPos && bPos) || (!aPos && !bPos)) {
-                    return 0;
-                }
-                else if (bPos) {
-                    return 1;
-                }
-                else {
-                    return -1;
-                }
-            }
-
-            var readingSort = function(a, b) {
-                if (!$scope.query.lemma_reading) {
-                    return 0;
-                }
-                var lemmaReadingHira = Helpers.kataToHira($scope.query.lemma_reading);
-                var aReadings = a.readings.map(function(r) {
-                    return r.text;
-                });
-                var bReadings = b.readings.map(function(r) {
-                    return r.text;
-                });
-
-                aHasReading = aReadings.indexOf(lemmaReadingHira) >= 0 || aReadings.indexOf($scope.query.lemma_reading) >= 0;
-                bHasReading = bReadings.indexOf(lemmaReadingHira) >= 0|| bReadings.indexOf($scope.query.lemma_reading) >= 0;
-
-                if ((aHasReading && bHasReading) || (!aHasReading && !bHasReading)) {
-                    return 0;
-                }
-                else if (bHasReading) {
-                    return 1;
-                }
-                else {
-                    return -1;
-                }
-            }
-
-            return readingSort(a, b) || posSort(a, b) || commonSort(a, b);
-
-        });
     }
 
     $scope.showLongerEntries = function() {
@@ -117,8 +29,6 @@ angular.module('mecab-translate')
 
     JMdict_e.setOutput(function(output) {
         $scope.query = JMdict_e.getLast();
-        $scope.phraseExampleButtonClicked = false;
-        $scope.phraseExampleStart = 0;
         $scope.longerEntryListing = [];
         $scope.regexResults = [];
         $scope.shorterEntries = output.shorter;
@@ -134,41 +44,20 @@ angular.module('mecab-translate')
         }
     });
 
-    Phrase.setOutput(function(output) {
-        output.forEach(function(example) {
-            if (!example.jpn)
-                return;
-            example.jpn = example.jpn.split(new RegExp('('+$scope.queryAsString()+')', 'g')).map(function(part) {
-                return part;
-            });
-        });
-        $scope.phraseExamples = output;
-    });
-
-    $scope.phraseExampleButtonClicked = false;
-    $scope.phraseExampleStart = 0;
-
-    $scope.getPhraseExamples = function(more, previous) {
-        Phrase.customOutput([{message: 'Searching...'}]);
-        var q = $scope.queryAsString();
-        if (previous) {
-            $scope.phraseExampleStart -= 20;
-            Phrase.search(q, 20, $scope.phraseExampleStart, false);
-        } else if (more) {
-            Phrase.search(q, 20, $scope.phraseExampleStart, false);
-            $scope.phraseExampleStart += 20;
-        } else {
-            Phrase.search(q, 5, 0, true);
-        }
-        $scope.phraseExampleButtonClicked = true;
-    }
-
     $scope.translate = function(text) {
-        JMdict_e.translate(text);
+        var obj = false;
+        if (typeof text == 'object') {
+            obj = true;
+            text = {
+                lemma: text[0],
+                reading: isNaN(text[1]) ? text[1] : null
+            }
+        }
+        JMdict_e.translate(text, obj);
     }
 
     $scope.parseReference = function(ref) {
-        return ref.split('・')[0];
+        return ref.split('・');
     }
 
     $scope.getKanjidic2 = function(kanji) {

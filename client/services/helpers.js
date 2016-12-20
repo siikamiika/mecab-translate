@@ -108,7 +108,7 @@ angular.module('mecab-translate')
             hira.split('').forEach(function(h) {
                 if (isHira(h)) {
                     var code = h.charCodeAt(0);
-                    code += HIRAGANA_START - KATAKANA_START;
+                    code += KATAKANA_START - HIRAGANA_START;
                     kata.push(String.fromCharCode(code));
                 } else {
                     kata.push(h);
@@ -180,13 +180,6 @@ angular.module('mecab-translate')
                 }
             });
         },
-        commonPriority: [
-            'news1',
-            'ichi1',
-            'spec1',
-            'spec2',
-            'gai1'
-        ],
         blend: function(color1, color2, weight) {
             var outputColor = [];
 

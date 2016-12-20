@@ -215,7 +215,7 @@
                 <div style="font-size: 28px">
                     <span ng-repeat="word in entry.words">
                         <span
-                            ng-class="{'common': isCommon(word)}"
+                            ng-class="{'common': word.common}"
                             ng-attr-title="{{word.pri.join(', ')}}"
                         ><span ng-repeat="char in word.text track by $index" class="clickable" ng-click="setKanjivgChar(char); getKanjidic2(char); getSimilarKanji(char)">{{char}}</span></span><span
                             ng-if="word.inf.length"
@@ -229,7 +229,7 @@
                     <span ng-repeat="reading in entry.readings">
                         <span
                             class="clickable"
-                            ng-class="{'common': isCommon(reading)}"
+                            ng-class="{'common': reading.common}"
                             ng-attr-title="{{reading.pri.join(', ')}}"
                             ng-click="translate(reading.text)"
                         >{{reading.text}}</span><span
@@ -287,29 +287,7 @@
         </ul>
         <hr>
         <div>
-            <button ng-if="!phraseExampleButtonClicked &amp;&amp; query" ng-click="getPhraseExamples()">Examples for {{queryAsString()}}</button>
-            <ul>
-                <li ng-repeat="example in phraseExamples">
-                    <div ng-if="example.message">{{example.message}}</div>
-                    <div style="font-size: 24px;">
-                        <span ng-repeat="part in example.jpn track by $index" ng-style="{'color': part == queryAsString() ? 'red' : ''}">{{part}}</span>
-                    </div>
-                    <div>{{example.eng}}</div>
-                    <hr ng-if="!$last">
-                </li>
-            </ul>
-            <button
-                ng-if="phraseExampleStart >= 40"
-                ng-click="getPhraseExamples(true, true)"
-            >Previous 20</button>
-            <button
-                ng-if="phraseExampleButtonClicked &amp;&amp; phraseExamples.length >= 5"
-                ng-click="getPhraseExamples(true)"
-                >{{phraseExamples.length == 5 ? 'More' : 'Next 20'}}</button>
-        </div>
-        <hr>
-        <div>
-            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{query.lemma ? query.lemma : query}} ({{longerEntries.length}})</button>
+            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{queryAsString()}} ({{longerEntries.length}})</button>
             <div ng-repeat="entry in longerEntryListing"><span class="clickable" ng-click="translate(entry)">{{entry}}</span></div>
         </div>
     </div>
@@ -325,7 +303,6 @@
 <script src="services/kanjidic2.js"></script>
 <script src="services/kanjivg.js"></script>
 <script src="services/tatoeba.js"></script>
-<script src="services/phrase.js"></script>
 <script src="services/kanjivgparts.js"></script>
 <script src="services/similarkanji.js"></script>
 <script src="services/responsivevoice.js"></script>
