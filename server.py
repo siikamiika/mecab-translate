@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from tornado import websocket, web, ioloop
 from tornado.log import enable_pretty_logging; enable_pretty_logging()
@@ -21,6 +22,7 @@ elif sys.version_info[0] == 2:
     from Queue import Queue, Empty
     import cPickle as pickle
     chr = unichr
+    from io import open
 if os.name == 'nt':
     try:
         import win32com.client
