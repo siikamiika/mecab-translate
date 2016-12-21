@@ -13,6 +13,7 @@ from os.path import dirname, realpath, splitext, isfile
 import sys
 import random
 from functools import cmp_to_key
+from collections import OrderedDict
 if sys.version_info[0] == 3:
     from queue import Queue, Empty
     import pickle
@@ -579,6 +580,89 @@ class Kanjidic2(object):
         print('    parsed in {:.2f} s'.format(time.time() - start))
 
 
+class Radkfile(object):
+
+    SPECIAL_CHAR = {
+        'js01': '⺅',
+        'js02': '𠆢',
+        'js07': '丷',
+        '3331': '⺉',
+        'js10': '𠂉',
+        '6134': '⻌',
+        'js04': '⺌',
+        '3D38': '⺖',
+        '3F37': '⺘',
+        '4653': '⺡',
+        '4A6D': '⺨',
+        'js03': '⺾',
+        'kozatoR': '⻏',
+        'kozatoL': '⻖',
+        'js05': '⺹',
+        '4944': '⺣',
+        '504B': '⺭',
+        '4D46': '疒',
+        '5072': '禸',
+        '5C33': '⻂',
+        '5474': '⺲',
+        '3557': '啇',
+        }
+
+    def __init__(self):
+        self.file = 'data/radkfile'
+        self.radicals = OrderedDict()
+        self.krad = dict()
+        self._parse()
+
+    def lookup(self, radicals):
+        results = self.radicals[radicals[0]]['kanji']
+        for r in radicals[1:]:
+            results &= self.radicals[r]['kanji']
+        valid_radicals = set()
+        for k in results:
+            valid_radicals |= self.krad[k]
+        return dict(
+            kanji=list(map(
+                lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2501),
+                results)),
+            valid_radicals=list(valid_radicals)
+        )
+
+    def get_radicals(self):
+        return [(r, self.radicals[r]['strokes']) for r in self.radicals]
+
+    def _parse(self):
+        print('parsing radkfile...')
+        start = time.time()
+
+        past_comments = False
+        radical = None
+        strokes = None
+        kanji = set()
+        for l in open(self.file, encoding='euc-jp'):
+            if not past_comments:
+                if not l.startswith('#'):
+                    past_comments = True
+                else:
+                    continue
+            if l.startswith('$'):
+                if radical:
+                    self.radicals[radical] = dict(strokes=strokes, kanji=kanji)
+                    kanji = set()
+                l = l.split()[1:]
+                radical = self.SPECIAL_CHAR[l[2]] if len(l) == 3 else l[0]
+                strokes = int(l[1])
+            else:
+                l_kanji = list(l.strip())
+                kanji.update(l_kanji)
+                for k in l_kanji:
+                    if not self.krad.get(k):
+                        self.krad[k] = set()
+                    self.krad[k].add(radical)
+        self.radicals[radical] = dict(strokes=strokes, kanji=kanji)
+
+        print('    parsed in {:.2f} s'.format(time.time() - start))
+
+
 class Tatoeba(object):
 
     def __init__(self):
@@ -787,6 +871,18 @@ class Kanjidic2Handler(web.RequestHandler):
         self.write(json.dumps(kanjidic2.get(query)))
 
 
+class RadkfileHandler(web.RequestHandler):
+
+    def get(self):
+        self.set_header('Cache-Control', 'max-age=3600')
+        self.set_header('Content-Type', 'application/json')
+        query = self.get_query_argument('query', '').strip()
+        if not query:
+            self.write(json.dumps(radkfile.get_radicals()))
+        else:
+            self.write(json.dumps(radkfile.lookup(list(query))))
+
+
 class KanjiVGPartsHandler(web.RequestHandler):
 
     def get(self):
@@ -858,6 +954,7 @@ def get_app():
         (r'/mecab', MecabHandler),
         (r'/jmdict_e', JMdict_eHandler),
         (r'/kanjidic2', Kanjidic2Handler),
+        (r'/radkfile', RadkfileHandler),
         (r'/kvgparts', KanjiVGPartsHandler),
         (r'/kvgcombinations', KanjiVGCombinationsHandler),
         (r'/kanjisimilars', KanjiSimilarsHandler),
@@ -872,6 +969,7 @@ if __name__ == '__main__':
     mecab = Mecab()
     jmdict_e = JMdict_e()
     kanjidic2 = Kanjidic2()
+    radkfile = Radkfile()
     tatoeba = Tatoeba()
     kvgparts = KanjiVGParts()
     kanjisimilars = KanjiSimilars()
