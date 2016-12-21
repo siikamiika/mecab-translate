@@ -15,7 +15,7 @@ KANJIDIC2 = 'http://www.edrdg.org/kanjidic/kanjidic2.xml.gz'
 RADKFILE = 'http://ftp.monash.edu.au/pub/nihongo/radkfile.gz'
 TATOEBA = 'http://tatoeba.org/files/downloads/wwwjdic.csv'
 KANJIVG = 'https://github.com/KanjiVG/kanjivg/releases/download/r20160426/kanjivg-20160426-main.zip'
-ANGULAR = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular.min.js'
+ANGULAR = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js'
 
 
 def download(url, destination, compression=None):
