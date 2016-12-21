@@ -616,7 +616,7 @@ class Radkfile(object):
         self._parse()
 
     def lookup(self, radicals):
-        results = self.radicals[radicals[0]]['kanji']
+        results = set(self.radicals[radicals[0]]['kanji'])
         for r in radicals[1:]:
             results &= self.radicals[r]['kanji']
         valid_radicals = set()
