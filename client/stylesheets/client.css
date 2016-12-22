@@ -18,13 +18,15 @@ ul {
 
 #kanji-radical-input {
     position: fixed;
-    top: 20%;
+    bottom: 10px;
     left: 0px;
     z-index: 1;
     max-width: 550px;
     width: 97%;
     background-color: white;
     border-style: solid;
+    max-height: 600px;
+    max-height: 80vh;
 }
 
 #radical-input-candidates {
@@ -39,8 +41,8 @@ ul {
 
 #radical-input-radicals {
     overflow-y: scroll;
-    height: 500px;
-    height: 45vh;
+    max-height: 500px;
+    max-height: 45vh;
 }
 
 .radical-input-radical {
