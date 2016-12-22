@@ -24,6 +24,10 @@ angular.module('mecab-translate')
         Mecab.analyzeHistory(offset);
     }
 
+    $scope.toggleRadicalInput = function() {
+        EventBridge.dispatch('toggle-radical-input');
+    }
+
     $scope.translateWildcard = function(query, mode) {
         query = (function() {
             switch (mode) {
@@ -45,6 +49,15 @@ angular.module('mecab-translate')
     EventBridge.addEventListener('text-selected', function(text) {
         if ($scope.lookupSelected) {
             $scope.wildcardSearch = text;
+        }
+    });
+
+    EventBridge.addEventListener('input-character', function(character) {
+        if ($scope.inputMode == 'wildcard') {
+            $scope.wildcardSearch = ($scope.wildcardSearch || '') + character;
+        } else if ($scope.inputMode == 'parser') {
+            $scope.textInput = ($scope.textInput || '') + character;
+            $scope.analyze();
         }
     });
 

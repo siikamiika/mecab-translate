@@ -16,6 +16,51 @@ ul {
     opacity: 0.4;
 }
 
+#kanji-radical-input {
+    position: fixed;
+    top: 20%;
+    left: 0px;
+    z-index: 1;
+    max-width: 550px;
+    width: 97%;
+    background-color: white;
+    border-style: solid;
+}
+
+#radical-input-candidates {
+    height: 80px;
+    overflow-y: scroll;
+}
+
+.radical-input-candidate {
+    display: inline-block;
+    font-size: 24px;
+}
+
+#radical-input-radicals {
+    overflow-y: scroll;
+    height: 500px;
+    height: 45vh;
+}
+
+.radical-input-radical {
+    display: inline-block;
+    font-size: 24px;
+}
+
+.radical-input-radical.selected {
+    background-color: yellow;
+}
+
+.radical-input-label {
+    display: inline-block;
+    color: white;
+    background-color: black;
+    text-align: center;
+    font-size: 24px;
+    width: 1.2em;
+}
+
 .important {
     border-bottom-style: dotted;
     border-width: 1px;

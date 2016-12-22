@@ -10,7 +10,7 @@
 <body keypress-events>
     <!-- Config menu -->
     <div style="position: fixed; top: 0px; left: 0px; z-index: 1;" ng-controller="ConfigMenu">
-        <div class="clickable" id="config-button" ng-click="toggleShowConfigMenu()" style="display: inline-block;" ng-click="">&#9881;</div>
+        <div class="clickable" id="config-button" ng-click="toggleShowConfigMenu()" style="display: inline-block;">&#9881;</div>
         <div ng-show="showConfigMenu" style="background-color: white; width: 300px; height: 300px; overflow: scroll;">
             <h4>TTS</h4>
             <div>
@@ -47,13 +47,35 @@
             </div>
         </div>
     </div>
+    <!-- Kanji radical input -->
+    <div id="kanji-radical-input" ng-controller="RadicalInput" ng-show="showRadicalInput">
+        <div ng-click="showRadicalInput = false;" class="clickable">
+            <div style="display: inline-block; background-color: red;">x</div>
+        </div>
+        <div id="radical-input-candidates">
+            <div
+                ng-click="inputCharacter(k[0])"
+                class="clickable radical-input-candidate"
+                ng-repeat="k in radicalInputCandidates"
+                ng-style="{'color': blend([255,0,0], [0,0,0], (k[1] || 2500)/2500)}">{{k[0]}}</div>
+        </div>
+        <hr>
+        <div id="radical-input-radicals">
+            <div class="clickable" style="display: inline-block; font-size: 24px;" ng-click="resetRadicals()">&#8635;</div>
+            <div
+                ng-class="[r.class, {'unobtrusive': r.invalid &amp;&amp; r.class == 'radical-input-radical'}, {'selected': r.selected}, {'clickable': r.class == 'radical-input-radical' &amp;&amp; !r.invalid}]"
+                ng-repeat="r in radicalInputRadicals"
+                ng-click="toggleRadical(r.text, r.invalid || r.class == 'radical-input-label')">{{r.text}}</div>
+        </div>
+    </div>
     <!-- Text input area -->
     <div ng-controller="Input">
         <div ng-show="showTextInput">
-            <form ng-init="inputMode = 'parser'">
+            <form style="display: inline-block;" ng-init="inputMode = 'parser'">
                 <label><input type="radio" ng-model="inputMode" value="parser">MeCab</label>
                 <label><input type="radio" ng-model="inputMode" value="wildcard">Word lookup</label>
             </form>
+            <button ng-click="toggleRadicalInput()">Radical input</button>
             <div ng-show="inputMode == 'parser'">
                 <textarea ng-model="textInput" ng-change="analyze()" id="text-input"></textarea>
             </div>
@@ -297,10 +319,12 @@
 <script src="controllers/output.js"></script>
 <script src="controllers/translation.js"></script>
 <script src="controllers/configmenu.js"></script>
+<script src="controllers/radicalinput.js"></script>
 
 <script src="services/mecab.js"></script>
 <script src="services/jmdict_e.js"></script>
 <script src="services/kanjidic2.js"></script>
+<script src="services/radkfile.js"></script>
 <script src="services/kanjivg.js"></script>
 <script src="services/kanjivgparts.js"></script>
 <script src="services/similarkanji.js"></script>
