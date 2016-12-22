@@ -65,7 +65,7 @@
             <div
                 ng-class="[r.class, {'unobtrusive': r.invalid &amp;&amp; r.class == 'radical-input-radical'}, {'selected': r.selected}, {'clickable': r.class == 'radical-input-radical' &amp;&amp; !r.invalid}]"
                 ng-repeat="r in radicalInputRadicals"
-                ng-click="toggleRadical(r.text, r.invalid || r.class == 'radical-input-label')">{{r.text}}</div>
+                ng-click="toggleRadical(r.text, r.invalid || r.class == 'radical-input-label')">{{r.alt_text || r.text}}</div>
         </div>
     </div>
     <!-- Text input area -->

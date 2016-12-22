@@ -41,7 +41,7 @@ angular.module('mecab-translate')
                 strokes = $scope.radicals[i][1];
                 $scope.radicalInputRadicals.push({class: 'radical-input-label', text: $scope.radicals[i][1]});
             }
-            $scope.radicalInputRadicals.push({class: 'radical-input-radical', text: $scope.radicals[i][0]});
+            $scope.radicalInputRadicals.push({class: 'radical-input-radical', text: $scope.radicals[i][0], alt_text: $scope.radicals[i][2]});
         }
     });
 

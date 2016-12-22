@@ -630,7 +630,7 @@ class Radkfile(object):
         )
 
     def get_radicals(self):
-        return [(r, self.radicals[r]['strokes']) for r in self.radicals]
+        return [(r, self.radicals[r]['strokes'], self.radicals[r]['radical']) for r in self.radicals]
 
     def _parse(self):
         print('parsing radkfile...')
@@ -638,6 +638,7 @@ class Radkfile(object):
 
         past_comments = False
         radical = None
+        index = None
         strokes = None
         kanji = set()
         for l in open(self.file, encoding='euc-jp'):
@@ -647,10 +648,11 @@ class Radkfile(object):
                 else:
                     continue
             if l.startswith('$'):
-                if radical:
-                    self.radicals[radical] = dict(strokes=strokes, kanji=kanji)
+                if index:
+                    self.radicals[index] = dict(strokes=strokes, kanji=kanji, radical=radical)
                     kanji = set()
                 l = l.split()[1:]
+                index = l[0]
                 radical = self.SPECIAL_CHAR[l[2]] if len(l) == 3 else l[0]
                 strokes = int(l[1])
             else:
@@ -659,8 +661,8 @@ class Radkfile(object):
                 for k in l_kanji:
                     if not self.krad.get(k):
                         self.krad[k] = set()
-                    self.krad[k].add(radical)
-        self.radicals[radical] = dict(strokes=strokes, kanji=kanji)
+                    self.krad[k].add(index)
+        self.radicals[index] = dict(strokes=strokes, kanji=kanji, radical=radical)
 
         print('    parsed in {:.2f} s'.format(time.time() - start))
 
