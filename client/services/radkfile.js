@@ -17,6 +17,20 @@ angular.module('mecab-translate')
                 output([]);
             });
         },
+        decompose: function(text) {
+            $http({
+                method: 'GET',
+                url: '/radkfile',
+                params: {
+                    query: text,
+                    mode: 'decompose'
+                }
+            }).then(function success(data) {
+                output(data.data);
+            }, function error(data) {
+                output([]);
+            });
+        },
         getRadicals: function(fn) {
             $http({
                 method: 'GET',

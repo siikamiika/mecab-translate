@@ -629,6 +629,14 @@ class Radkfile(object):
             valid_radicals=list(valid_radicals)
         )
 
+    def decompose(self, text):
+        valid_radicals = set()
+        for c in text:
+            radicals = self.krad.get(c)
+            if radicals:
+                valid_radicals |= radicals
+        return dict(decomposed_radicals=list(valid_radicals))
+
     def get_radicals(self):
         return [(r, self.radicals[r]['strokes'], self.radicals[r]['radical']) for r in self.radicals]
 
@@ -881,9 +889,12 @@ class RadkfileHandler(web.RequestHandler):
         self.set_header('Cache-Control', 'max-age=3600')
         self.set_header('Content-Type', 'application/json')
         query = self.get_query_argument('query', '').strip()
-        if not query:
+        mode = self.get_query_argument('mode', 'lookup')
+        if mode == 'decompose':
+            self.write(json.dumps(radkfile.decompose(query)))
+        elif not query:
             self.write(json.dumps(radkfile.get_radicals()))
-        else:
+        elif mode == 'lookup':
             self.write(json.dumps(radkfile.lookup(list(query))))
 
 

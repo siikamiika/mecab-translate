@@ -61,6 +61,11 @@
         </div>
         <hr>
         <div id="radical-input-radicals">
+            <input
+                style="max-width: 200px;"
+                ng-change="decomposeText()"
+                ng-model="decomposeInput"
+                placeholder="例えば->⺅歹⺉"></input>
             <div class="clickable" style="display: inline-block; font-size: 24px;" ng-click="resetRadicals()">&#8635;</div>
             <div
                 ng-class="[r.class, {'unobtrusive': r.invalid &amp;&amp; r.class == 'radical-input-radical'}, {'selected': r.selected}, {'clickable': r.class == 'radical-input-radical' &amp;&amp; !r.invalid}]"

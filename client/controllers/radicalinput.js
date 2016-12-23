@@ -5,30 +5,43 @@ angular.module('mecab-translate')
 
     $scope.selectedRadicals = [];
     $scope.validRadicals = [];
+    $scope.decomposedRadicals = [];
 
     var refresh = function() {
         for (i in $scope.radicalInputRadicals) {
-            $scope.radicalInputRadicals[i].selected = false;
-            $scope.radicalInputRadicals[i].invalid = false;
-            if ($scope.selectedRadicals.indexOf($scope.radicalInputRadicals[i].text) > -1) {
-                $scope.radicalInputRadicals[i].selected = true;
-            } else if ($scope.validRadicals.length && $scope.validRadicals.indexOf($scope.radicalInputRadicals[i].text) == -1) {
-                $scope.radicalInputRadicals[i].invalid = true;
+            refreshRadical($scope.radicalInputRadicals[i]);
+        }
+
+        function refreshRadical(radical) {
+            var selected = false;
+            var invalid = false;
+            if ($scope.selectedRadicals.indexOf(radical.text) > -1) {
+                selected = true;
+            } else if ($scope.validRadicals.length && $scope.validRadicals.indexOf(radical.text) == -1) {
+                invalid = true;
+            } else if ($scope.decomposedRadicals.length && $scope.decomposedRadicals.indexOf(radical.text) == -1) {
+                invalid = true;
             }
+            radical.selected = selected;
+            radical.invalid = invalid;
         }
     }
 
     Radkfile.setOutput(function(data) {
-        $scope.validRadicals = data.valid_radicals;
-        $scope.radicalInputCandidates = data.kanji.sort(function(a, b) {
-            if (a[1] == b[1]) {
-                return 0;
-            } else if (a[1] > b[1]) {
-                return 1;
-            } else {
-                return -1;
-            }
-        });
+        if (data.decomposed_radicals) {
+            $scope.decomposedRadicals = data.decomposed_radicals;
+        } else {
+            $scope.validRadicals = data.valid_radicals;
+            $scope.radicalInputCandidates = data.kanji.sort(function(a, b) {
+                if (a[1] == b[1]) {
+                    return 0;
+                } else if (a[1] > b[1]) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+        }
         refresh();
     });
 
@@ -65,10 +78,16 @@ angular.module('mecab-translate')
         }
     }
 
+    $scope.decomposeText = function() {
+        Radkfile.decompose($scope.decomposeInput);
+    }
+
     $scope.resetRadicals = function() {
         $scope.selectedRadicals = [];
         $scope.validRadicals = [];
         $scope.radicalInputCandidates = [];
+        $scope.decomposedRadicals = [];
+        $scope.decomposeInput = '';
         refresh();
     }
 
