@@ -29,6 +29,10 @@ ul {
     max-height: 80vh;
 }
 
+#radical-input-multichar {
+    font-size: 20px;
+}
+
 #radical-input-candidates {
     height: 80px;
     overflow-y: scroll;

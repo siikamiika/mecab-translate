@@ -616,9 +616,7 @@ class Radkfile(object):
         self._parse()
 
     def lookup(self, radicals):
-        results = set(self.radicals[radicals[0]]['kanji'])
-        for r in radicals[1:]:
-            results &= self.radicals[r]['kanji']
+        results = self._lookup(radicals)
         valid_radicals = set()
         for k in results:
             valid_radicals |= self.krad[k]
@@ -637,8 +635,45 @@ class Radkfile(object):
                 valid_radicals |= radicals
         return dict(decomposed_radicals=list(valid_radicals))
 
+    def multichar(self, before=None, query=None, after=None):
+        query_pattern = []
+        suggestions = []
+        for c in query:
+            suggestions.append(dict(kanji=set(), valid_radicals=set()))
+            if type(c) == str:
+                query_pattern.append(c)
+            elif len(c) == 0:
+                query_pattern.append('.')
+            else:
+                query_pattern.append('[{}]'.format(''.join(self._lookup(c))))
+        query_pattern = ''.join(query_pattern)
+
+        pattern = r'{}({}){}'.format(re.escape(before or ''), query_pattern, re.escape(after or ''))
+        matches = jmdict_e.get(pattern, regex=True)['regex']
+        pattern = re.compile(pattern)
+        for m in matches:
+            chars = pattern.search(m).group(1)
+            for i, c in enumerate(chars):
+                suggestions[i]['kanji'].add(c)
+                radicals = self.krad.get(c)
+                if radicals:
+                    suggestions[i]['valid_radicals'] |= self.krad.get(c)
+
+        return [dict(
+            kanji=list(map(
+                lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2501),
+                s['kanji'])),
+            valid_radicals=list(s['valid_radicals'])
+        ) for s in suggestions]
+
     def get_radicals(self):
         return [(r, self.radicals[r]['strokes'], self.radicals[r]['radical']) for r in self.radicals]
+
+    def _lookup(self, radicals):
+        results = set(self.radicals[radicals[0]]['kanji'])
+        for r in radicals[1:]:
+            results &= self.radicals[r]['kanji']
+        return results
 
     def _parse(self):
         print('parsing radkfile...')
@@ -896,6 +931,13 @@ class RadkfileHandler(web.RequestHandler):
             self.write(json.dumps(radkfile.get_radicals()))
         elif mode == 'lookup':
             self.write(json.dumps(radkfile.lookup(list(query))))
+        elif mode == 'multichar':
+            query = json.loads(query)
+            self.write(json.dumps(radkfile.multichar(
+                before=query.get('before'),
+                query=query.get('query'),
+                after=query.get('after')
+                )))
 
 
 class KanjiVGPartsHandler(web.RequestHandler):

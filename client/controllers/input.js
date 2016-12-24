@@ -52,11 +52,11 @@ angular.module('mecab-translate')
         }
     });
 
-    EventBridge.addEventListener('input-character', function(character) {
+    EventBridge.addEventListener('input-text', function(text) {
         if ($scope.inputMode == 'wildcard') {
-            $scope.wildcardSearch = ($scope.wildcardSearch || '') + character;
+            $scope.wildcardSearch = ($scope.wildcardSearch || '') + text;
         } else if ($scope.inputMode == 'parser') {
-            $scope.textInput = ($scope.textInput || '') + character;
+            $scope.textInput = ($scope.textInput || '') + text;
             $scope.analyze();
         }
     });

@@ -52,11 +52,21 @@
         <div ng-click="showRadicalInput = false;" class="clickable">
             <div style="display: inline-block; background-color: red;">x</div>
         </div>
+        <div id="radical-input-multichar">
+            <div
+                class="clickable"
+                ng-style="{'color': (charIndex == $index &amp;&amp; 'red') || 'black'}"
+                ng-click="changeChar($index)" ng-repeat="c in selectedRadicals track by $index"
+                style="display: inline-block; text-align: center;">{{multicharText(c)}}</div>
+            <div ng-click="addChar()" class="clickable" style="display: inline-block;">[+]</div>
+            <div ng-click="commitText()" class="clickable" style="display: inline-block;">[&#10003;]</div>
+            <div ng-click="resetText()" class="clickable" style="display: inline-block;">[x]</div>
+        </div>
         <div id="radical-input-candidates">
             <div
-                ng-click="inputCharacter(k[0])"
+                ng-click="commitCharacter(k[0])"
                 class="clickable radical-input-candidate"
-                ng-repeat="k in radicalInputCandidates"
+                ng-repeat="k in radicalInputCandidates[charIndex]"
                 ng-style="{'color': blend([255,0,0], [0,0,0], (k[1] || 2500)/2500)}">{{k[0]}}</div>
         </div>
         <hr>
