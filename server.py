@@ -640,15 +640,15 @@ class Radkfile(object):
         suggestions = []
         for c in query:
             suggestions.append(dict(kanji=set(), valid_radicals=set()))
-            if type(c) == str:
+            if type(c) != list:
                 query_pattern.append(c)
             elif len(c) == 0:
                 query_pattern.append('.')
             else:
-                query_pattern.append('[{}]'.format(''.join(self._lookup(c))))
+                query_pattern.append(u'[{}]'.format(''.join(self._lookup(c))))
         query_pattern = ''.join(query_pattern)
 
-        pattern = r'{}({}){}'.format(re.escape(before or ''), query_pattern, re.escape(after or ''))
+        pattern = u'{}({}){}'.format(re.escape(before or ''), query_pattern, re.escape(after or ''))
         matches = jmdict_e.get(pattern, regex=True)['regex']
         pattern = re.compile(pattern)
         for m in matches:
