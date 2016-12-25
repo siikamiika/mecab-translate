@@ -48,7 +48,7 @@
         </div>
     </div>
     <!-- Kanji radical input -->
-    <div id="kanji-radical-input" ng-controller="RadicalInput" ng-show="showRadicalInput">
+    <div ng-class="{'busy': locked}" id="kanji-radical-input" ng-controller="RadicalInput" ng-show="showRadicalInput">
         <div ng-click="showRadicalInput = false;" class="clickable">
             <div style="display: inline-block; background-color: red;">x</div>
         </div>
@@ -74,7 +74,7 @@
             <input
                 style="max-width: 200px;"
                 ng-change="decomposeText()"
-                ng-model="decomposeInput"
+                ng-model="decomposeInput[charIndex]"
                 placeholder="例えば->⺅歹⺉"></input>
             <div class="clickable" style="display: inline-block; font-size: 24px;" ng-click="resetRadicals()">&#8635;</div>
             <div

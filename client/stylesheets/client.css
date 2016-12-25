@@ -29,6 +29,10 @@ ul {
     max-height: 80vh;
 }
 
+#kanji-radical-input.busy {
+    border-color: red;
+}
+
 #radical-input-multichar {
     font-size: 20px;
 }

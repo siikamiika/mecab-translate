@@ -3,11 +3,19 @@ angular.module('mecab-translate')
 
     $scope.blend = Helpers.blend;
 
+    $scope.locked = false;
     $scope.charIndex = 0;
     $scope.selectedRadicals = [[]];
     $scope.validRadicals = [[]];
     $scope.radicalInputCandidates = [[]];
-    $scope.decomposedRadicals = [];
+    $scope.decomposedRadicals = [[]];
+
+    var lock = function() {
+        $scope.locked = true;
+        setTimeout(function() {
+            $scope.locked = false;
+        }, 5000);
+    }
 
     var refresh = function() {
         for (i in $scope.radicalInputRadicals) {
@@ -21,7 +29,7 @@ angular.module('mecab-translate')
                 selected = true;
             } else if ($scope.validRadicals[$scope.charIndex].length && $scope.validRadicals[$scope.charIndex].indexOf(radical.text) == -1) {
                 invalid = true;
-            } else if ($scope.decomposedRadicals.length && $scope.decomposedRadicals.indexOf(radical.text) == -1) {
+            } else if ($scope.decomposedRadicals[$scope.charIndex].length && $scope.decomposedRadicals[$scope.charIndex].indexOf(radical.text) == -1) {
                 invalid = true;
             }
             radical.selected = selected;
@@ -54,7 +62,7 @@ angular.module('mecab-translate')
 
     Radkfile.setOutput(function(data) {
         if (data.decomposed_radicals) {
-            $scope.decomposedRadicals = data.decomposed_radicals;
+            $scope.decomposedRadicals[$scope.charIndex] = data.decomposed_radicals;
         } else if (data.valid_radicals) {
             $scope.validRadicals[$scope.charIndex] = data.valid_radicals;
             $scope.radicalInputCandidates[$scope.charIndex] = data.kanji.sort(sortInputCandidates($scope.selectedRadicals[$scope.charIndex]));
@@ -64,10 +72,14 @@ angular.module('mecab-translate')
                     $scope.selectedRadicals[i] = [];
                 }
                 $scope.validRadicals[i] = data[i].valid_radicals;
+                if (data[i].kanji.length == 1 && i != data.length - 1 && typeof $scope.selectedRadicals[i] == 'object') {
+                     $scope.selectedRadicals[i] = data[i].kanji[0][0];
+                }
                 $scope.radicalInputCandidates[i] = data[i].kanji.sort(sortInputCandidates($scope.selectedRadicals[i]));
             }
         }
         refresh();
+        $scope.locked = false;
     });
 
     Radkfile.getRadicals(function(radicals) {
@@ -85,6 +97,9 @@ angular.module('mecab-translate')
     });
 
     $scope.toggleRadical = function(radical, invalid) {
+        if ($scope.locked) {
+            return;
+        }
         if (invalid) {
             return;
         }
@@ -99,6 +114,7 @@ angular.module('mecab-translate')
             $scope.selectedRadicals[$scope.charIndex].splice(index, 1);
         }
         if ($scope.selectedRadicals[$scope.charIndex].length) {
+            lock();
             if ($scope.selectedRadicals.length > 1) {
                 Radkfile.multichar(null, $scope.selectedRadicals, null);
             } else {
@@ -106,6 +122,7 @@ angular.module('mecab-translate')
             }
         } else {
             if ($scope.selectedRadicals.length > 1) {
+                lock();
                 Radkfile.multichar(null, $scope.selectedRadicals, null);
             } else {
                 $scope.validRadicals[$scope.charIndex] = [];
@@ -116,40 +133,56 @@ angular.module('mecab-translate')
     }
 
     $scope.addChar = function() {
+        if ($scope.locked) {
+            return;
+        }
+        lock();
         $scope.selectedRadicals.push([]);
         $scope.charIndex = $scope.selectedRadicals.length - 1;
+        $scope.decomposedRadicals.push([]);
         Radkfile.multichar(null, $scope.selectedRadicals, null);
     }
 
     $scope.changeChar = function(i) {
+        if ($scope.locked) {
+            return;
+        }
         $scope.charIndex = i;
         refresh();
     }
 
     $scope.decomposeText = function() {
-        Radkfile.decompose($scope.decomposeInput);
+        lock();
+        Radkfile.decompose($scope.decomposeInput[$scope.charIndex]);
     }
 
     $scope.resetRadicals = function() {
+        if ($scope.locked) {
+            return;
+        }
         $scope.selectedRadicals[$scope.charIndex] = [];
         if ($scope.selectedRadicals.length > 1) {
+            lock();
             Radkfile.multichar(null, $scope.selectedRadicals, null);
         } else {
-            $scope.validRadicals[$scope.charIndex] = [];
-            $scope.radicalInputCandidates[$scope.charIndex] = [];
-            $scope.decomposedRadicals = [];
-            $scope.decomposeInput = '';
+            $scope.validRadicals[0] = [];
+            $scope.radicalInputCandidates[0] = [];
+            $scope.decomposedRadicals = [[]];
+            $scope.decomposeInput[0] = '';
             refresh();
         }
     }
 
     $scope.resetText = function() {
+        if ($scope.locked) {
+            return;
+        }
         $scope.charIndex = 0;
         $scope.selectedRadicals = [[]];
         $scope.validRadicals = [[]];
         $scope.radicalInputCandidates = [[]];
-        $scope.decomposedRadicals = [];
-        $scope.decomposeInput = '';
+        $scope.decomposedRadicals = [[]];
+        $scope.decomposeInput = [''];
         refresh();
     }
 
@@ -158,12 +191,29 @@ angular.module('mecab-translate')
     }
 
     $scope.commitText = function() {
+        if ($scope.locked) {
+            return;
+        }
         var text = [];
+        var empty = [];
         for (c in $scope.selectedRadicals) {
             if (typeof $scope.selectedRadicals[c] == 'object') {
-                text.push('?');
+                empty.push(c);
             } else {
                 text.push($scope.selectedRadicals[c]);
+            }
+        }
+        if (empty.length) {
+            if (empty[empty.length - 1] == $scope.selectedRadicals.length - 1) {
+                var pos = $scope.selectedRadicals.length - 1;
+                for (var i = empty.length - 2; i >= 0; i--) {
+                    if (empty[i] != pos - 1) {
+                        $scope.changeChar(empty[0]);
+                        return;
+                    } else {
+                        pos--;
+                    }
+                }
             }
         }
         EventBridge.dispatch('input-text', text.join(''));
@@ -171,7 +221,11 @@ angular.module('mecab-translate')
     };
 
     $scope.commitCharacter = function(character) {
+        if ($scope.locked) {
+            return;
+        }
         $scope.selectedRadicals[$scope.charIndex] = character;
+        lock();
         Radkfile.multichar(null, $scope.selectedRadicals, null);
         
     }
