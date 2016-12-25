@@ -75,6 +75,7 @@ angular.module('mecab-translate')
     }
 
     Radkfile.setOutput(function(data) {
+        var reload = false;
         if (data.decomposed_radicals) {
             $scope.decomposedRadicals[$scope.charIndex] = data.decomposed_radicals;
         } else if (data.valid_radicals) {
@@ -88,12 +89,17 @@ angular.module('mecab-translate')
                 $scope.validRadicals[i] = data[i].valid_radicals;
                 if (data[i].kanji.length == 1 && i != data.length - 1 && typeof $scope.selectedRadicals[i] == 'object') {
                      $scope.selectedRadicals[i] = data[i].kanji[0][0];
+                     reload = true;
                 }
                 $scope.radicalInputCandidates[i] = data[i].kanji.sort(sortInputCandidates($scope.selectedRadicals[i]));
             }
         }
-        refresh();
-        $scope.locked = false;
+        if (reload) {
+            Radkfile.multichar(null, $scope.selectedRadicals, null);
+        } else {
+            refresh();
+            $scope.locked = false;
+        }
     });
 
     Radkfile.getRadicals(function(radicals) {
@@ -157,6 +163,20 @@ angular.module('mecab-translate')
         Radkfile.multichar(null, $scope.selectedRadicals, null);
     }
 
+    $scope.removeChar = function() {
+        if ($scope.locked || $scope.selectedRadicals.length == 1) {
+            return;
+        }
+        lock();
+        $scope.selectedRadicals.splice($scope.charIndex, 1);
+        $scope.decomposedRadicals.splice($scope.charIndex, 1);
+        $scope.decomposeInput.splice($scope.charIndex, 1);
+        if ($scope.charIndex >= $scope.selectedRadicals.length) {
+            $scope.charIndex = $scope.selectedRadicals.length - 1;
+        }
+        Radkfile.multichar(null, $scope.selectedRadicals, null);
+    }
+
     $scope.changeChar = function(i) {
         if ($scope.locked) {
             return;
@@ -176,6 +196,8 @@ angular.module('mecab-translate')
         $scope.selectedRadicals[$scope.charIndex] = [];
         if ($scope.selectedRadicals.length > 1) {
             lock();
+            $scope.decomposedRadicals[$scope.charIndex] = [];
+            $scope.decomposeInput[$scope.charIndex] = '';
             Radkfile.multichar(null, $scope.selectedRadicals, null);
         } else {
             $scope.validRadicals[0] = [];

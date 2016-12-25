@@ -641,16 +641,21 @@ class Radkfile(object):
         for c in query:
             suggestions.append(dict(kanji=set(), valid_radicals=set()))
             if type(c) != list:
-                query_pattern.append(c)
+                query_pattern.append(re.escape(c))
             elif len(c) == 0:
-                query_pattern.append('.')
+                query_pattern.append('.?')
             else:
                 query_pattern.append(u'[{}]'.format(''.join(self._lookup(c))))
-        query_pattern = ''.join(query_pattern)
-
-        pattern = u'{}({}){}'.format(re.escape(before or ''), query_pattern, re.escape(after or ''))
-        matches = jmdict_e.get(pattern, regex=True)['regex']
-        pattern = re.compile(pattern)
+        query_pattern = u''.join(query_pattern)
+        if before == None and after == None and query_pattern.strip('.?') == '':
+            matches = []
+        else:
+            pattern = u'.*?{}({}){}'.format(
+                re.escape(before or ''),
+                query_pattern,
+                re.escape(after or ''))
+            matches = jmdict_e.get(pattern, regex=True)['regex']
+            pattern = re.compile(pattern)
         for m in matches:
             chars = pattern.search(m).group(1)
             for i, c in enumerate(chars):
