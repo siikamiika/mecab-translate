@@ -62,6 +62,14 @@ ul {
     background-color: yellow;
 }
 
+.radical-input-radical.highlight {
+    background-color: red;
+}
+
+.radical-input-radical.highlight.selected {
+    background-color: orange;
+}
+
 .radical-input-label {
     display: inline-block;
     color: white;

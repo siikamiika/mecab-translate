@@ -64,6 +64,8 @@
         </div>
         <div id="radical-input-candidates">
             <div
+                ng-mouseenter="decomposeText(k[0])"
+                ng-mouseleave="decomposeText(decomposeInput[charIndex])"
                 ng-click="commitCharacter(k[0])"
                 class="clickable radical-input-candidate"
                 ng-repeat="k in radicalInputCandidates[charIndex]"
@@ -73,12 +75,12 @@
         <div id="radical-input-radicals">
             <input
                 style="max-width: 200px;"
-                ng-change="decomposeText()"
+                ng-change="decomposeText(decomposeInput[charIndex])"
                 ng-model="decomposeInput[charIndex]"
                 placeholder="例えば->⺅歹⺉"></input>
             <div class="clickable" style="display: inline-block; font-size: 24px;" ng-click="resetRadicals()">&#8635;</div>
             <div
-                ng-class="[r.class, {'unobtrusive': r.invalid &amp;&amp; r.class == 'radical-input-radical'}, {'selected': r.selected}, {'clickable': r.class == 'radical-input-radical' &amp;&amp; !r.invalid}]"
+                ng-class="[r.class, {'unobtrusive': r.invalid &amp;&amp; r.class == 'radical-input-radical'}, {'selected': r.selected}, {'clickable': r.class == 'radical-input-radical' &amp;&amp; !r.invalid}, {'highlight': r.decomposed}]"
                 ng-repeat="r in radicalInputRadicals"
                 ng-click="toggleRadical(r.text, r.invalid || r.class == 'radical-input-label')">{{r.alt_text || r.text}}</div>
         </div>

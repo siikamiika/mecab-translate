@@ -9,6 +9,7 @@ angular.module('mecab-translate')
     $scope.validRadicals = [[]];
     $scope.radicalInputCandidates = [[]];
     $scope.decomposedRadicals = [[]];
+    $scope.decomposeInput = [''];
 
     var lock = function() {
         $scope.locked = true;
@@ -25,23 +26,36 @@ angular.module('mecab-translate')
         function refreshRadical(radical) {
             var selected = false;
             var invalid = false;
+            var decomposed = false;
             if ($scope.selectedRadicals[$scope.charIndex].indexOf(radical.text) > -1) {
                 selected = true;
-            } else if ($scope.validRadicals[$scope.charIndex].length && $scope.validRadicals[$scope.charIndex].indexOf(radical.text) == -1) {
+            }
+            if ($scope.validRadicals[$scope.charIndex].length && $scope.validRadicals[$scope.charIndex].indexOf(radical.text) == -1) {
                 invalid = true;
-            } else if ($scope.decomposedRadicals[$scope.charIndex].length && $scope.decomposedRadicals[$scope.charIndex].indexOf(radical.text) == -1) {
-                invalid = true;
+            }
+            if ($scope.decomposedRadicals[$scope.charIndex].indexOf(radical.text) > -1) {
+                decomposed = true;
             }
             radical.selected = selected;
             radical.invalid = invalid;
+            radical.decomposed = decomposed;
         }
     }
 
     var sortInputCandidates = function(radicals) {
         return function(a, b) {
+            function sortOrd(__a, __b) {
+                if (__a[0] == __b[0]) {
+                    return 0;
+                } else if (__a[0] > __b[0]) {
+                    return 1;
+                } else {
+                    -1;
+                }
+            }
             function sortFreq(_a, _b) {
                 if (_a[1] == _b[1]) {
-                    return 0;
+                    return sortOrd(_a, _b);
                 } else if (_a[1] > _b[1]) {
                     return 1;
                 } else {
@@ -151,9 +165,8 @@ angular.module('mecab-translate')
         refresh();
     }
 
-    $scope.decomposeText = function() {
-        lock();
-        Radkfile.decompose($scope.decomposeInput[$scope.charIndex]);
+    $scope.decomposeText = function(text) {
+        Radkfile.decompose(text);
     }
 
     $scope.resetRadicals = function() {
