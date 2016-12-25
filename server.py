@@ -643,22 +643,36 @@ class Radkfile(object):
             if type(c) != list:
                 query_pattern.append(re.escape(c))
             elif len(c) == 0:
-                query_pattern.append('.?')
+                query_pattern.append('.')
             else:
                 query_pattern.append(u'[{}]'.format(''.join(self._lookup(c))))
-        query_pattern = u''.join(query_pattern)
-        if before == None and after == None and query_pattern.strip('.?') == '':
-            matches = []
-        else:
-            pattern = u'.*?{}({}){}'.format(
-                re.escape(before or ''),
-                query_pattern,
-                re.escape(after or ''))
-            matches = jmdict_e.get(pattern, regex=True)['regex']
-            pattern = re.compile(pattern)
+
+        no_matches = False
+        if (before or after or '') + ''.join(query_pattern).rstrip('.') == '':
+            no_matches = True
+        elif not after:
+            end = 0
+            for i in reversed(query_pattern):
+                if i == '.':
+                    end += 1
+                else:
+                    break
+            if end > 0 and end < len(query_pattern):
+                query_pattern = query_pattern[:-end] + ['.?'] * end
+
+        query_pattern = ''.join([u'({})'.format(p) for p in query_pattern])
+        pattern = u'.*?{}{}{}'.format(
+            re.escape(before or ''),
+            query_pattern,
+            re.escape(after or ''))
+        matches = [] if no_matches else jmdict_e.get(pattern, regex=True)['regex']
+        pattern = re.compile(pattern)
+
         for m in matches:
-            chars = pattern.search(m).group(1)
+            chars = pattern.search(m).groups()
             for i, c in enumerate(chars):
+                if not c:
+                    continue
                 suggestions[i]['kanji'].add(c)
                 radicals = self.krad.get(c)
                 if radicals:
