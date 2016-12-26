@@ -110,6 +110,7 @@ angular.module('mecab-translate')
         var strokes = 0;
         for(i in radicals) {
             $scope.radicals[radicals[i][0]] = radicals[i][2];
+            $scope.radicals[radicals[i][2]] = radicals[i][0];
             if (strokes != radicals[i][1]) {
                 strokes = radicals[i][1];
                 $scope.radicalInputRadicals.push({class: 'radical-input-label', text: radicals[i][1]});
@@ -303,7 +304,7 @@ angular.module('mecab-translate')
                     parsed.input.push(radicals.slice(0));
                     radicals = [];
                 } else if (inputEdit[i] != '_') {
-                    radicals.push(inputEdit[i]);
+                    radicals.push($scope.radicals[inputEdit[i]]);
                 }
             } else if (['_', '.', '?', '＿', '。', '？'].indexOf(inputEdit[i]) != -1) {
                 parsed.input.push([]);
