@@ -69,8 +69,6 @@
         </div>
         <div id="radical-input-candidates">
             <div
-                ng-mouseenter="decomposeText(k[0])"
-                ng-mouseleave="decomposeText(decomposeInput[charIndex])"
                 ng-click="commitCharacter(k[0])"
                 class="clickable radical-input-candidate"
                 ng-repeat="k in radicalInputCandidates[charIndex]"
