@@ -50,11 +50,17 @@
     <!-- Kanji radical input -->
     <div ng-class="{'busy': locked}" id="kanji-radical-input" ng-controller="RadicalInput" ng-show="showRadicalInput">
         <div id="radical-input-multichar">
+            <div style="display: inline-block;" ng-show="before">{{before}} | </div>
             <div
                 class="clickable"
                 ng-style="{'color': (charIndex == $index &amp;&amp; 'red') || 'black'}"
                 ng-click="changeChar($index)" ng-repeat="c in selectedRadicals track by $index"
                 style="display: inline-block; text-align: center;">{{multicharText(c)}}</div>
+            <div style="display: inline-block;" ng-show="after"> | {{after}}</div>
+            <form style="display: inline-block;" ng-show="showInputEdit" ng-submit="toggleInputEdit()">
+                <input style="width: 80px;" ng-model="inputEdit"></input>
+            </form>
+            <div ng-click="toggleInputEdit()" class="clickable" style="display: inline-block; width: 1.5em; text-align: center;">[e]</div>
             <div ng-click="removeChar()" class="clickable" style="display: inline-block; background-color: blue; width: 1.5em; text-align: center;">[-]</div>
             <div ng-click="addChar()" class="clickable" style="display: inline-block; background-color: red; width: 1.5em; text-align: center;">[+]</div>
             <div ng-click="commitText()" class="clickable" style="display: inline-block; background-color: green; width: 1.5em; text-align: center;">[&#10003;]</div>

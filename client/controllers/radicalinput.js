@@ -10,6 +10,8 @@ angular.module('mecab-translate')
     $scope.radicalInputCandidates = [[]];
     $scope.decomposedRadicals = [[]];
     $scope.decomposeInput = [''];
+    $scope.before = '';
+    $scope.after = '';
 
     var lock = function() {
         $scope.locked = true;
@@ -212,6 +214,8 @@ angular.module('mecab-translate')
         if ($scope.locked) {
             return;
         }
+        $scope.before = '';
+        $scope.after = '';
         $scope.charIndex = 0;
         $scope.selectedRadicals = [[]];
         $scope.validRadicals = [[]];
@@ -269,6 +273,68 @@ angular.module('mecab-translate')
         return typeof c == 'object'
             ? '[' + (c.map(function(r) {return $scope.radicals[r]}).join('') || '_') + ']' || '_'
             : c;
+    }
+
+    $scope.inputEditText = function() {
+        var separator = ($scope.before || $scope.after) ? '|' : '';
+        return $scope.before + separator + $scope.selectedRadicals.map(function(c) {
+            return $scope.multicharText(c);
+        }).join('') + separator + $scope.after;
+    }
+
+    $scope.parseInputEditText = function() {
+        var parsed = {before: '', input: [], after: ''};
+        var inputEdit = $scope.inputEdit.split(/[|｜\/・／]/);
+        if (inputEdit.length > 1) {
+            parsed.before = inputEdit[0];
+            parsed.after = inputEdit[2] || '';
+            inputEdit = inputEdit[1];
+        } else {
+            inputEdit = inputEdit[0];
+        }
+        var inRadicals = false;
+        var radicals = [];
+        for (i in inputEdit) {
+            if (!inRadicals && ['[', '「', '『'].indexOf(inputEdit[i]) != -1) {
+                inRadicals = true;
+            } else if (inRadicals) {
+                if ([']', '」', '』'].indexOf(inputEdit[i]) != -1) {
+                    inRadicals = false;
+                    parsed.input.push(radicals.slice(0));
+                    radicals = [];
+                } else if (inputEdit[i] != '_') {
+                    radicals.push(inputEdit[i]);
+                }
+            } else if (['_', '.', '?', '＿', '。', '？'].indexOf(inputEdit[i]) != -1) {
+                parsed.input.push([]);
+            } else {
+                parsed.input.push(inputEdit[i]);
+            }
+        }
+        if (parsed.input.length == 0) {
+            parsed.input.push([]);
+        }
+        return parsed;
+    }
+
+    $scope.toggleInputEdit = function() {
+        $scope.showInputEdit = !$scope.showInputEdit;
+        if ($scope.showInputEdit == true) {
+            $scope.inputEdit = $scope.inputEditText();
+        } else {
+            lock();
+            var parsed = $scope.parseInputEditText();
+            $scope.before = parsed.before;
+            $scope.selectedRadicals = parsed.input;
+            $scope.after = parsed.after;
+
+            $scope.charIndex = 0;
+            $scope.decomposeInput = [''];
+            $scope.decomposedRadicals = parsed.input.map(function(c) {
+                return [];
+            });
+            Radkfile.multichar($scope.before, $scope.selectedRadicals, $scope.after);
+        }
     }
 
     EventBridge.addEventListener('toggle-radical-input', $scope.toggleShowRadicalInput);
