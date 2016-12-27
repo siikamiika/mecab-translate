@@ -112,7 +112,10 @@ ul {
 
 .kanjidic-info {
     display: inline-block;
-    max-width: 400px;
+    width: 400px;
+    min-width: 60%;
+    max-width: 95%;
+    overflow-x: scroll;
 }
 
 .kanjidic-info td {
