@@ -79,12 +79,6 @@ ul {
     width: 1.2em;
 }
 
-.important {
-    border-bottom-style: dotted;
-    border-width: 1px;
-    white-space: nowrap;
-}
-
 .warning {
     color: red;
 }
