@@ -209,7 +209,7 @@
                         class="clickable"
                         ng-repeat="k in similarKanji"
                         ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
-                        ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0])"
+                        ng-click="getKanjiInfo(k[0])"
                         ng-mouseenter="getKanjidic2(k[0])"
                         ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>
                         <span>&nbsp;</span>
@@ -233,7 +233,7 @@
                 ng-repeat="k in kanjivgCombinations"
                 class="clickable"
                 ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
-                ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0]); getSimilarKanji(k[0])"
+                ng-click="getKanjiInfo(k[0])"
                 ng-mouseenter="getKanjidic2(k[0]); getSimilarKanji(k[0])"
                 ng-mouseleave="getKanjidic2(kanji); getSimilarKanji(kanji)">{{k[0]}} </span>
         </div>
