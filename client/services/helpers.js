@@ -164,11 +164,15 @@ angular.module('mecab-translate')
                     return 'other';
             }
         },
-        ifExists: function(url, callback) {
+        ifExists: function(url, callback, e) {
             $http.get(url)
             .then(function success(data) {
                 callback();
-            }, function error(data) {});
+            }, function error(data) {
+                if (e) {
+                    e();
+                }
+            });
         },
         intersection: function(a, b) {
             return a.filter(function(i) {

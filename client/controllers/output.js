@@ -12,7 +12,7 @@ angular.module('mecab-translate')
     });
 
     $scope.setKanjivgChar = function(kanji) {
-        KanjiVG.setKanjivgChar(kanji);
+        KanjiVG.get(kanji);
     }
 
     $scope.getKanjidic2 = function(kanji) {

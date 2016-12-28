@@ -156,14 +156,7 @@
     </div>
     <!-- Kanji info -->
     <div ng-controller="KanjiInfo" ng-show="showKanjiInfo">
-        <object
-            id="kanjivg"
-            type="image/svg+xml"
-            height="200px"
-            width="200px"
-            ng-init="kanjivgUrl = 'kanji/0002e.svg'"
-            ng-show="kanjivgUrl !== 'kanji/0002e.svg'"
-            ng-attr-data="{{kanjivgUrl}}"></object>
+        <div id="interactive-kanji" ng-controller="InteractiveKanji" style="display: inline-block;"></div>
         <table ng-if="kanjidicInfo.literal" class="kanjidic-info">
             <tr>
                 <td><b>Kanji</b></td>
@@ -340,6 +333,7 @@
 <script src="controllers/configmenu.js"></script>
 <script src="controllers/radicalinput.js"></script>
 <script src="controllers/kanji-info.js"></script>
+<script src="controllers/interactive-kanji.js"></script>
 
 <script src="services/mecab.js"></script>
 <script src="services/jmdict_e.js"></script>

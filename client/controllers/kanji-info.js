@@ -27,6 +27,12 @@ angular.module('mecab-translate')
         $scope.similarKanji = response;
     });
 
+    EventBridge.addEventListener('kanjivg-response', function(response) {
+        getKanjiVGParts(response.kanji);
+        $scope.getSimilarKanji(response.kanji);
+        $scope.kanji = response.kanji;
+    });
+
     $scope.getKanjiMouseover = function() {
         return $scope.kanjiMouseover;
     }
@@ -65,17 +71,7 @@ angular.module('mecab-translate')
     }
 
     $scope.setKanjivgChar = function(kanji) {
-        if (kanji && kanji.length == 1) {
-            var url = 'kanji/' + ('00000' + kanji.charCodeAt(0).toString(16)).slice(-5) + '.svg';
-            Helpers.ifExists(url, function() {
-                getKanjiVGParts(kanji);
-                $scope.getSimilarKanji(kanji);
-                $scope.kanjivgUrl = url;
-                $scope.kanji = kanji;
-            });
-        }
+        KanjiVG.get(kanji);
     }
-
-    KanjiVG.setOutput($scope.setKanjivgChar);
 
 });
