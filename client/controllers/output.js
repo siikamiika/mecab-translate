@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, ResponsiveVoice, RemoteTts, Tts, TtsEvents, EventBridge, Config, Helpers) {
+.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, SimilarKanji, KanjiVG, ResponsiveVoice, RemoteTts, Tts, TtsEvents, EventBridge, Config, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
@@ -11,12 +11,10 @@ angular.module('mecab-translate')
         $scope.lines = output;
     });
 
-    $scope.setKanjivgChar = function(kanji) {
+    $scope.getKanjiInfo = function(kanji) {
         KanjiVG.get(kanji);
-    }
-
-    $scope.getKanjidic2 = function(kanji) {
         Kanjidic2.get(kanji);
+        SimilarKanji.get(kanji);
     }
 
     $scope.showWordInfo = function(word) {

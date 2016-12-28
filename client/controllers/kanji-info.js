@@ -29,7 +29,6 @@ angular.module('mecab-translate')
 
     EventBridge.addEventListener('kanjivg-response', function(response) {
         getKanjiVGParts(response.kanji);
-        $scope.getSimilarKanji(response.kanji);
         $scope.kanji = response.kanji;
     });
 

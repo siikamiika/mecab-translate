@@ -43,16 +43,10 @@ angular.module('mecab-translate')
         return ref.split('・');
     }
 
-    $scope.getKanjidic2 = function(kanji) {
-        Kanjidic2.get(kanji);
-    }
-
-    $scope.getSimilarKanji = function(kanji) {
-        SimilarKanji.get(kanji);
-    }
-
-    $scope.setKanjivgChar = function(kanji) {
+    $scope.getKanjiInfo = function(kanji) {
         KanjiVG.get(kanji);
+        Kanjidic2.get(kanji);
+        SimilarKanji.get(kanji);
     }
 
 });
