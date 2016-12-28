@@ -146,106 +146,105 @@
             </div>
             <hr>
         </div>
-        <div>
-            <div ng-show="showMecabInfo" ng-if="word.pos" class="mecab-info">
-                <b>Pos: </b>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}
-                <b>Infl.: </b>{{word.inflection_type}}, {{word.inflection_form}}
-                <b>Lemma: </b>{{word.lemma}}
-                <b>Reading: </b><button ng-if="word.reading" ng-click="TTS(word.hatsuon || word.reading)">{{word.reading}}</button>
-                <hr>
-            </div>
-            <div ng-show="showKanjiInfo">
-                <object
-                    id="kanjivg"
-                    type="image/svg+xml"
-                    height="200px"
-                    width="200px"
-                    ng-init="kanjivgUrl = 'kanji/0002e.svg'"
-                    ng-show="kanjivgUrl !== 'kanji/0002e.svg'"
-                    ng-attr-data="{{kanjivgUrl}}"></object>
-                <table ng-if="kanjidicInfo.literal" class="kanjidic-info">
-                    <tr>
-                        <td><b>Kanji</b></td>
-                        <td style="font-size: 28px;">{{kanjidicInfo.literal}}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Meaning</b></td>
-                        <td>
-                            <span ng-repeat="meaning in kanjidicInfo.meaning">
-                                <span>{{meaning}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><b>On</b></td>
-                        <td>
-                            <span ng-repeat="on in kanjidicInfo.on">
-                                <span>{{on}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><b>Kun</b></td>
-                        <td>
-                            <span ng-repeat="kun in kanjidicInfo.kun">
-                                <span>{{kun}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><b>Nanori</b></td>
-                        <td>
-                            <span ng-repeat="nanori in kanjidicInfo.nanori">
-                                <span>{{nanori}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
-                            </span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><b>Freq.</b></td>
-                        <td ng-style="{'color': blend([255,0,0], [0,0,0], (kanjidicInfo.freq || 2500)/2500)}">{{kanjidicInfo.freq}}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Strokes</b></td>
-                        <td>{{kanjidicInfo.stroke_count}}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Similar</b></td>
-                        <td ng-style="{'font-size': similarKanjiSize + 'px'}">
-                            <span
-                                class="clickable"
-                                ng-repeat="k in similarKanji"
-                                ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
-                                ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0])"
-                                ng-mouseenter="getKanjidic2(k[0])"
-                                ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>
-                                <span>&nbsp;</span>
-                        </td>
-                    </tr>
-                </table>
-                <div ng-show="showKanjiPartBrowser" ng-style="{'font-size': kanjiPartBrowserSize + 'px'}">
-                    <form ng-if="kanjivgParts">
-                        <label ng-repeat="part in kanjivgParts track by $index">
-                            <input
-                                type="checkbox"
-                                ng-model="selectedKanjivgParts[$index]"
-                                value="{{part}}"
-                                ng-click="getKanjiVGCombinations()"
-                            > <span
-                                ng-mouseenter="getKanjidic2(part); getSimilarKanji(part)"
-                                ng-mouseleave="getKanjidic2(kanji); getSimilarKanji(kanji)">{{part}}</span>
-                        </label>
-                    </form>
-                    <span
-                        ng-repeat="k in kanjivgCombinations"
-                        class="clickable"
-                        ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
-                        ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0]); getSimilarKanji(k[0])"
-                        ng-mouseenter="getKanjidic2(k[0]); getSimilarKanji(k[0])"
-                        ng-mouseleave="getKanjidic2(kanji); getSimilarKanji(kanji)">{{k[0]}} </span>
-                </div>
-                <hr>
-            </div>
+        <div ng-show="showMecabInfo" ng-if="word.pos" class="mecab-info">
+            <b>Pos: </b>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}
+            <b>Infl.: </b>{{word.inflection_type}}, {{word.inflection_form}}
+            <b>Lemma: </b>{{word.lemma}}
+            <b>Reading: </b><button ng-if="word.reading" ng-click="TTS(word.hatsuon || word.reading)">{{word.reading}}</button>
+            <hr>
         </div>
+    </div>
+    <!-- Kanji info -->
+    <div ng-controller="KanjiInfo" ng-show="showKanjiInfo">
+        <object
+            id="kanjivg"
+            type="image/svg+xml"
+            height="200px"
+            width="200px"
+            ng-init="kanjivgUrl = 'kanji/0002e.svg'"
+            ng-show="kanjivgUrl !== 'kanji/0002e.svg'"
+            ng-attr-data="{{kanjivgUrl}}"></object>
+        <table ng-if="kanjidicInfo.literal" class="kanjidic-info">
+            <tr>
+                <td><b>Kanji</b></td>
+                <td style="font-size: 28px;">{{kanjidicInfo.literal}}</td>
+            </tr>
+            <tr>
+                <td><b>Meaning</b></td>
+                <td>
+                    <span ng-repeat="meaning in kanjidicInfo.meaning">
+                        <span>{{meaning}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td><b>On</b></td>
+                <td>
+                    <span ng-repeat="on in kanjidicInfo.on">
+                        <span>{{on}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Kun</b></td>
+                <td>
+                    <span ng-repeat="kun in kanjidicInfo.kun">
+                        <span>{{kun}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Nanori</b></td>
+                <td>
+                    <span ng-repeat="nanori in kanjidicInfo.nanori">
+                        <span>{{nanori}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Misc.</b></td>
+                <td>
+                    <span title="Stroke count">{{kanjidicInfo.stroke_count}}&#9998;</span>
+                    <span ng-if="kanjidicInfo.freq" class="unobtrusive">|</span>
+                    <span ng-if="kanjidicInfo.freq" title="Frequency" ng-style="{'color': blend([255,0,0], [0,0,0], (kanjidicInfo.freq || 2500)/2500)}">{{kanjidicInfo.freq}}/2500</span>
+                </td>
+            </tr>
+            <tr>
+                <td><b>Similar</b></td>
+                <td ng-style="{'font-size': similarKanjiSize + 'px'}">
+                    <span
+                        class="clickable"
+                        ng-repeat="k in similarKanji"
+                        ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
+                        ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0])"
+                        ng-mouseenter="getKanjidic2(k[0])"
+                        ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>
+                        <span>&nbsp;</span>
+                </td>
+            </tr>
+        </table>
+        <div ng-show="showKanjiPartBrowser" ng-style="{'font-size': kanjiPartBrowserSize + 'px'}">
+            <form ng-if="kanjivgParts">
+                <label ng-repeat="part in kanjivgParts track by $index">
+                    <input
+                        type="checkbox"
+                        ng-model="selectedKanjivgParts[$index]"
+                        value="{{part}}"
+                        ng-click="getKanjiVGCombinations()"
+                    > <span
+                        ng-mouseenter="getKanjidic2(part); getSimilarKanji(part)"
+                        ng-mouseleave="getKanjidic2(kanji); getSimilarKanji(kanji)">{{part}}</span>
+                </label>
+            </form>
+            <span
+                ng-repeat="k in kanjivgCombinations"
+                class="clickable"
+                ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
+                ng-click="setKanjivgChar(k[0]); getKanjidic2(k[0]); getSimilarKanji(k[0])"
+                ng-mouseenter="getKanjidic2(k[0]); getSimilarKanji(k[0])"
+                ng-mouseleave="getKanjidic2(kanji); getSimilarKanji(kanji)">{{k[0]}} </span>
+        </div>
+        <hr>
     </div>
     <!-- Translation -->
     <div ng-controller="Translation">
@@ -340,6 +339,7 @@
 <script src="controllers/translation.js"></script>
 <script src="controllers/configmenu.js"></script>
 <script src="controllers/radicalinput.js"></script>
+<script src="controllers/kanji-info.js"></script>
 
 <script src="services/mecab.js"></script>
 <script src="services/jmdict_e.js"></script>

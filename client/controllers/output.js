@@ -1,41 +1,23 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, KanjiVGParts, SimilarKanji, ResponsiveVoice, RemoteTts, Tts, TtsEvents, EventBridge, Config, Helpers) {
+.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, KanjiVG, ResponsiveVoice, RemoteTts, Tts, TtsEvents, EventBridge, Config, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
-    $scope.blend = Helpers.blend;
-
     Config.listen('show-mecab-info', function(val) {
         $scope.showMecabInfo = val;
-    });
-
-    Config.listen('show-kanji-info', function(val) {
-        $scope.showKanjiInfo = val;
-    });
-
-    Config.listen('show-kanji-part-browser', function(val) {
-        $scope.showKanjiPartBrowser = val;
-    });
-
-    Config.listen('kanji-part-browser-size', function(val) {
-        $scope.kanjiPartBrowserSize = val;
-    });
-
-    Config.listen('similar-kanji-size', function(val) {
-        $scope.similarKanjiSize = val;
     });
 
     Mecab.setOutput(function(output) {
         $scope.lines = output;
     });
 
-    Kanjidic2.setOutput(function(output) {
-        $scope.kanjidicInfo = output;
-    });
+    $scope.setKanjivgChar = function(kanji) {
+        KanjiVG.setKanjivgChar(kanji);
+    }
 
-    SimilarKanji.setOutput(function(output) {
-        $scope.similarKanji = output;
-    });
+    $scope.getKanjidic2 = function(kanji) {
+        Kanjidic2.get(kanji);
+    }
 
     $scope.showWordInfo = function(word) {
         if (!window.getSelection().toString()) {
@@ -60,55 +42,6 @@ angular.module('mecab-translate')
         var selection = window.getSelection().toString();
         if (selection)
             EventBridge.dispatch('text-selected', selection);
-    }
-
-    $scope.getKanjiMouseover = function() {
-        return $scope.kanjiMouseover;
-    }
-
-    $scope.getKanjidic2 = function(kanji) {
-        $scope.kanjiMouseover = kanji;
-        Kanjidic2.get(kanji, $scope.getKanjiMouseover);
-    }
-
-    var getKanjiVGParts = function(kanji) {
-        $scope.selectedKanjivgParts = [];
-        $scope.kanjivgCombinations = [];
-        $scope.kanjivgKanji = kanji;
-        KanjiVGParts.getParts(kanji, function(parts) {
-            $scope.kanjivgParts = parts;
-        });
-        KanjiVGParts.getCombinations([$scope.kanjivgKanji], function(combinations) {
-            $scope.kanjivgCombinations = combinations;
-        });
-    }
-
-    $scope.getSimilarKanji = function(kanji) {
-        SimilarKanji.get(kanji, $scope.getKanjiMouseover);
-    }
-
-    $scope.getKanjiVGCombinations = function() {
-        var parts = [];
-        for (i in $scope.kanjivgParts) {
-            if ($scope.selectedKanjivgParts[i]) {
-                parts.push($scope.kanjivgParts[i]);
-            }
-        }
-        KanjiVGParts.getCombinations(parts.length ? parts : [$scope.kanjivgKanji], function(combinations) {
-            $scope.kanjivgCombinations = combinations;
-        });
-    }
-
-    $scope.setKanjivgChar = function(kanji) {
-        if (kanji && kanji.length == 1) {
-            var url = 'kanji/' + ('00000' + kanji.charCodeAt(0).toString(16)).slice(-5) + '.svg';
-            Helpers.ifExists(url, function() {
-                getKanjiVGParts(kanji);
-                $scope.getSimilarKanji(kanji);
-                $scope.kanjivgUrl = url;
-                $scope.kanji = kanji;
-            });
-        }
     }
 
     $scope.TTS = function(text, line) {
@@ -164,7 +97,5 @@ angular.module('mecab-translate')
         }
 
     });
-
-    KanjiVG.setOutput($scope.setKanjivgChar);
 
 });

@@ -1,7 +1,5 @@
 angular.module('mecab-translate')
-.factory('Kanjidic2', function($http) {
-
-    var output;
+.factory('Kanjidic2', function($http, EventBridge) {
 
     return {
         get: function(val, mouseover) {
@@ -11,16 +9,13 @@ angular.module('mecab-translate')
                 params: {query: val}
             }).then(function success(data) {
                 if (!mouseover || mouseover() == val) {
-                    output(data.data);
+                    EventBridge.dispatch('kanjidic2-response', data.data);
                 }
             }, function error(data) {
                 if (!mouseover || mouseover() == val) {
-                    output({});
+                    EventBridge.dispatch('kanjidic2-response', {});
                 }
             });
-        },
-        setOutput: function(fn) {
-            output = fn;
         }
     }
 

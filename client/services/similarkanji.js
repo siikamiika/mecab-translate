@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.factory('SimilarKanji', function($http) {
+.factory('SimilarKanji', function($http, EventBridge) {
 
     return {
         get: function(kanji, mouseover) {
@@ -9,16 +9,13 @@ angular.module('mecab-translate')
                 params: {query: kanji}
             }).then(function success(data) {
                 if (!mouseover || mouseover() == kanji) {
-                    output(data.data);
+                    EventBridge.dispatch('similar-kanji-response', data.data);
                 }
             }, function error(data) {
                 if (!mouseover || mouseover() == kanji) {
-                    output([]);
+                    EventBridge.dispatch('similar-kanji-response', []);
                 }
             })
-        },
-        setOutput: function(fn) {
-            output = fn;
         }
     }
 
