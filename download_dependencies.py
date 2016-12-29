@@ -10,9 +10,28 @@ import zlib
 from zipfile import ZipFile
 import os
 
-JMDICT = 'http://ftp.monash.edu.au/pub/nihongo/JMdict_e.gz'
-KANJIDIC2 = 'http://www.edrdg.org/kanjidic/kanjidic2.xml.gz'
-RADKFILE = 'http://ftp.monash.edu.au/pub/nihongo/radkfile.gz'
+MONASH_MIRRORS = [
+    'http://ftp.monash.edu.au/pub/nihongo/',
+    'ftp://ftp.uni-duisburg.de/Mirrors/ftp.monash.edu.au/pub/nihongo/',
+    'ftp://ftp.monash.edu.au/pub/nihongo/'
+]
+
+MONASH = None
+for m in MONASH_MIRRORS:
+    try:
+        print('Testing {}...'.format(m))
+        urlopen(m + '00INDEX.html').read()
+        MONASH = m
+        print('Success! Using {} as monash ftp provider'.format(m))
+        break
+    except:
+        print('Failed.')
+else:
+    print('All monash mirrors failed. Skipping JMdict_e.gz, kanjidic2.xml.gz and radkfile.gz')
+
+JMDICT = 'JMdict_e.gz'
+KANJIDIC2 = 'kanjidic2.xml.gz'
+RADKFILE = 'radkfile.gz'
 TATOEBA = 'http://tatoeba.org/files/downloads/wwwjdic.csv'
 KANJIVG = 'https://github.com/KanjiVG/kanjivg/releases/download/r20160426/kanjivg-20160426-main.zip'
 ANGULAR = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js'
@@ -25,8 +44,12 @@ def download(url, destination, compression=None):
     except:
         pass
 
-    print('Downloading', url)
-    data = urlopen(url).read()
+    print('Downloading {}...'.format(url))
+    try:
+        data = urlopen(url).read()
+    except:
+        print('Failed, skipping')
+        return
 
 
     if compression == 'zip':
@@ -43,11 +66,14 @@ def download(url, destination, compression=None):
         with open(os.path.join(destination, filename), 'wb') as f:
             f.write(data)
 
+    print('Success!')
+
 
 def main():
-    download(JMDICT, 'data', 'gz')
-    download(KANJIDIC2, 'data', 'gz')
-    download(RADKFILE, 'data', 'gz')
+    if MONASH:
+        download(MONASH + JMDICT, 'data', 'gz')
+        download(MONASH + KANJIDIC2, 'data', 'gz')
+        download(MONASH + RADKFILE, 'data', 'gz')
     download(TATOEBA, 'data')
     download(KANJIVG, 'client', 'zip')
     download(ANGULAR, 'client/vendor')
