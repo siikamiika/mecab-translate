@@ -30,6 +30,25 @@ angular.module('mecab-translate')
     EventBridge.addEventListener('kanjivg-response', function(response) {
         getKanjiVGParts(response.kanji);
         $scope.kanji = response.kanji;
+        if (!response.fromself) {
+            $scope.originalKanjiPart = null;
+        }
+    });
+
+    var originalKanjiPartTmp;
+    EventBridge.addEventListener('original-kanji-part', function(data) {
+        if (data.event == 'mouseenter' && data.mouseOver() == data.expected) {
+            originalKanjiPartTmp = $scope.originalKanjiPart;
+            $scope.originalKanjiPart = data.originalPart;
+            $scope.kanjiPartMouseOver = true;
+        } else if (data.event == 'mouseleave' && data.mouseOver() == data.expected) {
+            $scope.originalKanjiPart = originalKanjiPartTmp;
+            $scope.kanjiPartMouseOver = false;
+        } else if (data.event == 'click') {
+            $scope.originalKanjiPart = data.originalPart;
+            originalKanjiPartTmp = data.originalPart;
+            $scope.kanjiPartMouseOver = false;
+        }
     });
 
     $scope.getKanjiInfo = function(kanji) {

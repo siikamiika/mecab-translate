@@ -160,7 +160,16 @@
         <table ng-if="kanjidicInfo.literal" class="kanjidic-info">
             <tr>
                 <td><b>Kanji</b></td>
-                <td style="font-size: 28px;">{{kanjidicInfo.literal}}</td>
+                <td>
+                    <span style="font-size: 28px;">{{kanjidicInfo.literal}}</span>
+                    <!--TODO add radicals-->
+                    <span
+                        ng-if="originalKanjiPart &amp;&amp; ((kanjidicInfo.literal == kanji) || (kanjidicInfo.literal == originalKanjiPart) || kanjiPartMouseOver)"
+                        ng-click="getKanjiInfo(originalKanjiPart)"
+                        ng-mouseenter="getKanjidic2(originalKanjiPart); getSimilarKanji(originalKanjiPart)"
+                        ng-mouseleave="getKanjidic2(kanji); getSimilarKanji(kanji)"
+                        class="clickable">({{originalKanjiPart}})</span>
+                </td>
             </tr>
             <tr>
                 <td><b>Meaning</b></td>

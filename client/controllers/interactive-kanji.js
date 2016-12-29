@@ -44,18 +44,19 @@ angular.module('mecab-translate')
             var originalKanjiPart = part.getAttribute('kvg:original');
             var kanjiPart = part.getAttribute('kvg:element');
             part.onclick = function() {
-                KanjiVG.get(kanjiPart);
+                KanjiVG.get(kanjiPart, true);
                 Kanjidic2.get(kanjiPart);
                 SimilarKanji.get(kanjiPart);
+                EventBridge.dispatch('original-kanji-part', {event: 'click', originalPart: originalKanjiPart});
             }
             part.onmouseenter = function() {
                 parts.forEach(function(_part) {
                     _part.setAttribute('stroke', 'gray');
                 });
-                var val = originalKanjiPart || kanjiPart;
-                mouseOver = val;
-                Kanjidic2.get(val, getMouseOver);
-                SimilarKanji.get(val, getMouseOver);
+                mouseOver = kanjiPart;
+                Kanjidic2.get(kanjiPart, getMouseOver);
+                SimilarKanji.get(kanjiPart, getMouseOver);
+                EventBridge.dispatch('original-kanji-part', {event: 'mouseenter', originalPart: originalKanjiPart, expected: kanjiPart, mouseOver: getMouseOver});
             }
             part.onmouseleave = function() {
                 parts.forEach(function(_part) {
@@ -69,6 +70,7 @@ angular.module('mecab-translate')
                 mouseOver = original;
                 Kanjidic2.get(original, getMouseOver);
                 SimilarKanji.get(original, getMouseOver);
+                EventBridge.dispatch('original-kanji-part', {event: 'mouseleave', expected: original, mouseOver: getMouseOver});
             }
         });
     }
