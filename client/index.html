@@ -36,6 +36,9 @@
             <div>
                 <label><input type="checkbox" ng-model="showKanjiPartBrowser" ng-click="checkbox()">Show kanji part browser</label>
             </div>
+            <div>
+                <label><input type="checkbox" ng-model="nonClickMode" ng-click="checkbox()">Non-click mode (Alt+n)</label>
+            </div>
             <h4>styles</h4>
             <div>
                 <div>Kanji part browser size</div>
@@ -138,12 +141,17 @@
                         ng-repeat="word in line"
                         ng-class="posClass(word.pos)"
                         ng-attr-title="{{posClass(word.pos)}}"
-                        ng-click="showWordInfo(word)"><span
+                        ng-click="showWordInfo(word)"
+                        ng-mouseenter="showWordInfo(word, true)"
+                        ng-mouseleave="clearWordInfoQueue()"><span
                             class="character"
                             ng-repeat="char in word.literal track by $index"
-                            ng-click="getKanjiInfo(char);">{{char}}</span></span>
+                            ng-click="getKanjiInfo(char); disableNonClickMode();"
+                            ng-mouseenter="getKanjiInfo(char, true)"
+                            ng-mouseleave="clearKanjiInfoQueue()">{{char}}</span></span>
                 </div>
             </div>
+            <div style="font-size: 10px;" class="unobtrusive" ng-show="nonclick">Automatically looking up words and characters when mouse enters them. Disabled by clicking any character.</div>
             <hr>
         </div>
         <div ng-show="showMecabInfo" ng-if="word.pos" class="mecab-info">

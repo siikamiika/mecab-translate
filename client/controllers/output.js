@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.controller('Output', function($scope, Mecab, JMdict_e, Kanjidic2, SimilarKanji, KanjiVG, ResponsiveVoice, RemoteTts, Tts, TtsEvents, EventBridge, Config, Helpers) {
+.controller('Output', function($scope, $rootScope, Mecab, JMdict_e, Kanjidic2, SimilarKanji, KanjiVG, ResponsiveVoice, RemoteTts, Tts, TtsEvents, EventBridge, Config, Helpers) {
 
     $scope.posClass = Helpers.posClass;
 
@@ -7,18 +7,76 @@ angular.module('mecab-translate')
         $scope.showMecabInfo = val;
     });
 
+    var nonclick;
+    Config.listen('non-click-mode', function(val) {
+        nonclick = val;
+        $scope.nonclick = val;
+    });
+
+    $rootScope.$on('toggle-non-click-mode', function() {
+        Config.set('non-click-mode', !nonclick);
+    });
+
+    $scope.disableNonClickMode = function() {
+        Config.set('non-click-mode', false);
+    }
+
+    $rootScope.$on('shift-down', function() {
+        $scope.nonclick = !nonclick;
+        if (kanjiInfoQueue)
+            $scope.getKanjiInfo(kanjiInfoQueue);
+        if (wordInfoQueue)
+            $scope.showWordInfo(wordInfoQueue);
+    });
+
+    $rootScope.$on('shift-up', function() {
+        $scope.nonclick = nonclick;
+    });
+
     Mecab.setOutput(function(output) {
         $scope.lines = output;
     });
 
-    $scope.getKanjiInfo = function(kanji) {
-        KanjiVG.get(kanji);
-        Kanjidic2.get(kanji);
-        SimilarKanji.get(kanji);
+    $scope.clearKanjiInfoQueue = function() {
+        kanjiInfoQueue = null;
+    }
+    var kanjiInfoQueue;
+    var kanjiInfoTimer;
+    $scope.getKanjiInfo = function(kanji, mouseover) {
+        if (mouseover) {
+            kanjiInfoQueue = kanji;
+            if (!$scope.nonclick)
+                return;
+            if (kanjiInfoTimer) {
+                clearTimeout(kanjiInfoTimer);
+            }
+            kanjiInfoTimer = setTimeout(function() {
+                $scope.getKanjiInfo(kanjiInfoQueue);
+            }, 100);
+        } else {
+            KanjiVG.get(kanji);
+            Kanjidic2.get(kanji);
+            SimilarKanji.get(kanji);
+        }
     }
 
-    $scope.showWordInfo = function(word) {
-        if (!window.getSelection().toString()) {
+    $scope.clearWordInfoQueue = function() {
+        wordInfoQueue = null;
+    }
+    var wordInfoQueue;
+    var wordInfoTimer;
+    $scope.showWordInfo = function(word, mouseover) {
+        if (mouseover) {
+            wordInfoQueue = word;
+            if (!$scope.nonclick)
+                return;
+            if (wordInfoTimer) {
+                clearTimeout(wordInfoTimer);
+            }
+            wordInfoTimer = setTimeout(function() {
+                $scope.showWordInfo(wordInfoQueue);
+            }, 100);
+        } else if (!window.getSelection().toString()) {
             $scope.word = word;
             JMdict_e.translate(word, true);
         }

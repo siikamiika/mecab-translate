@@ -10,12 +10,16 @@ angular.module('mecab-translate')
     $scope.showMecabInfo = Config.get('show-mecab-info');
     $scope.showKanjiInfo = Config.get('show-kanji-info');
     $scope.showKanjiPartBrowser = Config.get('show-kanji-part-browser');
+    Config.listen('non-click-mode', function(val) {
+        $scope.nonClickMode = val;
+    });
     $scope.checkbox = function() {
         Config.set('show-history-navigation-buttons', $scope.showHistoryNavigationButtons);
         Config.set('show-text-input', $scope.showTextInput);
         Config.set('show-mecab-info', $scope.showMecabInfo);
         Config.set('show-kanji-info', $scope.showKanjiInfo);
         Config.set('show-kanji-part-browser', $scope.showKanjiPartBrowser);
+        Config.set('non-click-mode', $scope.nonClickMode);
     }
 
     $scope.kanjiPartBrowserSize = Config.get('kanji-part-browser-size');

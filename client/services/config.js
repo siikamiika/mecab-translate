@@ -10,6 +10,7 @@ angular.module('mecab-translate')
     config['show-kanji-part-browser'] = true;
     config['kanji-part-browser-size'] = 20;
     config['similar-kanji-size'] = 20;
+    config['non-click-mode'] = false;
 
     var configListeners = {};
 
