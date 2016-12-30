@@ -152,15 +152,14 @@
                 </div>
             </div>
             <div style="font-size: 10px;" class="unobtrusive" ng-show="nonclick">Automatically looking up words and characters when mouse enters them. Disabled by clicking any character.</div>
-            <hr>
         </div>
         <div ng-show="showMecabInfo" ng-if="word.pos" class="mecab-info">
             <b>Pos: </b>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}
             <b>Infl.: </b>{{word.inflection_type}}, {{word.inflection_form}}
             <b>Lemma: </b>{{word.lemma}}
-            <b>Reading: </b><button ng-if="word.reading" ng-click="TTS(word.hatsuon || word.reading)">{{word.reading}}</button>
-            <hr>
+            <b>Reading: </b><span class="clickable" ng-if="word.reading" ng-click="TTS(word.hatsuon || word.reading)">{{word.reading}}</span>
         </div>
+        <hr>
     </div>
     <!-- Kanji info -->
     <div ng-controller="KanjiInfo" ng-show="showKanjiInfo">
@@ -336,7 +335,6 @@
                 <div ng-click="translate(r)" style="font-size: 20px; display: inline-block;" class="clickable">{{r}}</div>
             </li>
         </ul>
-        <hr>
         <div>
             <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{(query.lemma.split('-') || [''])[0] || query.literal || query}} ({{longerEntries.length}})</button>
             <div ng-repeat="entry in longerEntryListing"><span class="clickable" ng-click="translate(entry)">{{entry}}</span></div>
