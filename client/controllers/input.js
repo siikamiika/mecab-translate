@@ -1,11 +1,12 @@
 angular.module('mecab-translate')
-.controller('Input', function($scope, $rootScope, Mecab, JMdict_e, EventBridge, Config, Helpers) {
+.controller('Input', function($scope, $rootScope, Mecab, WebsocketInput, JMdict_e, EventBridge, Config, Helpers) {
 
     var input = document.getElementById('text-input');
     var back = document.getElementById('input-history-back');
     var forward = document.getElementById('input-history-forward');
 
     Mecab.setInput(input);
+    WebsocketInput.setInput(input);
     Mecab.setButtons(back, forward);
 
     Config.listen('show-history-navigation-buttons', function(val) {

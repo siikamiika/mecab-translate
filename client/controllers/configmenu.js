@@ -1,10 +1,33 @@
 angular.module('mecab-translate')
-.controller('ConfigMenu', function($scope, $rootScope, Config, Tts) {
+.controller('ConfigMenu', function($scope, $rootScope, Config, Tts, EventBridge) {
 
     $scope.toggleShowConfigMenu = function() {
         $scope.showConfigMenu = !$scope.showConfigMenu;
     }
 
+    $scope.wsInputConnected = false;
+    EventBridge.addEventListener('websocket-input-connected', function() {
+        $scope.wsInputConnected = true;
+        $scope.$apply();
+    });
+
+    EventBridge.addEventListener('websocket-input-close', function() {
+        $scope.wsInputConnected = false;
+        $scope.$apply();
+    });
+
+    $scope.websocketInputConnect = function() {
+        $scope.wsInputConnected = false;
+        Config.set('websocket-input-host', $scope.websocketInputHost);
+        if ($scope.websocketInputHost) {
+            Config.set('websocket-input-enabled', true);
+        } else {
+            Config.set('websocket-input-enabled', false);
+        }
+    }
+
+    $scope.websocketInputHost = Config.get('websocket-input-host');
+    $scope.websocketInputEnabled = Config.get('websocket-input-enabled');
     $scope.showHistoryNavigationButtons = Config.get('show-history-navigation-buttons');
     $scope.showTextInput = Config.get('show-text-input');
     $scope.showMecabInfo = Config.get('show-mecab-info');
@@ -45,4 +68,6 @@ angular.module('mecab-translate')
     }
 
     $scope.updateTts();
+
+    $scope.websocketInputConnect();
 });

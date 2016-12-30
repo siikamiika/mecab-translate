@@ -20,6 +20,12 @@
                     <option value="remotetts">Remote SAPI5 on localhost port 9871</option>
                 </select>
             </div>
+            <h4>WebSocket input</h4>
+            <div ng-show="wsInputConnected" style="color: green;">Connected</div>
+            <div ng-show="!wsInputConnected" style="color: red;">Disconnected</div>
+            <div>
+                <input type="text" placeholder="host:port" ng-model="websocketInputHost" ng-change="websocketInputConnect()">
+            </div>
             <h4>show/hide</h4>
             <div>
                 <label><input type="checkbox" ng-model="showHistoryNavigationButtons" ng-click="checkbox()">Show history navigation buttons (hotkeys always available)</label>
@@ -368,6 +374,7 @@
 <script src="services/remotetts.js"></script>
 <script src="services/tts.js"></script>
 <script src="services/tts_events.js"></script>
+<script src="services/websocket-input.js"></script>
 <script src="services/eventbridge.js"></script>
 <script src="services/config.js"></script>
 <script src="services/helpers.js"></script>
