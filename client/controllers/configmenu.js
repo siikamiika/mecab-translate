@@ -22,6 +22,8 @@ angular.module('mecab-translate')
         Config.set('non-click-mode', $scope.nonClickMode);
     }
 
+    $scope.outputFontSize = Config.get('output-font-size');
+    $scope.outputMaxHeight = Config.get('output-max-height');
     $scope.kanjiPartBrowserSize = Config.get('kanji-part-browser-size');
     $scope.similarKanjiSize = Config.get('similar-kanji-size');
     $scope.textChange = function(key, value) {

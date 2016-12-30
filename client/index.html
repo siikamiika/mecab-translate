@@ -36,10 +36,19 @@
             <div>
                 <label><input type="checkbox" ng-model="showKanjiPartBrowser" ng-click="checkbox()">Show kanji part browser</label>
             </div>
+            <h4>Features</h4>
             <div>
                 <label><input type="checkbox" ng-model="nonClickMode" ng-click="checkbox()">Non-click mode (Alt+n)</label>
             </div>
             <h4>styles</h4>
+            <div>
+                <div>Output font size</div>
+                <input type="text" ng-model="outputFontSize" ng-change="textChange('output-font-size', outputFontSize)">
+            </div>
+            <div>
+                <div>Output max height</div>
+                <input type="text" ng-model="outputMaxHeight" ng-change="textChange('output-max-height', outputMaxHeight)">
+            </div>
             <div>
                 <div>Kanji part browser size</div>
                 <input type="text" ng-model="kanjiPartBrowserSize" ng-change="textChange('kanji-part-browser-size', kanjiPartBrowserSize)">
@@ -125,16 +134,14 @@
     </div>
     <!-- Analyzed output -->
     <div ng-controller="Output" ng-mouseup="translateSelection(); updateWordLookup();">
-        <div id="output">
+        <div ng-style="{'font-size': outputFontSize + 'px', 'max-height': outputMaxHeight, 'overflow-y': (outputMaxHeight != 'none' &amp;&amp; 'scroll') || 'show'}" id="output">
             <div
                 ng-class="mouseInside ? 'bg-highlight' : ''"
                 ng-repeat="line in lines track by $index"
                 ng-mouseenter="mouseInside = true"
                 ng-mouseleave="mouseInside = false"
                 ng-init="ttsRow = $index">
-                <div class="tts-button" ng-class="mouseInside ? '' : 'hide'">
-                    <button ng-click="TTS(line, true); updateRow(ttsRow)">TTS</button>
-                </div>
+                <div class="clickable tts-button unobtrusive" ng-click="TTS(line, true); updateRow(ttsRow)" ng-class="mouseInside ? '' : 'hide'">[TTS]</div>
                 <div class="line" ng-class="'row-' + $index">
                     <span
                         class="clickable word"
@@ -151,8 +158,8 @@
                             ng-mouseleave="clearKanjiInfoQueue()">{{char}}</span></span>
                 </div>
             </div>
-            <div style="font-size: 10px;" class="unobtrusive" ng-show="nonclick">Automatically looking up words and characters when mouse enters them. Disabled by clicking any character.</div>
         </div>
+        <div style="font-size: 10px;" class="unobtrusive" ng-show="nonclick">Automatically looking up words and characters when mouse enters them. Disabled by clicking any character.</div>
         <div ng-show="showMecabInfo" ng-if="word.pos" class="mecab-info">
             <b>Pos: </b>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}
             <b>Infl.: </b>{{word.inflection_type}}, {{word.inflection_form}}

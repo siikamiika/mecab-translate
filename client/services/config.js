@@ -8,9 +8,11 @@ angular.module('mecab-translate')
     config['show-mecab-info'] = true;
     config['show-kanji-info'] = true;
     config['show-kanji-part-browser'] = true;
+    config['non-click-mode'] = false;
+    config['output-font-size'] = 36;
+    config['output-max-height'] = '';
     config['kanji-part-browser-size'] = 20;
     config['similar-kanji-size'] = 20;
-    config['non-click-mode'] = false;
 
     var configListeners = {};
 

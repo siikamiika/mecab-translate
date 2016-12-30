@@ -3,6 +3,14 @@ angular.module('mecab-translate')
 
     $scope.posClass = Helpers.posClass;
 
+    Config.listen('output-font-size', function(val) {
+        $scope.outputFontSize = val;
+    });
+
+    Config.listen('output-max-height', function(val) {
+        $scope.outputMaxHeight = val ? val + 'px' : 'none';
+    });
+
     Config.listen('show-mecab-info', function(val) {
         $scope.showMecabInfo = val;
     });
