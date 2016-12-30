@@ -133,7 +133,7 @@
         </div>
     </div>
     <!-- Analyzed output -->
-    <div ng-controller="Output" ng-mouseup="translateSelection(); updateWordLookup();">
+    <div ng-controller="Output" ng-mouseup="translateSelection(); updateWordLookup();" ng-mouseenter="resumeNonClickMode()">
         <div ng-style="{'font-size': outputFontSize + 'px', 'max-height': outputMaxHeight, 'overflow-y': (outputMaxHeight != 'none' &amp;&amp; 'scroll') || 'show'}" id="output">
             <div
                 ng-class="mouseInside ? 'bg-highlight' : ''"
@@ -153,13 +153,13 @@
                         ng-mouseleave="clearWordInfoQueue()"><span
                             class="character"
                             ng-repeat="char in word.literal track by $index"
-                            ng-click="getKanjiInfo(char); disableNonClickMode();"
+                            ng-click="getKanjiInfo(char); pauseNonClickMode();"
                             ng-mouseenter="getKanjiInfo(char, true)"
                             ng-mouseleave="clearKanjiInfoQueue()">{{char}}</span></span>
                 </div>
             </div>
         </div>
-        <div style="font-size: 10px;" class="unobtrusive" ng-show="nonclick">Automatically looking up words and characters when mouse enters them. Disabled by clicking any character.</div>
+        <div style="font-size: 10px;" class="unobtrusive" ng-class="{'hide': !nonclick}">Non-click mode activated.</div>
         <div ng-show="showMecabInfo" ng-if="word.pos" class="mecab-info">
             <b>Pos: </b>{{word.pos}}, {{word.pos2}}, {{word.pos3}}, {{word.pos4}}
             <b>Infl.: </b>{{word.inflection_type}}, {{word.inflection_form}}

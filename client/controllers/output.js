@@ -25,8 +25,12 @@ angular.module('mecab-translate')
         Config.set('non-click-mode', !nonclick);
     });
 
-    $scope.disableNonClickMode = function() {
-        Config.set('non-click-mode', false);
+    $scope.pauseNonClickMode = function() {
+        $scope.nonclick = false;
+    }
+
+    $scope.resumeNonClickMode = function() {
+        $scope.nonclick = nonclick;
     }
 
     $rootScope.$on('shift-down', function() {
