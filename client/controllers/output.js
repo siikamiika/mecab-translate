@@ -44,6 +44,8 @@ angular.module('mecab-translate')
     var kanjiInfoTimer;
     $scope.getKanjiInfo = function(kanji, mouseover) {
         if (mouseover) {
+            if (!Helpers.isKanji(kanji))
+                return;
             kanjiInfoQueue = kanji;
             if (!$scope.nonclick)
                 return;
@@ -51,7 +53,9 @@ angular.module('mecab-translate')
                 clearTimeout(kanjiInfoTimer);
             }
             kanjiInfoTimer = setTimeout(function() {
-                $scope.getKanjiInfo(kanjiInfoQueue);
+                if (kanjiInfoQueue) {
+                    $scope.getKanjiInfo(kanjiInfoQueue);
+                }
             }, 100);
         } else {
             KanjiVG.get(kanji);
@@ -74,7 +78,9 @@ angular.module('mecab-translate')
                 clearTimeout(wordInfoTimer);
             }
             wordInfoTimer = setTimeout(function() {
-                $scope.showWordInfo(wordInfoQueue);
+                if (wordInfoQueue) {
+                    $scope.showWordInfo(wordInfoQueue);
+                }
             }, 100);
         } else if (!window.getSelection().toString()) {
             $scope.word = word;

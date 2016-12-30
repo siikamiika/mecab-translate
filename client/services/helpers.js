@@ -116,6 +116,9 @@ angular.module('mecab-translate')
             });
             return kata.join('');
         },
+        isKanji: function(char) {
+            return typeof char == 'string' && char.length == 1 && isKanji(char);
+        },
         posClass: function(pos) {
             switch(pos) {
                 case mecabPos.MEISHI:
