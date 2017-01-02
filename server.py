@@ -341,22 +341,25 @@ class JMdict_e(object):
             results |= set(result['longer'])
             if result['exact']:
                 results.add(w)
-        results.remove(context['lemma'][0])
+        results.discard(context['lemma'][0])
 
         raw = ''.join(context['raw'])
         def matches(result, pos=0, word=0):
-            if raw.startswith(result):
+            if pos == 0 and raw.startswith(result):
                 return True
             for c in context:
+                c_pos = pos
                 for i in range(word, len(context[c])):
-                    new_pos = pos + len(context[c][i])
-                    part = result[pos:new_pos]
-                    pos = new_pos
+                    new_pos = c_pos + len(context[c][i])
+                    part = result[c_pos:new_pos]
+                    c_pos = new_pos
                     if kata_to_hira(part) == kata_to_hira(context[c][i]):
-                        if new_pos == len(result) + 1:
+                        if c_pos == len(result):
                             return True
                         else:
-                            return matches(result, pos, i + 1)
+                            return matches(result, c_pos, i + 1)
+                    else:
+                        break
             else:
                 return False
 
