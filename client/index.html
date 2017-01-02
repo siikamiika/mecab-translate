@@ -154,8 +154,8 @@
                         ng-repeat="word in line"
                         ng-class="posClass(word.pos)"
                         ng-attr-title="{{posClass(word.pos)}}"
-                        ng-click="showWordInfo(word)"
-                        ng-mouseenter="showWordInfo(word, true)"
+                        ng-click="showWordInfo(word, null, [$parent.$index, $index])"
+                        ng-mouseenter="showWordInfo(word, true, [$parent.$index, $index])"
                         ng-mouseleave="clearWordInfoQueue()"><span
                             class="character"
                             ng-repeat="char in word.literal track by $index"

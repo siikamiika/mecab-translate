@@ -308,7 +308,7 @@ class JMdict_e(object):
         self.dictionary = Dictionary(self.temp_dictionary)
         del self.temp_dictionary
 
-    def get(self, word, reading=None, pos=None, regex=False):
+    def get(self, word, reading=None, pos=None, regex=False, context=None):
 
         if regex:
             return self.dictionary.regex_search(word)
@@ -317,6 +317,8 @@ class JMdict_e(object):
         self._sort_pos = set(pos) if pos else None
 
         res = self.dictionary.get(word)
+        if context:
+            res['longer'] = self._get_context(context)
 
         key = cmp_to_key(self._sort)
 
@@ -326,6 +328,39 @@ class JMdict_e(object):
             res['shorter'] = sorted([self._entry(e) for e in res['shorter']], key=key)
 
         return res
+
+    def _get_context(self, context):
+        first_words = set()
+        for w in set([context['raw'][0], context['reading'][0], context['lemma'][0], context['lemma_reading'][0]]):
+            first_words.add(w)
+            first_words.add(hira_to_kata(w))
+            first_words.add(kata_to_hira(w))
+        results = set()
+        for w in first_words:
+            result = self.dictionary.get(w)
+            results |= set(result['longer'])
+            if result['exact']:
+                results.add(w)
+        results.remove(context['lemma'][0])
+
+        raw = ''.join(context['raw'])
+        def matches(result, pos=0, word=0):
+            if raw.startswith(result):
+                return True
+            for c in context:
+                for i in range(word, len(context[c])):
+                    new_pos = pos + len(context[c][i])
+                    part = result[pos:new_pos]
+                    pos = new_pos
+                    if kata_to_hira(part) == kata_to_hira(context[c][i]):
+                        if new_pos == len(result) + 1:
+                            return True
+                        else:
+                            return matches(result, pos, i + 1)
+            else:
+                return False
+
+        return list(filter(matches, results))
 
     def _sort(self, a, b):
         def common_sort(a, b):
@@ -924,7 +959,8 @@ class JMdict_eHandler(web.RequestHandler):
         regex = True if self.get_query_argument('regex', default='no') == 'yes' else False
         reading = self.get_query_argument('reading', default=None)
         pos = self.get_query_argument('pos', default='').split(',')
-        response = jmdict_e.get(query, reading=reading, pos=pos, regex=regex)
+        context = json.loads(self.get_query_argument('context', default='null'))
+        response = jmdict_e.get(query, reading=reading, pos=pos, regex=regex, context=context)
         self.write(json.dumps(response))
 
 

@@ -81,7 +81,7 @@ angular.module('mecab-translate')
     }
     var wordInfoQueue;
     var wordInfoTimer;
-    $scope.showWordInfo = function(word, mouseover) {
+    $scope.showWordInfo = function(word, mouseover, position) {
         if (mouseover) {
             wordInfoQueue = word;
             if (!$scope.nonclick)
@@ -91,12 +91,12 @@ angular.module('mecab-translate')
             }
             wordInfoTimer = setTimeout(function() {
                 if (wordInfoQueue) {
-                    $scope.showWordInfo(wordInfoQueue);
+                    $scope.showWordInfo(wordInfoQueue, false, position);
                 }
             }, 100);
         } else if (!window.getSelection().toString()) {
             $scope.word = word;
-            JMdict_e.translate(word, true);
+            JMdict_e.translate(word, true, false, position ? {lines: $scope.lines, pos: position} : null);
         }
     }
 

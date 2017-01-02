@@ -119,6 +119,30 @@ angular.module('mecab-translate')
         isKanji: function(char) {
             return typeof char == 'string' && char.length == 1 && isKanji(char);
         },
+        removeChouon: function(text) {
+            var t = [];
+            var previous;
+            for (var i = 0; i < text.length; i++) {
+                if (text[i] == 'ー') {
+                    if ('アカガサザタダナハバパマヤャラワ'.indexOf(previous) != -1) {
+                        t.push('ア');
+                    } else if ('イキギシジチヂニヒビピミリヰエケゲセゼテデネヘベペメレヱ'.indexOf(previous) != -1) {
+                        t.push('イ');
+                    } else if ('ウクグスズツヅヌフブプムユュルオコゴソゾトドノホボポモヨョロヲ'.indexOf(previous) != -1) {
+                        t.push('ウ');
+                    } else {
+                        t.push('ー');
+                    }
+                } else {
+                    t.push(text[i]);
+                }
+                previous = text[i];
+            }
+            return t.join('');
+        },
+        isPunctuation : function(char) {
+            return '.。．‥…,،，、;；:：!！?？\'´‘’"”“-－―～~[]「」『』【】〈〉《》〔〕()（）{}｛｝'.indexOf(char) != -1
+        },
         posClass: function(pos) {
             switch(pos) {
                 case mecabPos.MEISHI:
