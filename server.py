@@ -420,7 +420,6 @@ class JMdict_e(object):
             for i, e in enumerate([a, b]):
                 if len(e['words']) == 0:
                     kana_match[i] = True
-                    break
             if kana_match[0] == kana_match[1]:
                 return 0
             return kana_match[1] or -1
