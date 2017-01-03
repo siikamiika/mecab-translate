@@ -424,7 +424,7 @@ class JMdict_e(object):
                 return 0
             return kana_match[1] or -1
 
-        return lemma_sort(a, b) or reading_sort(a, b) or pos_sort(a, b) or common_sort(a, b)
+        return reading_sort(a, b) or pos_sort(a, b) or lemma_sort(a, b) or common_sort(a, b)
 
 
     def _entry(self, entry):
