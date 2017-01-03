@@ -28,40 +28,43 @@
             </div>
             <h4>show/hide</h4>
             <div>
-                <label><input type="checkbox" ng-model="showHistoryNavigationButtons" ng-click="checkbox()">Show history navigation buttons (hotkeys always available)</label>
+                <label><input type="checkbox" ng-model="showHistoryNavigationButtons" ng-click="setConfig('show-history-navigation-buttons', showHistoryNavigationButtons)">Show history navigation buttons (hotkeys always available)</label>
             </div>
             <div>
-                <label><input type="checkbox" ng-model="showTextInput" ng-click="checkbox()">Show text input area</label>
+                <label><input type="checkbox" ng-model="showTextInput" ng-click="setConfig('show-text-input', showTextInput)">Show text input area</label>
             </div>
             <div>
-                <label><input type="checkbox" ng-model="showMecabInfo" ng-click="checkbox()">Show mecab info</label>
+                <label><input type="checkbox" ng-model="showMecabInfo" ng-click="setConfig('show-mecab-info', showMecabInfo)">Show mecab info</label>
             </div>
             <div>
-                <label><input type="checkbox" ng-model="showKanjiInfo" ng-click="checkbox()">Show kanji info</label>
+                <label><input type="checkbox" ng-model="showKanjiInfo" ng-click="setConfig('show-kanji-info', showKanjiInfo)">Show kanji info</label>
             </div>
             <div>
-                <label><input type="checkbox" ng-model="showKanjiPartBrowser" ng-click="checkbox()">Show kanji part browser</label>
+                <label><input type="checkbox" ng-model="showKanjiPartBrowser" ng-click="setConfig('show-kanji-part-browser', showKanjiPartBrowser)">Show kanji part browser</label>
             </div>
             <h4>Features</h4>
             <div>
-                <label><input type="checkbox" ng-model="nonClickMode" ng-click="checkbox()">Non-click mode (Alt+n)</label>
+                <label><input type="checkbox" ng-model="nonClickMode" ng-click="setConfig('non-click-mode', nonClickMode)">Non-click mode (Alt+n)</label>
+            </div>
+            <div>
+                <label><input type="checkbox" ng-model="contextBasedSearch" ng-click="setConfig('context-based-search', contextBasedSearch)">Context-based search</label>
             </div>
             <h4>styles</h4>
             <div>
                 <div>Output font size</div>
-                <input type="text" ng-model="outputFontSize" ng-change="textChange('output-font-size', outputFontSize)">
+                <input type="text" ng-model="outputFontSize" ng-change="setConfig('output-font-size', outputFontSize)">
             </div>
             <div>
                 <div>Output max height</div>
-                <input type="text" ng-model="outputMaxHeight" ng-change="textChange('output-max-height', outputMaxHeight)">
+                <input type="text" ng-model="outputMaxHeight" ng-change="setConfig('output-max-height', outputMaxHeight)">
             </div>
             <div>
                 <div>Kanji part browser size</div>
-                <input type="text" ng-model="kanjiPartBrowserSize" ng-change="textChange('kanji-part-browser-size', kanjiPartBrowserSize)">
+                <input type="text" ng-model="kanjiPartBrowserSize" ng-change="setConfig('kanji-part-browser-size', kanjiPartBrowserSize)">
             </div>
             <div>
                 <div>Similar kanji size</div>
-                <input type="text" ng-model="similarKanjiSize" ng-change="textChange('similar-kanji-size', similarKanjiSize)">
+                <input type="text" ng-model="similarKanjiSize" ng-change="setConfig('similar-kanji-size', similarKanjiSize)">
             </div>
         </div>
     </div>

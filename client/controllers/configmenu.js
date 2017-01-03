@@ -36,20 +36,13 @@ angular.module('mecab-translate')
     Config.listen('non-click-mode', function(val) {
         $scope.nonClickMode = val;
     });
-    $scope.checkbox = function() {
-        Config.set('show-history-navigation-buttons', $scope.showHistoryNavigationButtons);
-        Config.set('show-text-input', $scope.showTextInput);
-        Config.set('show-mecab-info', $scope.showMecabInfo);
-        Config.set('show-kanji-info', $scope.showKanjiInfo);
-        Config.set('show-kanji-part-browser', $scope.showKanjiPartBrowser);
-        Config.set('non-click-mode', $scope.nonClickMode);
-    }
-
+    $scope.contextBasedSearch = Config.get('context-based-search');
     $scope.outputFontSize = Config.get('output-font-size');
     $scope.outputMaxHeight = Config.get('output-max-height');
     $scope.kanjiPartBrowserSize = Config.get('kanji-part-browser-size');
     $scope.similarKanjiSize = Config.get('similar-kanji-size');
-    $scope.textChange = function(key, value) {
+
+    $scope.setConfig = function(key, value) {
         Config.set(key, value);
     }
 

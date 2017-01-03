@@ -11,6 +11,7 @@ angular.module('mecab-translate')
     config['show-kanji-info'] = true;
     config['show-kanji-part-browser'] = true;
     config['non-click-mode'] = false;
+    config['context-based-search'] = false;
     config['output-font-size'] = 36;
     config['output-max-height'] = '';
     config['kanji-part-browser-size'] = 20;

@@ -15,6 +15,10 @@ angular.module('mecab-translate')
         $scope.showMecabInfo = val;
     });
 
+    Config.listen('context-based-search', function(val) {
+        $scope.contextBasedSearch = val;
+    });
+
     var nonclick;
     Config.listen('non-click-mode', function(val) {
         nonclick = val;
@@ -96,7 +100,8 @@ angular.module('mecab-translate')
             }, 100);
         } else if (!window.getSelection().toString()) {
             $scope.word = word;
-            JMdict_e.translate(word, true, false, position ? {lines: $scope.lines, pos: position} : null);
+            JMdict_e.translate(word, true, false, position && $scope.contextBasedSearch
+                ? {lines: $scope.lines, pos: position} : null);
         }
     }
 

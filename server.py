@@ -347,19 +347,21 @@ class JMdict_e(object):
         def matches(result, pos=0, word=0):
             if pos == 0 and raw.startswith(result):
                 return True
+            if word >= len(context['raw']):
+                return False
+            possible = []
             for c in context:
-                c_pos = pos
-                for i in range(word, len(context[c])):
-                    new_pos = c_pos + len(context[c][i])
-                    part = result[c_pos:new_pos]
-                    c_pos = new_pos
-                    if kata_to_hira(part) == kata_to_hira(context[c][i]):
-                        if c_pos == len(result):
-                            return True
-                        else:
-                            return matches(result, c_pos, i + 1)
+                context_word = context[c][word]
+                new_pos = pos + len(context_word)
+                part = result[pos:new_pos]
+                if kata_to_hira(part) == kata_to_hira(context_word):
+                    if new_pos == len(result):
+                        return True
                     else:
-                        break
+                        possible.append(lambda: matches(result, new_pos, word + 1))
+            for rec in possible:
+                if rec():
+                    return True
             else:
                 return False
 
