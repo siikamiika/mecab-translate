@@ -583,6 +583,11 @@ class Kanjidic2(object):
         # stroke count, frequency
         misc = character.find('misc')
 
+        grade = misc.find('grade')
+        if grade is not None:
+            grade = int(grade.text)
+        entry['grade'] = grade
+
         stroke_count = misc.find('stroke_count')
         if stroke_count is not None:
             stroke_count = int(stroke_count.text)
@@ -592,6 +597,11 @@ class Kanjidic2(object):
         if freq is not None:
             freq = int(freq.text)
         entry['freq'] = freq
+
+        jlpt = misc.find('jlpt')
+        if jlpt is not None:
+            jlpt = int(jlpt.text)
+        entry['jlpt'] = jlpt
 
         reading_meaning = character.find('reading_meaning')
         if not reading_meaning:

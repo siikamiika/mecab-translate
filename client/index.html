@@ -229,9 +229,13 @@
             <tr>
                 <td><b>Misc.</b></td>
                 <td>
-                    <span title="Stroke count">{{kanjidicInfo.stroke_count}}&#9998;</span>
+                    <span class="abbr" ng-if="kanjidicInfo.grade" title="Grade: {{kanjiGrade(kanjidicInfo.grade, true)}}">{{kanjiGrade(kanjidicInfo.grade)}}{{kanjidicInfo.grade}}</span>
+                    <span ng-if="kanjidicInfo.grade" class="unobtrusive">|</span>
+                    <span class="abbr" title="Stroke count">{{kanjidicInfo.stroke_count}}s</span>
                     <span ng-if="kanjidicInfo.freq" class="unobtrusive">|</span>
-                    <span ng-if="kanjidicInfo.freq" title="Frequency" ng-style="{'color': blend([255,0,0], [0,0,0], (kanjidicInfo.freq || 2500)/2500)}">{{kanjidicInfo.freq}}</span>
+                    <span class="abbr" ng-if="kanjidicInfo.freq" title="Frequency" ng-style="{'color': blend([255,0,0], [0,0,0], (kanjidicInfo.freq || 2500)/2500)}">{{kanjidicInfo.freq}}</span>
+                    <span ng-if="kanjidicInfo.jlpt" class="unobtrusive">|</span>
+                    <span class="abbr" ng-if="kanjidicInfo.jlpt" title="JLPT N{{kanjidicInfo.jlpt}}">N{{kanjidicInfo.jlpt}}</span>
                 </td>
             </tr>
             <tr>

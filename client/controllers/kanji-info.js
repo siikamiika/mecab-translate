@@ -95,4 +95,16 @@ angular.module('mecab-translate')
         });
     }
 
+    $scope.kanjiGrade = function(num, explanation) {
+        if (num >= 1 && num <= 6) {
+            return explanation ? 'Kyōiku, kanji learned in elementary school' : '教育';
+        } else if (num >= 7 && num <= 8) {
+            return explanation ? 'Jōyō, regular-use kanji that is not kyōiku' : '常用';
+        } else if (num == 9) {
+            return explanation ? 'Jinmeiyō, kanji used in names' : '人名用';
+        } else if (num == 10) {
+            return explanation ? 'Kyūjitai, traditional form kanji' : '旧字体';
+        }
+    }
+
 });
