@@ -47,6 +47,14 @@ KATAKANA_END = 0x30FA
 CJK_IDEO_START = 0x4e00
 CJK_IDEO_END = 0x9faf
 
+def is_kana(word):
+    for c in word:
+        o = ord(c)
+        if o > KATAKANA_END or o < HIRAGANA_START or HIRAGANA_END < o < KATAKANA_START:
+            return False
+    else:
+        return True
+
 def kata_to_hira(kata):
     hira = []
     for k in kata:
@@ -313,6 +321,8 @@ class JMdict_e(object):
         if regex:
             return self.dictionary.regex_search(word)
 
+        self._lemma_kana = is_kana(word)
+        self._sort_word = word
         self._sort_reading = reading
         self._sort_pos = set(pos) if pos else None
 
@@ -403,7 +413,19 @@ class JMdict_e(object):
                 return 0
             return reading_match[1] or -1
 
-        return reading_sort(a, b) or pos_sort(a, b) or common_sort(a, b)
+        def lemma_sort(a, b):
+            if not self._lemma_kana:
+                return 0
+            kana_match = [False, False]
+            for i, e in enumerate([a, b]):
+                if len(e['words']) == 0:
+                    kana_match[i] = True
+                    break
+            if kana_match[0] == kana_match[1]:
+                return 0
+            return kana_match[1] or -1
+
+        return lemma_sort(a, b) or reading_sort(a, b) or pos_sort(a, b) or common_sort(a, b)
 
 
     def _entry(self, entry):
