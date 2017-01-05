@@ -37,6 +37,7 @@ angular.module('mecab-translate')
         $scope.nonClickMode = val;
     });
     $scope.contextBasedSearch = Config.get('context-based-search');
+    $scope.outputLineMaxLength = Config.get('output-line-max-length');
     $scope.outputFontSize = Config.get('output-font-size');
     $scope.outputMaxHeight = Config.get('output-max-height');
     $scope.kanjiPartBrowserSize = Config.get('kanji-part-browser-size');

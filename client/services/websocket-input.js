@@ -1,5 +1,5 @@
 angular.module('mecab-translate')
-.factory('WebsocketInput', function(Config, EventBridge) {
+.factory('WebsocketInput', function(Config, EventBridge, Mecab) {
 
     var input;
 
@@ -32,7 +32,7 @@ angular.module('mecab-translate')
             }
             ws.onmessage = function(text) {
                 input.value = text.data;
-                angular.element(input).triggerHandler('change');
+                Mecab.analyze(text.data);
             }
         }, 500);
     }

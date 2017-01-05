@@ -141,7 +141,7 @@ angular.module('mecab-translate')
             return t.join('');
         },
         isPunctuation : function(char) {
-            return '.。．‥…,،，、;；:：!！?？\'´‘’"”“-－―～~[]「」『』【】〈〉《》〔〕()（）{}｛｝'.indexOf(char) != -1
+            return char !== '' && '.。．‥…,،，、;；:：!！?？\'´‘’"”“-－―～~[]「」『』【】〈〉《》〔〕()（）{}｛｝'.indexOf(char) != -1;
         },
         posClass: function(pos) {
             switch(pos) {

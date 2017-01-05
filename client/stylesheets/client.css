@@ -18,6 +18,10 @@ ul {
     opacity: 0.4;
 }
 
+.config-textinput {
+    width: 50px;
+}
+
 #kanji-radical-input {
     position: fixed;
     bottom: 10px;

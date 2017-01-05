@@ -19,6 +19,17 @@ angular.module('mecab-translate')
         $scope.contextBasedSearch = val;
     });
 
+    Config.listen('output-line-max-length', function(val) {
+        $scope.outputLineMaxLength = val;
+        if ($scope.lines) {
+            var lines = [[].concat.apply([], $scope.lines)];
+            if (val > 0) {
+                lines = processMecabLines(lines);
+            }
+            $scope.lines = lines;
+        }
+    });
+
     var nonclick;
     Config.listen('non-click-mode', function(val) {
         nonclick = val;
@@ -49,8 +60,57 @@ angular.module('mecab-translate')
         $scope.nonclick = nonclick;
     });
 
+    function processMecabLines(lines) {
+        lines = lines || [];
+
+        var processedLines = [];
+        var lineLength, punctuationIndex, particleIndex, lineOffset, delimiter;
+        for (var i = 0; i < lines.length; i++) {
+            punctuationIndex = -1;
+            particleIndex = -1;
+            lineOffset = 0;
+            lineLength = 0;
+            for (var j = 0; j < lines[i].length; j++) {
+                delimiter = false;
+                lineLength += lines[i][j].literal.length;
+                if (Helpers.isPunctuation(lines[i][j].literal)) {
+                    punctuationIndex = j;
+                    delimiter = true;
+                } else if (['が','の','を','に','へ','と','か','や','な','わ','よ','ね'].indexOf(lines[i][j].literal) != -1) {
+                    particleIndex = j;
+                    delimiter = true;
+                }
+                if (!delimiter && lineLength > $scope.outputLineMaxLength) {
+                    if (punctuationIndex == -1) {
+                        if (particleIndex == -1) {
+                            processedLines.push(lines[i].slice(lineOffset, j));
+                            lineOffset = j;
+                        } else {
+                            processedLines.push(lines[i].slice(lineOffset, particleIndex + 1));
+                            lineOffset = particleIndex + 1;
+                            particleIndex = -1;
+                        }
+                    } else {
+                        processedLines.push(lines[i].slice(lineOffset, punctuationIndex + 1));
+                        lineOffset = punctuationIndex + 1;
+                        punctuationIndex = -1;
+                    }
+                    lineLength = lines[i].slice(lineOffset, j).map(function(a, b) {
+                        return a.literal;
+                    }).join('').length;
+                }
+            }
+            processedLines.push(lines[i].slice(lineOffset));
+        }
+        return processedLines;
+    }
+
     Mecab.setOutput(function(output) {
-        $scope.lines = output;
+        if ($scope.outputLineMaxLength > 0) {
+            $scope.lines = processMecabLines(output);
+        } else {
+            $scope.lines = output;
+        }
     });
 
     $scope.clearKanjiInfoQueue = function() {

@@ -49,22 +49,26 @@
             <div>
                 <label><input type="checkbox" ng-model="contextBasedSearch" ng-click="setConfig('context-based-search', contextBasedSearch)">Context-based search</label>
             </div>
+            <div>
+                <div>Limit output line length (break line after 。、！？/は,が,を...)</div>
+                <input class="config-textinput" type="text" ng-model="outputLineMaxLength" ng-change="setConfig('output-line-max-length', outputLineMaxLength)">
+            </div>
             <h4>styles</h4>
             <div>
                 <div>Output font size</div>
-                <input type="text" ng-model="outputFontSize" ng-change="setConfig('output-font-size', outputFontSize)">
+                <input class="config-textinput" type="text" ng-model="outputFontSize" ng-change="setConfig('output-font-size', outputFontSize)">
             </div>
             <div>
                 <div>Output max height</div>
-                <input type="text" ng-model="outputMaxHeight" ng-change="setConfig('output-max-height', outputMaxHeight)">
+                <input class="config-textinput" type="text" ng-model="outputMaxHeight" ng-change="setConfig('output-max-height', outputMaxHeight)">
             </div>
             <div>
                 <div>Kanji part browser size</div>
-                <input type="text" ng-model="kanjiPartBrowserSize" ng-change="setConfig('kanji-part-browser-size', kanjiPartBrowserSize)">
+                <input class="config-textinput" type="text" ng-model="kanjiPartBrowserSize" ng-change="setConfig('kanji-part-browser-size', kanjiPartBrowserSize)">
             </div>
             <div>
                 <div>Similar kanji size</div>
-                <input type="text" ng-model="similarKanjiSize" ng-change="setConfig('similar-kanji-size', similarKanjiSize)">
+                <input class="config-textinput" type="text" ng-model="similarKanjiSize" ng-change="setConfig('similar-kanji-size', similarKanjiSize)">
             </div>
         </div>
     </div>
