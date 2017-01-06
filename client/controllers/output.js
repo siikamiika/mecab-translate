@@ -71,6 +71,9 @@ angular.module('mecab-translate')
             lineOffset = 0;
             lineLength = 0;
             for (var j = 0; j < lines[i].length; j++) {
+                if (lines[i][j].literal === undefined) {
+                    continue;
+                }
                 delimiter = false;
                 lineLength += lines[i][j].literal.length;
                 if (Helpers.isPunctuation(lines[i][j].literal)) {
