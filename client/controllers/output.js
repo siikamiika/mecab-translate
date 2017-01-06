@@ -75,6 +75,9 @@ angular.module('mecab-translate')
                 lineLength += lines[i][j].literal.length;
                 if (Helpers.isPunctuation(lines[i][j].literal)) {
                     punctuationIndex = j;
+                    if (punctuationIndex > particleIndex) {
+                        particleIndex = -1;
+                    }
                     delimiter = true;
                 } else if (['が','の','を','に','へ','と','か','や','な','わ','よ','ね'].indexOf(lines[i][j].literal) != -1) {
                     particleIndex = j;
