@@ -146,7 +146,7 @@
         </div>
     </div>
     <!-- Analyzed output -->
-    <div ng-controller="Output" ng-mouseup="translateSelection(); updateWordLookup();" ng-mouseenter="resumeNonClickMode()">
+    <div ng-controller="Output" ng-mousedown="pauseNonClickMode()" ng-mouseup="translateSelection(); updateWordLookup();" ng-mouseenter="resumeNonClickMode()" ng-mouseleave="clearSelection()">
         <div ng-style="{'font-size': outputFontSize + 'px', 'max-height': outputMaxHeight, 'overflow-y': (outputMaxHeight != 'none' &amp;&amp; 'scroll') || 'show'}" id="output">
             <div
                 ng-class="mouseInside ? 'bg-highlight' : ''"
@@ -166,7 +166,8 @@
                      --><div
                             class="character"
                             ng-repeat="char in word.literal track by $index"
-                            ng-click="getKanjiInfo(char); pauseNonClickMode(word);"
+                            ng-mousedown="pauseNonClickMode(word)"
+                            ng-click="getKanjiInfo(char)"
                             ng-mouseenter="getKanjiInfo(char, true); showTooltip(word, $event)"
                             ng-mouseleave="clearKanjiInfoQueue()"><!--
                          -->{{char}}<!--

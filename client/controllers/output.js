@@ -194,7 +194,7 @@ angular.module('mecab-translate')
                     $scope.showWordInfo(wordInfoQueue, false, position, true);
                 }
             }, 100);
-        } else {
+        } else if (!window.getSelection().toString()) {
             if (!tooltip) {
                 $scope.word = word;
             }
@@ -213,6 +213,11 @@ angular.module('mecab-translate')
             JMdict_e.translate(selection);
             $scope.TTS(selection);
         }
+    }
+
+    $scope.clearSelection = function() {
+        window.getSelection().removeAllRanges();
+        $scope.lastSelection = '';
     }
 
     $scope.updateWordLookup = function() {
