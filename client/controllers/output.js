@@ -194,7 +194,7 @@ angular.module('mecab-translate')
                     $scope.showWordInfo(wordInfoQueue, false, position, true);
                 }
             }, 100);
-        } else if (!window.getSelection().toString()) {
+        } else {
             if (!tooltip) {
                 $scope.word = word;
             }
@@ -204,7 +204,7 @@ angular.module('mecab-translate')
     }
 
     $scope.translateSelection = function() {
-        var selection = window.getSelection().toString();
+        var selection = window.getSelection().toString().replace(/[\r\n]/g, '');
         if ($scope.lastSelection == selection)
             return;
         else
@@ -216,7 +216,7 @@ angular.module('mecab-translate')
     }
 
     $scope.updateWordLookup = function() {
-        var selection = window.getSelection().toString();
+        var selection = window.getSelection().toString().replace(/[\r\n]/g, '');
         if (selection)
             EventBridge.dispatch('text-selected', selection);
     }
