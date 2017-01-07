@@ -154,7 +154,7 @@
                 ng-mouseenter="mouseInside = true"
                 ng-mouseleave="mouseInside = false"
                 ng-init="ttsRow = $index">
-                <div class="clickable tts-button unobtrusive" ng-click="TTS(line, true); updateRow(ttsRow)" ng-class="mouseInside ? '' : 'hide'">[TTS]</div>
+                <div class="clickable tts-button unobtrusive" ng-mousedown="$event.stopPropagation()" ng-click="TTS(line, true); updateRow(ttsRow)" ng-class="mouseInside ? '' : 'hide'">[TTS]</div>
                 <div class="line" ng-class="'row-' + $index"><!--
                  --><div
                         class="clickable word"
