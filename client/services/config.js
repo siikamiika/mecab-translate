@@ -10,7 +10,7 @@ angular.module('mecab-translate')
     config['show-mecab-info'] = true;
     config['show-kanji-info'] = true;
     config['show-kanji-part-browser'] = true;
-    config['non-click-mode'] = false;
+    config['non-click-mode'] = true;
     config['context-based-search'] = false;
     config['output-line-max-length'] = '';
     config['output-font-size'] = 36;

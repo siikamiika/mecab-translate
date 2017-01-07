@@ -155,21 +155,49 @@
                 ng-mouseleave="mouseInside = false"
                 ng-init="ttsRow = $index">
                 <div class="clickable tts-button unobtrusive" ng-click="TTS(line, true); updateRow(ttsRow)" ng-class="mouseInside ? '' : 'hide'">[TTS]</div>
-                <div class="line" ng-class="'row-' + $index">
-                    <span
+                <div class="line" ng-class="'row-' + $index"><!--
+                 --><div
                         class="clickable word"
                         ng-repeat="word in line"
                         ng-class="posClass(word.pos)"
-                        ng-attr-title="{{posClass(word.pos)}}"
                         ng-click="showWordInfo(word, null, [$parent.$index, $index])"
                         ng-mouseenter="showWordInfo(word, true, [$parent.$index, $index])"
-                        ng-mouseleave="clearWordInfoQueue()"><span
+                        ng-mouseleave="clearWordInfoQueue(); hideTooltip(word)"><!--
+                     --><div
                             class="character"
                             ng-repeat="char in word.literal track by $index"
-                            ng-click="getKanjiInfo(char); pauseNonClickMode();"
-                            ng-mouseenter="getKanjiInfo(char, true)"
-                            ng-mouseleave="clearKanjiInfoQueue()">{{char}}</span></span>
-                </div>
+                            ng-click="getKanjiInfo(char); pauseNonClickMode(word);"
+                            ng-mouseenter="getKanjiInfo(char, true); showTooltip(word, $event)"
+                            ng-mouseleave="clearKanjiInfoQueue()"><!--
+                         -->{{char}}<!--
+                     --></div><!--
+                     --><div
+                            class="word-tooltip"
+                            ng-style="{'left': (word.right < word.width ? word.right - word.width : 0) + 'px', 'width': word.width + 'px'}"
+                            ng-click="$event.stopPropagation()"
+                            ng-mouseenter="hideTooltip(word)"
+                            ng-if="word.tooltip">
+                            <div ng-if="word.reading">{{word.reading}}</div>
+                            <hr ng-if="word.reading">
+                            <div ng-class="{'hide': !kanjidicInfo.literal}">{{kanjidicInfo.literal}}: <span ng-repeat="meaning in kanjidicInfo.meaning">{{meaning}}<span class="unobtrusive" ng-if="!$last"> | </span></span></div>
+                            <hr>
+                            <div ng-repeat="entry in jmdictEntries">
+                                <div style="font-size: 18px;">
+                                    <span ng-class="{'common': word.common}" ng-repeat="word in entry.words">{{word.text}}<span ng-if="!$last">, </span></span>
+                                    <span ng-if="entry.words.length">(</span><span ng-class="{'common': reading.common}" ng-repeat="reading in entry.readings">{{reading.text}}<span ng-if="!$last">, </span></span><span ng-if="entry.words.length">)</span>
+                                </div>
+                                <div ng-repeat="translation in entry.translations">
+                                    <span>{{$index + 1}}.</span>
+                                    <span ng-repeat="pos in translation.pos"><span class="part-of-speech">{{pos[0]}}</span><span ng-if="!$last">, </span></span>
+                                    <span ng-repeat="gloss in translation.gloss" class="translation">
+                                        <span>{{gloss}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
+                                    </span>
+                                </div>
+                                <hr ng-if="!$last">
+                            </div>
+                        </div><!--
+                 --></div><!--
+             --></div>
             </div>
         </div>
         <div style="font-size: 10px;" class="unobtrusive" ng-class="{'hide': !nonclick}">Non-click mode activated.</div>

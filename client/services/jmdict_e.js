@@ -1,12 +1,13 @@
 angular.module('mecab-translate')
-.factory('JMdict_e', function($http, Helpers) {
+.factory('JMdict_e', function($http, Helpers, EventBridge) {
 
-    var output;
     var last;
 
     return {
-        translate: function(word, obj, regex, context) {
-            last = word;
+        translate: function(word, obj, regex, context, tooltip) {
+            if (!tooltip) {
+                last = word;
+            }
             var reading, pos;
             if (obj) {
                 reading = word.lemma_reading;
@@ -61,13 +62,10 @@ angular.module('mecab-translate')
                     context: wordContext
                 }
             }).then(function success(data) {
-                output(data.data);
+                EventBridge.dispatch(tooltip ? 'jmdict-tooltip' : 'jmdict-response', data.data);
             }, function error(data) {
-                output([]);
+                EventBridge.dispatch(tooltip ? 'jmdict-tooltip' : 'jmdict-response', []);
             });
-        },
-        setOutput: function(fn) {
-            output = fn;
         },
         getLast: function() {
             return last;

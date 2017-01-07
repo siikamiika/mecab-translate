@@ -128,14 +128,25 @@ ul {
 
 .word {
     margin: 4px;
+    display: inline-block;
+    position: relative;
 }
 
 .word:hover {
     background-color: #bbb;
 }
 
-.character {
+.word-tooltip {
+    background-color: white;
+    position: absolute;
+    z-index: 1;
+    font-size: 14px;
+    cursor: initial;
+    border-style: solid;
+}
 
+.character {
+    display: inline-block;
 }
 
 .abbr:after {

@@ -40,8 +40,11 @@ angular.module('mecab-translate')
         Config.set('non-click-mode', !nonclick);
     });
 
-    $scope.pauseNonClickMode = function() {
+    $scope.pauseNonClickMode = function(word) {
         $scope.nonclick = false;
+        if (word) {
+            word.tooltip = false;
+        }
     }
 
     $scope.resumeNonClickMode = function() {
@@ -119,15 +122,35 @@ angular.module('mecab-translate')
         }
     });
 
+    $scope.showTooltip = function(word, event) {
+        if (!word.tooltip && $scope.nonclick) {
+            var bodyRect = document.body.getBoundingClientRect();
+            var element = event.target.classList.contains('word') ? event.target : event.target.parentElement;
+            var rect = element.getBoundingClientRect();
+            word.right = rect.width + (bodyRect.right - rect.right);
+            word.width = Math.min(Math.max(300, bodyRect.width / 2), bodyRect.width * 0.95);
+            word.tooltip = true;
+        }
+    }
+
+    $scope.hideTooltip = function(word) {
+        if ($scope.nonclick) {
+            word.tooltip = false;
+        }
+    }
+
+    EventBridge.addEventListener('kanjidic2-tooltip', function(response) {
+        $scope.kanjidicInfo = response;
+    });
+
     $scope.clearKanjiInfoQueue = function() {
         kanjiInfoQueue = null;
     }
     var kanjiInfoQueue;
     var kanjiInfoTimer;
-    $scope.getKanjiInfo = function(kanji, mouseover) {
+    $scope.getKanjiInfo = function(kanji, mouseover, tooltip) {
         if (mouseover) {
-            if (!Helpers.isKanji(kanji))
-                return;
+            $scope.kanjidicInfo = {};
             kanjiInfoQueue = kanji;
             if (!$scope.nonclick)
                 return;
@@ -136,23 +159,30 @@ angular.module('mecab-translate')
             }
             kanjiInfoTimer = setTimeout(function() {
                 if (kanjiInfoQueue) {
-                    $scope.getKanjiInfo(kanjiInfoQueue);
+                    $scope.getKanjiInfo(kanjiInfoQueue, false, true);
                 }
             }, 100);
         } else {
-            KanjiVG.get(kanji);
-            Kanjidic2.get(kanji);
-            SimilarKanji.get(kanji);
+            if (!tooltip) {
+                KanjiVG.get(kanji);
+                SimilarKanji.get(kanji);
+            }
+            Kanjidic2.get(kanji, null, tooltip);
         }
     }
+
+    EventBridge.addEventListener('jmdict-tooltip', function(output) {
+        $scope.jmdictEntries = output.exact || [];
+    });
 
     $scope.clearWordInfoQueue = function() {
         wordInfoQueue = null;
     }
     var wordInfoQueue;
     var wordInfoTimer;
-    $scope.showWordInfo = function(word, mouseover, position) {
+    $scope.showWordInfo = function(word, mouseover, position, tooltip) {
         if (mouseover) {
+            $scope.jmdictEntries = [];
             wordInfoQueue = word;
             if (!$scope.nonclick)
                 return;
@@ -161,13 +191,15 @@ angular.module('mecab-translate')
             }
             wordInfoTimer = setTimeout(function() {
                 if (wordInfoQueue) {
-                    $scope.showWordInfo(wordInfoQueue, false, position);
+                    $scope.showWordInfo(wordInfoQueue, false, position, true);
                 }
             }, 100);
         } else if (!window.getSelection().toString()) {
-            $scope.word = word;
+            if (!tooltip) {
+                $scope.word = word;
+            }
             JMdict_e.translate(word, true, false, position && $scope.contextBasedSearch
-                ? {lines: $scope.lines, pos: position} : null);
+                ? {lines: $scope.lines, pos: position} : null, tooltip);
         }
     }
 
