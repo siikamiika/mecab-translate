@@ -254,7 +254,7 @@ angular.module('mecab-translate')
         },
         mecabInfoTranslation: function(field, text, special) {
             text = text.split('-')[0];
-            return special && text.match(/^.一段/) && special[1] && special[0] !== removeChouon(special[1])
+            return special && text.match(/^.一段/) && special[1] && special[0].slice(-2) !== removeChouon(special[1]).slice(-2)
                 ? 'godan, potential'
                 : mecabInfoTranslation[field][text];
         },
