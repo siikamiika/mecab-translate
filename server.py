@@ -178,7 +178,7 @@ class Mecab(object):
         'inflection_form', 'lemma', 'reading', 'hatsuon']
 
     UNIDIC = ['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
-        'inflection_form', 'lemma_reading', 'lemma', '_', 'reading']
+        'inflection_form', 'lemma_reading', 'lemma', '_', 'reading', '_', 'orth_reading']
 
     def __init__(self):
         self.dictionary_format = Mecab.IPADIC

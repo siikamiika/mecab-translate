@@ -2,6 +2,7 @@ angular.module('mecab-translate')
 .controller('Output', function($scope, $rootScope, Mecab, JMdict_e, Kanjidic2, SimilarKanji, KanjiVG, ResponsiveVoice, RemoteTts, Tts, TtsEvents, EventBridge, Config, Helpers) {
 
     $scope.posClass = Helpers.posClass;
+    $scope.mecabInfoTranslation = Helpers.mecabInfoTranslation;
 
     Config.listen('output-font-size', function(val) {
         $scope.outputFontSize = val;

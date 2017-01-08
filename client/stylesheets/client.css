@@ -206,7 +206,7 @@ ul {
     border-bottom: 3px solid #FF4040;
 }
 
-.adjective {
+.i-adjective, .na-adjective {
     border-bottom: 3px solid #FF7070;
 }
 
