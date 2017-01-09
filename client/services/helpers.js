@@ -164,26 +164,28 @@ angular.module('mecab-translate')
     }
 
     var removeChouon = function(text) {
-            var t = [];
-            var previous;
-            for (var i = 0; i < text.length; i++) {
-                if (text[i] == 'ー') {
-                    if ('アカガサザタダナハバパマヤャラワ'.indexOf(previous) != -1) {
-                        t.push('ア');
-                    } else if ('イキギシジチヂニヒビピミリヰエケゲセゼテデネヘベペメレヱ'.indexOf(previous) != -1) {
-                        t.push('イ');
-                    } else if ('ウクグスズツヅヌフブプムユュルオコゴソゾトドノホボポモヨョロヲ'.indexOf(previous) != -1) {
-                        t.push('ウ');
-                    } else {
-                        t.push('ー');
-                    }
+        if (!text)
+            return '';
+        var t = [];
+        var previous;
+        for (var i = 0; i < text.length; i++) {
+            if (text[i] == 'ー') {
+                if ('アカガサザタダナハバパマヤャラワ'.indexOf(previous) != -1) {
+                    t.push('ア');
+                } else if ('イキギシジチヂニヒビピミリヰエケゲセゼテデネヘベペメレヱ'.indexOf(previous) != -1) {
+                    t.push('イ');
+                } else if ('ウクグスズツヅヌフブプムユュルオコゴソゾトドノホボポモヨョロヲ'.indexOf(previous) != -1) {
+                    t.push('ウ');
                 } else {
-                    t.push(text[i]);
+                    t.push('ー');
                 }
-                previous = text[i];
+            } else {
+                t.push(text[i]);
             }
-            return t.join('');
+            previous = text[i];
         }
+        return t.join('');
+    }
 
     return {
         okuriganaRegex: function(str) {

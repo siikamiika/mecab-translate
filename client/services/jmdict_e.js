@@ -37,16 +37,16 @@ angular.module('mecab-translate')
                 if (contextWords.length) {
                     wordContext = {
                         raw: contextWords.map(function(w) {
-                            return w.literal;
+                            return w.literal || '';
                         }),
                         reading: contextWords.map(function(w) {
                             return Helpers.removeChouon(w.reading);
                         }),
                         lemma: contextWords.map(function(w) {
-                            return w.lemma.split('-')[0];
+                            return (word.lemma||'').split('-')[0];
                         }),
                         lemma_reading: contextWords.map(function(w) {
-                            return w.lemma_reading;
+                            return w.lemma_reading || '';
                         })
                     }
                 }
