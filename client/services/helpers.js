@@ -254,11 +254,24 @@ angular.module('mecab-translate')
         posClass: function(pos) {
             return mecabInfoTranslation.pos[pos] || 'other';
         },
-        mecabInfoTranslation: function(field, text, special) {
-            text = text.split('-')[0];
-            return special && text.match(/^.一段/) && special[1] && special[0].slice(-2) !== removeChouon(special[1]).slice(-2)
-                ? 'godan, potential'
-                : mecabInfoTranslation[field][text];
+        mecabInfoTranslation: function(category, info) {
+            function strip(text) {
+                return text.split('-')[0];
+            }
+            function getField(field) {
+                return mecabInfoTranslation[field][strip(info[field])];
+            }
+            if (category == 'pos') {
+                return ['pos', 'pos2', 'pos3', 'pos4'].map(getField).join(', ');
+            } else if (category == 'inflection') {
+                if (info.inflection_type.match(/^.一段/) && info.orth_reading && info.lemma_reading.slice(-2) !== removeChouon(info.orth_reading).slice(-2)) {
+                    return 'godan, potential, ' + mecabInfoTranslation.inflection_form[strip(info.inflection_form)];
+                } else if (['助動詞-ダ', '助動詞-デス', '形容詞'].indexOf(info.inflection_type) != -1 && info.inflection_form == '意志推量形') {
+                    return mecabInfoTranslation.inflection_type[strip(info.inflection_type)] + ', speculation';
+                } else {
+                    return ['inflection_type', 'inflection_form'].map(getField).join(', ');
+                }
+            }
         },
         ifExists: function(url, callback, e) {
             $http.get(url)

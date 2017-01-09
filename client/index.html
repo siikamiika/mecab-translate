@@ -182,7 +182,7 @@
                                 {{word.reading}}
                                 <span ng-if="word.inflection_type">
                                     <span class="unobtrusive">|</span>
-                                    {{mecabInfoTranslation('inflection_type', word.inflection_type, [word.lemma_reading, word.orth_reading])}}, {{mecabInfoTranslation('inflection_form', word.inflection_form)}}
+                                    {{mecabInfoTranslation('inflection', word)}}
                                 </span>
                             </div>
                             <hr ng-if="word.reading">
@@ -209,8 +209,8 @@
         </div>
         <div style="font-size: 10px;" class="unobtrusive" ng-class="{'hide': !nonclick}">Non-click mode activated.</div>
         <div ng-show="showMecabInfo" ng-if="word.pos" class="mecab-info">
-            <b>Pos: </b>{{mecabInfoTranslation('pos', word.pos)}}, {{mecabInfoTranslation('pos2', word.pos2)}}, {{mecabInfoTranslation('pos3', word.pos3)}}, {{mecabInfoTranslation('pos4', word.pos4)}}
-            <b>Infl.: </b>{{mecabInfoTranslation('inflection_type', word.inflection_type, [word.lemma_reading, word.orth_reading])}}, {{mecabInfoTranslation('inflection_form', word.inflection_form)}}
+            <b>Pos: </b>{{mecabInfoTranslation('pos', word)}}
+            <b>Infl.: </b>{{mecabInfoTranslation('inflection', word)}}
             <b>Lemma: </b>{{word.lemma}}
             <b>Reading: </b><span class="clickable" ng-if="word.reading" ng-click="TTS(word.hatsuon || word.reading)">{{word.reading}}</span>
         </div>
