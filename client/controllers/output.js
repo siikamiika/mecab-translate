@@ -195,7 +195,6 @@ angular.module('mecab-translate')
     $scope.translateSelection = function() {
         var selection = window.getSelection();
         var text = selection.toString().replace(/[\r\n]/g, '');
-        selection.removeAllRanges();
         if (text) {
             EventBridge.dispatch('text-selected', text);
             $scope.resumeNonClickMode();
