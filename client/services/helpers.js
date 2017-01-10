@@ -264,7 +264,7 @@ angular.module('mecab-translate')
             if (category == 'pos') {
                 return ['pos', 'pos2', 'pos3', 'pos4'].map(getField).join(', ');
             } else if (category == 'inflection') {
-                if (info.inflection_type.match(/^.一段/) && info.orth_reading && info.lemma_reading.slice(-2) !== removeChouon(info.orth_reading).slice(-2)) {
+                if (info.inflection_type.match(/^下一段/) && info.orth_reading && info.lemma_reading.slice(-2) !== removeChouon(info.orth_reading).slice(-2)) {
                     return 'potential, ' + mecabInfoTranslation.inflection_form[strip(info.inflection_form)];
                 } else if (['助動詞-ダ', '助動詞-デス', '形容詞'].indexOf(info.inflection_type) != -1 && info.inflection_form == '意志推量形') {
                     return mecabInfoTranslation.inflection_type[strip(info.inflection_type)] + ', speculation';
