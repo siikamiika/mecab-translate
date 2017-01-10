@@ -14,6 +14,16 @@ ul {
     width: 90%;
 }
 
+#config-menu {
+    background-color: white;
+    border-style: solid;
+    max-width: 800px;
+    width: 80vw;
+    max-height: 800px;
+    max-height: 80vh;
+    overflow: scroll;
+}
+
 #config-button {
     opacity: 0.4;
 }

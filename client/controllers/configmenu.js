@@ -38,13 +38,25 @@ angular.module('mecab-translate')
     });
     $scope.contextBasedSearch = Config.get('context-based-search');
     $scope.outputLineMaxLength = Config.get('output-line-max-length');
+    $scope.externalSites = Config.get('external-sites');
+    $scope.addExternalSite = function() {
+        $scope.externalSites.push({aboveResults: true});
+        $scope.saveExternalSites();
+    }
+    $scope.removeExternalSite = function(index) {
+        $scope.externalSites.splice(index);
+        $scope.saveExternalSites();
+    }
+    $scope.saveExternalSites = function() {
+        $scope.setConfig('external-sites', $scope.externalSites, true);
+    }
     $scope.outputFontSize = Config.get('output-font-size');
     $scope.outputMaxHeight = Config.get('output-max-height');
     $scope.kanjiPartBrowserSize = Config.get('kanji-part-browser-size');
     $scope.similarKanjiSize = Config.get('similar-kanji-size');
 
-    $scope.setConfig = function(key, value) {
-        Config.set(key, value);
+    $scope.setConfig = function(key, value, noListen) {
+        Config.set(key, value, noListen);
     }
 
     $scope.ttsProvider = Config.get('tts-provider');

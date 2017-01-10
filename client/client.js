@@ -10,8 +10,6 @@ angular.module('mecab-translate', []).directive('keypressEvents', [
                     if (e.which == 9) { // Tab
                         $rootScope.$broadcast('focus-input');
                         e.preventDefault();
-                    } else if (e.which == 16) { // Shift
-                        $rootScope.$broadcast('shift-down');
                     } else if (e.altKey) {
                         var preventDefault = true;
                         if (e.which == 49) // Alt+1
@@ -25,10 +23,6 @@ angular.module('mecab-translate', []).directive('keypressEvents', [
                         if (preventDefault)
                             e.preventDefault();
                     }
-                });
-                $document.bind('keyup', function(e) {
-                    if (e.which ==  16) // Shift
-                        $rootScope.$broadcast('shift-up');
                 });
             }
         }

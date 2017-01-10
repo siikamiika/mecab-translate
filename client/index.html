@@ -9,9 +9,9 @@
 </head>
 <body keypress-events>
     <!-- Config menu -->
-    <div style="position: fixed; top: 0px; left: 0px; z-index: 1;" ng-controller="ConfigMenu">
+    <div style="position: fixed; top: 0px; left: 0px; z-index: 2;" ng-controller="ConfigMenu">
         <div class="clickable" id="config-button" ng-click="toggleShowConfigMenu()" style="display: inline-block;">&#9881;</div>
-        <div ng-show="showConfigMenu" style="background-color: white; width: 300px; height: 300px; overflow: scroll;">
+        <div ng-show="showConfigMenu" id="config-menu">
             <h4>TTS</h4>
             <div>
                 <select ng-model="ttsProvider" ng-change="updateTts()">
@@ -52,6 +52,20 @@
             <div>
                 <div>Limit output line length (break line after 。、！？/は,が,を...)</div>
                 <input class="config-textinput" type="text" ng-model="outputLineMaxLength" ng-change="setConfig('output-line-max-length', outputLineMaxLength)">
+            </div>
+            <div>
+                <div>External links</div>
+                <div ng-repeat="externalSite in externalSites">
+                    <div>
+                        <label><input type="checkbox" ng-model="externalSite.aboveResults" ng-change="saveExternalSites()">above results</label>
+                        <label><input type="checkbox" ng-model="externalSite.nextToWords" ng-change="saveExternalSites()">next to words</label>
+                        <label><input type="checkbox" ng-model="externalSite.nextToReadings" ng-change="saveExternalSites()">next to readings</label>
+                    </div>
+                    <input ng-change="saveExternalSites()" class="config-textinput" placeholder="name" ng-model="externalSite.name">
+                    <input ng-change="saveExternalSites()" placeholder="http://site.tld/s?q=%QUERY%" ng-model="externalSite.url">
+                    <span class="clickable" ng-click="removeExternalSite($index)">[x]</span>
+                </div>
+                <div><span class="clickable" ng-click="addExternalSite()">[+]</span></div>
             </div>
             <h4>styles</h4>
             <div>
@@ -146,7 +160,7 @@
         </div>
     </div>
     <!-- Analyzed output -->
-    <div ng-controller="Output" ng-mousedown="pauseNonClickMode()" ng-mouseup="translateSelection(); updateWordLookup();" ng-mouseenter="resumeNonClickMode()" ng-mouseleave="clearSelection()">
+    <div ng-controller="Output" ng-mousedown="pauseNonClickMode()" ng-mouseup="translateSelection()" ng-mouseenter="resumeNonClickMode()">
         <div ng-style="{'font-size': outputFontSize + 'px', 'max-height': outputMaxHeight, 'overflow-y': (outputMaxHeight != 'none' &amp;&amp; 'scroll') || 'show'}" id="output">
             <div
                 ng-class="mouseInside ? 'bg-highlight' : ''"
@@ -316,6 +330,9 @@
     </div>
     <!-- Translation -->
     <div ng-controller="Translation">
+        <div ng-if="query">
+            Results for 「{{query}}」<a target="_blank" ng-href="{{externalLink(externalSite.url, query)}}" ng-repeat="externalSite in externalSites" ng-if="externalSite.aboveResults">[{{externalSite.name}}]</a>
+        </div>
         <div ng-if="shorterEntries" class="warning">
             No exact matches! Did you mean...
         </div>
@@ -329,9 +346,15 @@
                         ><span ng-repeat="char in word.text track by $index" class="clickable" ng-click="getKanjiInfo(char)">{{char}}</span></span><span
                             ng-if="word.inf.length"
                             class="unobtrusive"
-                        >(<span ng-repeat="inf in word.inf"><span class="abbr" ng-attr-title="{{inf[1]}}">{{inf[0]}}</span><span ng-if="!$last">, </span></span>)</span><span
-                            ng-if="!$last"
-                        >, </span>
+                        >(<span ng-repeat="inf in word.inf"><span class="abbr" ng-attr-title="{{inf[1]}}">{{inf[0]}}</span><span ng-if="!$last">, </span></span>)</span><!--
+                     --><a
+                            class="unobtrusive"
+                            style="font-size: 16px;"
+                            target="_blank"
+                            ng-href="{{externalLink(externalSite.url, word.text)}}"
+                            ng-repeat="externalSite in externalSites"
+                            ng-if="externalSite.nextToWords">[{{externalSite.name}}]</a><!--
+                     --><span ng-if="!$last">, </span>
                     </span>
                 </div>
                 <div ng-style="{'font-size': entry.words.length ? '20px' : '28px'}">
@@ -347,9 +370,15 @@
                         >(<span ng-repeat="inf in reading.inf"><span class="abbr" ng-attr-title="{{inf[1]}}">{{inf[0]}}</span><span ng-if="!$last">, </span></span>)</span><span
                             ng-if="reading.restr.length"
                             class="unobtrusive"
-                        >({{reading.restr.join(', ')}})</span><span
-                            ng-if="!$last"
-                        >, </span>
+                        >({{reading.restr.join(', ')}})</span><!--
+                     --><a
+                            class="unobtrusive"
+                            style="font-size: 16px;"
+                            target="_blank"
+                            ng-href="{{externalLink(externalSite.url, reading.text)}}"
+                            ng-repeat="externalSite in externalSites"
+                            ng-if="entry.words.length ? externalSite.nextToReadings : externalSite.nextToWords">[{{externalSite.name}}]</a><!--
+                     --><span ng-if="!$last">, </span>
                     </span>
                 </div>
                 <ol>
@@ -395,7 +424,7 @@
             </li>
         </ul>
         <div>
-            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{(query.lemma.split('-') || [''])[0] || query.literal || query}} ({{longerEntries.length}})</button>
+            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{query}} ({{longerEntries.length}})</button>
             <div ng-repeat="entry in longerEntryListing"><span class="clickable" ng-click="translate(entry)">{{entry}}</span></div>
         </div>
     </div>

@@ -1,5 +1,11 @@
 angular.module('mecab-translate')
-.controller('Translation', function($scope, JMdict_e, Kanjidic2, SimilarKanji, KanjiVG, Helpers, EventBridge) {
+.controller('Translation', function($scope, JMdict_e, Kanjidic2, SimilarKanji, KanjiVG, Helpers, EventBridge, Config) {
+
+    $scope.externalSites = Config.get('external-sites');
+
+    $scope.externalLink = function(link, text) {
+        return (link || '').replace('%QUERY%', text);
+    }
 
     $scope.setEntries = function(entries) {
         $scope.entries = entries;
@@ -11,7 +17,8 @@ angular.module('mecab-translate')
     }
 
     EventBridge.addEventListener('jmdict-response', function(output) {
-        $scope.query = JMdict_e.getLast();
+        var query = JMdict_e.getLast();
+        $scope.query = (query.lemma || '').split('-')[0] || query.literal || query;
         $scope.longerEntryListing = [];
         $scope.regexResults = [];
         $scope.shorterEntries = output.shorter;

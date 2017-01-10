@@ -52,18 +52,6 @@ angular.module('mecab-translate')
         $scope.nonclick = nonclick;
     }
 
-    $rootScope.$on('shift-down', function() {
-        $scope.nonclick = !nonclick;
-        if (kanjiInfoQueue)
-            $scope.getKanjiInfo(kanjiInfoQueue);
-        if (wordInfoQueue)
-            $scope.showWordInfo(wordInfoQueue);
-    });
-
-    $rootScope.$on('shift-up', function() {
-        $scope.nonclick = nonclick;
-    });
-
     function processMecabLines(lines) {
         lines = lines || [];
 
@@ -205,26 +193,15 @@ angular.module('mecab-translate')
     }
 
     $scope.translateSelection = function() {
-        var selection = window.getSelection().toString().replace(/[\r\n]/g, '');
-        if ($scope.lastSelection == selection)
-            return;
-        else
-            $scope.lastSelection = selection;
-        if (selection) {
-            JMdict_e.translate(selection);
-            $scope.TTS(selection);
+        var selection = window.getSelection();
+        var text = selection.toString().replace(/[\r\n]/g, '');
+        selection.removeAllRanges();
+        if (text) {
+            EventBridge.dispatch('text-selected', text);
+            $scope.resumeNonClickMode();
+            JMdict_e.translate(text);
+            $scope.TTS(text);
         }
-    }
-
-    $scope.clearSelection = function() {
-        window.getSelection().removeAllRanges();
-        $scope.lastSelection = '';
-    }
-
-    $scope.updateWordLookup = function() {
-        var selection = window.getSelection().toString().replace(/[\r\n]/g, '');
-        if (selection)
-            EventBridge.dispatch('text-selected', selection);
     }
 
     $scope.TTS = function(text, line) {

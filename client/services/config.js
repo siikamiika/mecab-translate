@@ -13,6 +13,7 @@ angular.module('mecab-translate')
     config['non-click-mode'] = true;
     config['context-based-search'] = false;
     config['output-line-max-length'] = '';
+    config['external-sites'] = [];
     config['output-font-size'] = 36;
     config['output-max-height'] = '';
     config['kanji-part-browser-size'] = 20;
@@ -31,9 +32,11 @@ angular.module('mecab-translate')
         get: function(key) {
             return config[key];
         },
-        set: function(key, value) {
-            config[key] = value;
+        set: function(key, value, noListen) {
             localStorage[key] = JSON.stringify(value);
+            if (noListen)
+                return;
+            config[key] = value;
             for(i in configListeners[key])
                 configListeners[key][i](config[key]);
         },
