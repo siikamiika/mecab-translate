@@ -44,7 +44,7 @@ angular.module('mecab-translate')
         $scope.saveExternalSites();
     }
     $scope.removeExternalSite = function(index) {
-        $scope.externalSites.splice(index);
+        $scope.externalSites.splice(index, 1);
         $scope.saveExternalSites();
     }
     $scope.saveExternalSites = function() {
