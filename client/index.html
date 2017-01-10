@@ -330,7 +330,7 @@
     </div>
     <!-- Translation -->
     <div ng-controller="Translation">
-        <div ng-if="query">
+        <div ng-if="query && !query.literal">
             Results for 「{{query}}」<a target="_blank" ng-href="{{externalLink(externalSite.url, query)}}" ng-repeat="externalSite in externalSites" ng-if="externalSite.aboveResults">[{{externalSite.name}}]</a>
         </div>
         <div ng-if="shorterEntries" class="warning">
@@ -424,7 +424,7 @@
             </li>
         </ul>
         <div>
-            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{query}} ({{longerEntries.length}})</button>
+            <button ng-click="showLongerEntries()" ng-if="longerEntries.length">More words starting with {{(query.lemma || '').split('-')[0] || query.literal || query}} ({{longerEntries.length}})</button>
             <div ng-repeat="entry in longerEntryListing"><span class="clickable" ng-click="translate(entry)">{{entry}}</span></div>
         </div>
     </div>

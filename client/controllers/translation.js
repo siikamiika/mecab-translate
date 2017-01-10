@@ -18,8 +18,7 @@ angular.module('mecab-translate')
 
     EventBridge.addEventListener('jmdict-response', function(output) {
         window.getSelection().removeAllRanges();
-        var query = JMdict_e.getLast();
-        $scope.query = (query.lemma || '').split('-')[0] || query.literal || query;
+        $scope.query = JMdict_e.getLast();
         $scope.longerEntryListing = [];
         $scope.regexResults = [];
         $scope.shorterEntries = output.shorter;
