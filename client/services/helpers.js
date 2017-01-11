@@ -3,7 +3,7 @@ angular.module('mecab-translate')
 
     var mecabToEdictPos = {};
     mecabToEdictPos['particle'] = ['prt', 'aux'];
-    mecabToEdictPos['aux. verb'] = ['aux-v', 'aux-adj'];
+    mecabToEdictPos['aux-verb'] = ['aux-v', 'aux-adj'];
     mecabToEdictPos['suffix'] = ['suf', 'n-suf'];
     mecabToEdictPos['prefix'] = ['pref'];
     mecabToEdictPos['interjection'] = ['int'];
@@ -135,7 +135,7 @@ angular.module('mecab-translate')
             if (category == 'pos') {
                 return ['pos', 'pos2', 'pos3', 'pos4'].map(getField).join(', ');
             } else if (category == 'inflection') {
-                if (['aux-da', 'aux-desu', 'i.adj'].indexOf(info.inflection_type) != -1 && info.inflection_form == 'volitional') {
+                if (['aux|da', 'aux|desu', 'i-adjective'].indexOf(info.inflection_type) != -1 && info.inflection_form == 'volitional') {
                     return info.inflection_type + ', speculation';
                 } else {
                     return ['inflection_type', 'inflection_form'].map(getField).join(', ');
