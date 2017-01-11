@@ -212,7 +212,7 @@ ul {
     border-bottom: 3px solid #A0C0FF;
 }
 
-.verb {
+.verb, .aux-verb {
     border-bottom: 3px solid #FF4040;
 }
 
@@ -224,7 +224,7 @@ ul {
     border-bottom: 3px solid #FF9090;
 }
 
-.determiner {
+.prenoun {
     border-bottom: 3px solid #FFB0B0;
 }
 
