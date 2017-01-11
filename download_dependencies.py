@@ -35,6 +35,7 @@ RADKFILE = 'radkfile.gz'
 TATOEBA = 'http://tatoeba.org/files/downloads/wwwjdic.csv'
 KANJIVG = 'https://github.com/KanjiVG/kanjivg/releases/download/r20160426/kanjivg-20160426-main.zip'
 ANGULAR = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js'
+UNIDIC_MECAB_TRANSLATE = 'https://github.com/siikamiika/unidic-mecab-translate/releases/download/1.0/unidic-mecab-translate-1.0.zip'
 
 
 def download(url, destination, compression=None):
@@ -77,6 +78,7 @@ def main():
     download(TATOEBA, 'data')
     download(KANJIVG, 'client', 'zip')
     download(ANGULAR, 'client/vendor')
+    download(UNIDIC_MECAB_TRANSLATE, 'data', 'zip')
 
 
 if __name__ == '__main__':

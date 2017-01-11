@@ -174,22 +174,12 @@ class TTSEventSink(object):
 
 class Mecab(object):
 
-    IPADIC = ['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
-        'inflection_form', 'lemma', 'reading', 'hatsuon']
-
     UNIDIC = ['pos', 'pos2', 'pos3', 'pos4', 'inflection_type',
-        'inflection_form', 'lemma_reading', 'lemma', '_', 'reading', '_', 'orth_reading']
+        'inflection_form', 'lemma_reading', 'lemma', '_', 'reading']
 
     def __init__(self):
-        self.dictionary_format = Mecab.IPADIC
-        dic_f = Config.get('mecab_dictionary_format')
-        if dic_f == 'unidic':
-            self.dictionary_format = Mecab.UNIDIC
-        elif dic_f and dic_f != 'ipadic':
-            print('unknown mecab_dictionary_format: {}'.format(dic_f))
-        args = ['mecab']
-        if Config.get('mecab_dictionary'):
-            args += ['-d', Config.get('mecab_dictionary')]
+        self.dictionary_format = Mecab.UNIDIC
+        args = ['mecab', '-d', 'data/unidic-mecab-translate']
         self.process = Popen(args, stdout=PIPE, stdin=PIPE, bufsize=1)
         self.output = Queue()
         self.t = Thread(target=self._handle_stdout)
