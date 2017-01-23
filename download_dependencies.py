@@ -36,6 +36,7 @@ TATOEBA = 'http://tatoeba.org/files/downloads/wwwjdic.csv'
 KANJIVG = 'https://github.com/KanjiVG/kanjivg/releases/download/r20160426/kanjivg-20160426-main.zip'
 ANGULAR = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js'
 UNIDIC_MECAB_TRANSLATE = 'https://github.com/siikamiika/unidic-mecab-translate/releases/download/1.2/unidic-mecab-translate-1.2.zip'
+SIMILAR_KANJI = 'https://raw.githubusercontent.com/siikamiika/similar-kanji/master/kanji.tgz_similars.ut8'
 
 
 def download(url, destination, compression=None):
@@ -79,6 +80,7 @@ def main():
     download(KANJIVG, 'client', 'zip')
     download(ANGULAR, 'client/vendor')
     download(UNIDIC_MECAB_TRANSLATE, 'data', 'zip')
+    download(SIMILAR_KANJI, 'data')
 
 
 if __name__ == '__main__':
