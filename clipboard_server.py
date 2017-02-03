@@ -10,20 +10,21 @@ import os
 if os.name == 'posix':
     pyperclip.set_clipboard('xclip')
 
+clients = []
+
 class Clipboard(object):
 
     def __init__(self):
-        self.clients = []
         self.old = ''
         Thread(target=self._watchdog).start()
 
     def add_client(self, client):
-        if client not in self.clients:
-            self.clients.append(client)
+        if client not in clients:
+            clients.append(client)
 
     def remove_client(self, client):
-        if client in self.clients:
-            self.clients.remove(client)
+        if client in clients:
+            clients.remove(client)
 
     def _watchdog(self):
         while True:
@@ -34,7 +35,7 @@ class Clipboard(object):
         text = pyperclip.paste()
         if not text or text == self.old:
             return
-        for c in self.clients:
+        for c in clients:
             c.write_message(text)
         self.old = text
 
@@ -46,21 +47,31 @@ class ClipboardHandler(websocket.WebSocketHandler):
 
     def open(self):
         clipboard.add_client(self)
-        print('{}--> {}'.format(len(clipboard.clients), self.request.remote_ip))
+        print('{}--> {}'.format(len(clients), self.request.remote_ip))
 
     def on_close(self):
         clipboard.remove_client(self)
-        print('{}<-- {}'.format(len(clipboard.clients), self.request.remote_ip))
+        print('{}<-- {}'.format(len(clients), self.request.remote_ip))
 
+class PostHandler(web.RequestHandler):
+
+    def post(self):
+        data = self.request.body.decode(post_encoding).strip()
+        for c in clients:
+            c.write_message(data)
 
 def get_app():
     return web.Application([
         (r'/', ClipboardHandler),
+        (r'/post', PostHandler),
     ])
 
 if __name__ == '__main__':
     clipboard = Clipboard()
     address, port = (sys.argv[1] if len(sys.argv) > 1 else ':9873').split(':')
+    post_encoding = 'shift-jis'
+    if len(sys.argv) > 2:
+        post_encoding = sys.argv[2]
     app = get_app()
     app.listen(int(port), address=address)
     main_loop = ioloop.IOLoop.instance()
