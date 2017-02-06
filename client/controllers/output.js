@@ -103,13 +103,32 @@ angular.module('mecab-translate')
         return processedLines;
     }
 
-    Mecab.setOutput(function(output) {
+    $scope.setLines = function(lines) {
         if ($scope.outputLineMaxLength > 0) {
-            $scope.lines = processMecabLines(output);
+            $scope.lines = processMecabLines(lines);
         } else {
-            $scope.lines = output;
+            $scope.lines = lines;
         }
+    }
+
+    EventBridge.addEventListener('mecab-response', function(output) {
+        $scope.allLines = output;
+        $scope.setLines(output);
     });
+
+    EventBridge.addEventListener('mecab-nbest', function(output) {
+        $scope.nbest = output;
+    });
+
+    $scope.clearNbest = function() {
+        $scope.nbest = null;
+        $scope.showNbest = false;
+        $scope.setLines($scope.allLines);
+    }
+
+    $scope.toggleNbest = function() {
+        $scope.showNbest = !$scope.showNbest;
+    }
 
     $scope.showTooltip = function(word, event) {
         if (!word.tooltip && $scope.nonclick) {
@@ -199,6 +218,8 @@ angular.module('mecab-translate')
             EventBridge.dispatch('text-selected', text);
             $scope.resumeNonClickMode();
             JMdict_e.translate(text);
+            $scope.lastSelection = text;
+            Mecab.analyze(text, null, 10);
             $scope.TTS(text);
         }
     }

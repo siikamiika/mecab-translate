@@ -56,7 +56,7 @@ class ClipboardHandler(websocket.WebSocketHandler):
 class PostHandler(web.RequestHandler):
 
     def post(self):
-        data = self.request.body.decode(post_encoding).strip()
+        data = self.request.body.decode(post_encoding, 'ignore').strip()
         for c in clients:
             c.write_message(data)
 

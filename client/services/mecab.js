@@ -1,11 +1,11 @@
 angular.module('mecab-translate')
-.factory('Mecab', function($http) {
+.factory('Mecab', function($http, EventBridge) {
 
     var history = [];
     var historyIndex = -1;
 
     return {
-        analyze: function(val, analyzingHistory) {
+        analyze: function(val, analyzingHistory, N) {
             if (!analyzingHistory && val && val.length) {
                 if (history.length >= 50) {
                     history.shift(1);
@@ -27,15 +27,12 @@ angular.module('mecab-translate')
             } else {
                 this.forward.disabled = false;
             }
-            $http.post('/mecab', angular.toJson(val))
+            $http.post('/mecab', angular.toJson({text: val, nbest: N}))
             .then(function success(data) {
-                this.output(data.data);
+                EventBridge.dispatch(N ? 'mecab-nbest' : 'mecab-response', data.data);
             }.bind(this), function error(data) {
-                this.output([]);
+                EventBridge.dispatch(N ? 'mecab-nbest' : 'mecab-response', []);
             }.bind(this));
-        },
-        setOutput: function(fn) {
-            this.output = fn;
         },
         analyzeHistory: function(offset) {
             var newValue = historyIndex + offset;

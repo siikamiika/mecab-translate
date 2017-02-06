@@ -179,8 +179,8 @@ class Mecab(object):
 
     def __init__(self):
         self.dictionary_format = Mecab.UNIDIC
-        args = ['mecab', '-d', 'data/unidic-mecab-translate']
-        self.process = Popen(args, stdout=PIPE, stdin=PIPE, bufsize=1)
+        self.args = ['mecab', '-d', 'data/unidic-mecab-translate']
+        self.process = Popen(self.args, stdout=PIPE, stdin=PIPE, bufsize=1)
         self.output = Queue()
         self.t = Thread(target=self._handle_stdout)
         self.t.daemon = True
@@ -204,6 +204,33 @@ class Mecab(object):
             except Exception as e:
                 print(e)
             result.append(part)
+        return result
+
+    def analyze_nbest(self, text, nbest):
+        nbest = str(min(30, max(1, int(nbest))))
+        args = self.args + ['-N', nbest]
+
+        process = Popen(args, stdout=PIPE, stdin=PIPE, bufsize=1)
+        stdout, stderr = process.communicate((text + '\n').encode('utf-8'))
+
+        result = []
+        buffer = []
+        for line in stdout.decode('utf-8').splitlines():
+            if line == 'EOS':
+                result.append(buffer)
+                buffer = []
+                continue
+
+            try:
+                part = dict()
+                part['literal'], line = line.split('\t')
+                part.update(zip(self.dictionary_format,
+                    ['' if i == '*' else i for i in line.split(',')]))
+            except Exception as e:
+                print(e)
+
+            buffer.append(part)
+
         return result
 
     def _handle_stdout(self):
@@ -972,8 +999,11 @@ class KanjiSimilars(object):
 class MecabHandler(web.RequestHandler):
 
     def post(self):
-        data = json.loads(self.request.body.decode('utf-8')).strip()
-        self.write(json.dumps([mecab.analyze(line) for line in data.splitlines()]))
+        data = json.loads(self.request.body.decode('utf-8'))
+        if data.get('nbest'):
+            self.write(json.dumps(mecab.analyze_nbest(data['text'], data['nbest'])))
+        else:
+            self.write(json.dumps([mecab.analyze(line) for line in data['text'].splitlines()]))
 
 
 class JMdict_eHandler(web.RequestHandler):
