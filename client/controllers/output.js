@@ -219,7 +219,7 @@ angular.module('mecab-translate')
             $scope.resumeNonClickMode();
             JMdict_e.translate(text);
             $scope.lastSelection = text;
-            Mecab.analyze(text, null, 10);
+            Mecab.analyze(text, true, 10);
             $scope.TTS(text);
         }
     }
