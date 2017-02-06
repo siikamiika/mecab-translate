@@ -173,14 +173,18 @@ ul {
 
 }
 
-#nbest {
+.nbest-table {
+    display: inline-table;
+    font-size: 10px;
+    text-align: center;
+}
+
+.nbest-word {
     font-size: 20px;
 }
 
-.annotation {
-    font-size: 12px;
-    line-height: 11px;
-    text-align: center;
+.nbest-reading {
+    font-size: 14px;
 }
 
 .line {

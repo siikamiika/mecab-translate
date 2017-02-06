@@ -130,12 +130,14 @@ angular.module('mecab-translate')
         $scope.showNbest = !$scope.showNbest;
     }
 
-    function short(text, length) {
-        text = text.split('|')[0].slice(0, length);
-        if (text.length == length) {
-            text += '.';
+    $scope.short = Helpers.short;
+
+    $scope.nbestReading = function(word) {
+        if (Helpers.isKana(word.literal)) {
+            return word.lemma;
+        } else {
+            return word.reading;
         }
-        return text;
     }
 
     $scope.wordAnnotation = function(word) {
@@ -159,11 +161,7 @@ angular.module('mecab-translate')
         if (word.inflection_type && word.inflection_form) {
             annotation.push(short(word.inflection_type, 4) + '/' + short(word.inflection_form, 4));
         }
-        if (Helpers.isKana(word.literal)) {
-            annotation.push(word.lemma);
-        } else {
-            annotation.push(word.reading);
-        }
+
         return annotation;
     }
 

@@ -126,6 +126,25 @@ angular.module('mecab-translate')
             }
             return true;
         },
+        short: function(input, maxlen, separator) {
+            var output = [];
+
+            for (var i = 0; i < input.length; i++) {
+                if (input[i]) {
+                    output.push(abbrWord(input[i]));
+                }
+            }
+
+            function abbrWord (text) {
+                text = text.split('|')[0];
+                if (text.length > maxlen) {
+                    return text.slice(0, maxlen) + '.';
+                } else {
+                    return text;
+                }
+            }
+            return output.join(separator);
+        },
         removeChouon: removeChouon,
         isPunctuation : function(char) {
             return char !== '' && '.。．‥…,،，、;；:：!！?？\'´‘’"”“-－―～~[]「」『』【】〈〉《》〔〕()（）{}｛｝'.indexOf(char) != -1;
