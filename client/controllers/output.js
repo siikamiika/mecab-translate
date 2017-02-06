@@ -130,6 +130,43 @@ angular.module('mecab-translate')
         $scope.showNbest = !$scope.showNbest;
     }
 
+    function short(text, length) {
+        text = text.split('|')[0].slice(0, length);
+        if (text.length == length) {
+            text += '.';
+        }
+        return text;
+    }
+
+    $scope.wordAnnotation = function(word) {
+        var annotation = [];
+        var pos = [];
+        if (word.pos) {
+            pos.push(short(word.pos, 4));
+        }
+        if (word.pos2) {
+            pos.push(short(word.pos2, 4));
+        }
+        if (word.pos3) {
+            pos.push(short(word.pos3, 4));
+        }
+        if (word.pos4) {
+            pos.push(short(word.pos4, 4));
+        }
+        if (pos.length) {
+            annotation.push(pos.join('/'));
+        }
+        if (word.inflection_type && word.inflection_form) {
+            annotation.push(short(word.inflection_type, 4) + '/' + short(word.inflection_form, 4));
+        }
+        if (Helpers.isKana(word.literal)) {
+            annotation.push(word.lemma);
+        } else {
+            annotation.push(word.reading);
+        }
+        return annotation;
+    }
+
     $scope.showTooltip = function(word, event) {
         if (!word.tooltip && $scope.nonclick) {
             var bodyRect = document.body.getBoundingClientRect();

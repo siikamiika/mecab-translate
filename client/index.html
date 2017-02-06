@@ -227,14 +227,12 @@
         </div>
         <ol ng-if="showNbest" id="nbest">
             <li ng-click="setLines([result]); resumeNonClickMode()" class="clickable" ng-repeat="result in nbest"><!--
-             --><span
+             --><div
+                    style="display: inline-block; margin: 2px;"
                     ng-repeat="word in result"
                     ng-class="posClass(word.pos)"><!--
-                 --><span
-                        ng-repeat="char in word.literal track by $index"><!--
-                     -->{{char}}<!--
-                --></span><!--
-             --></span><!--
+                 --><ruby>{{word.literal}}<rt class="annotation"><span ng-repeat="annotation in wordAnnotation(word)">{{annotation}}<br ng-if="!$last"></span></rt></ruby><!--
+             --></div><!--
          --></li>
         </ol>
         <div style="font-size: 10px;" class="unobtrusive" ng-class="{'hide': !nonclick}">Non-click mode activated.</div>

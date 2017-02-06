@@ -173,6 +173,16 @@ ul {
 
 }
 
+#nbest {
+    font-size: 20px;
+}
+
+.annotation {
+    font-size: 12px;
+    line-height: 11px;
+    text-align: center;
+}
+
 .line {
     width: 90%;
     display: inline-block;
