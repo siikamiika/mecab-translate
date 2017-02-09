@@ -16,6 +16,8 @@ angular.module('mecab-translate')
         }
     });
 
+    var regex = Config.get('websocket-input-regex');
+
     var ws;
     var connectTimer;
     function connect() {
@@ -31,8 +33,20 @@ angular.module('mecab-translate')
                 EventBridge.dispatch('websocket-input-close');
             }
             ws.onmessage = function(text) {
-                input.value = text.data;
-                Mecab.analyze(text.data);
+                text = text.data;
+                if (!text) return;
+                for (i = 0; i < regex.length; i++) {
+                    if (!regex[i].enabled) continue;
+                    text = textReplace(text, regex[i].pattern, regex[i].replacement);
+                }
+                function textReplace(text, re, replacement) {
+                    re = re.match('^/(.*)/([a-z]*)$');
+                    if (!re) return text;
+                    re = new RegExp(re[1], re[2]);
+                    return text.replace(re, replacement);
+                }
+                input.value = text;
+                Mecab.analyze(text);
             }
         }, 500);
     }

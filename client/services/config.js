@@ -5,6 +5,7 @@ angular.module('mecab-translate')
     config['tts-provider'] = 'responsivevoice';
     config['websocket-input-host'] = '';
     config['websocket-input-enabled'] = false;
+    config['websocket-input-regex'] = [];
     config['show-history-navigation-buttons'] = true;
     config['show-text-input'] = true;
     config['show-mecab-info'] = true;

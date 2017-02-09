@@ -28,6 +28,18 @@ angular.module('mecab-translate')
 
     $scope.websocketInputHost = Config.get('websocket-input-host');
     $scope.websocketInputEnabled = Config.get('websocket-input-enabled');
+    $scope.websocketInputRegex = Config.get('websocket-input-regex');
+    $scope.addWebsocketInputRegex = function() {
+        $scope.websocketInputRegex.push({enabled: true, name: '', pattern: '', replacement: ''});
+        $scope.saveWebsocketInputRegex();
+    }
+    $scope.removeWebsocketInputRegex = function(index) {
+        $scope.websocketInputRegex.splice(index, 1);
+        $scope.saveWebsocketInputRegex();
+    }
+    $scope.saveWebsocketInputRegex = function() {
+        $scope.setConfig('websocket-input-regex', $scope.websocketInputRegex, true);
+    }
     $scope.showHistoryNavigationButtons = Config.get('show-history-navigation-buttons');
     $scope.showTextInput = Config.get('show-text-input');
     $scope.showMecabInfo = Config.get('show-mecab-info');

@@ -26,6 +26,15 @@
             <div>
                 <input type="text" placeholder="host:port" ng-model="websocketInputHost" ng-change="websocketInputConnect()">
             </div>
+            <div>RegExp for WebSocket input</div>
+            <div ng-repeat="re in websocketInputRegex">
+                <input ng-change="saveWebsocketInputRegex()" class="config-textinput" placeholder="name" ng-model="re.name">
+                <input ng-change="saveWebsocketInputRegex()" placeholder="/regex/g" ng-model="re.pattern">
+                <input ng-change="saveWebsocketInputRegex()" placeholder="newSubstr" ng-model="re.replacement">
+                <input type="checkbox" ng-change="saveWebsocketInputRegex()" ng-model="re.enabled">
+                <span class="clickable" ng-click="removeWebsocketInputRegex($index)">[x]</span>
+            </div>
+            <div><span class="clickable" ng-click="addWebsocketInputRegex()">[+]</span></div>
             <h4>show/hide</h4>
             <div>
                 <label><input type="checkbox" ng-model="showHistoryNavigationButtons" ng-click="setConfig('show-history-navigation-buttons', showHistoryNavigationButtons)">Show history navigation buttons (hotkeys always available)</label>

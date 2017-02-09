@@ -32,7 +32,7 @@ class Clipboard(object):
             time.sleep(0.2)
 
     def _check_clipboard(self):
-        text = pyperclip.paste()
+        text = pyperclip.paste().strip()
         if not text or text == self.old:
             return
         for c in clients:
