@@ -43,7 +43,7 @@ angular.module('mecab-translate')
                     re = re.match('^/(.*)/([a-z]*)$');
                     if (!re) return text;
                     re = new RegExp(re[1], re[2]);
-                    return text.replace(re, replacement);
+                    return text.replace(re, replacement.replace('\\n', '\n'));
                 }
                 input.value = text;
                 Mecab.analyze(text);
