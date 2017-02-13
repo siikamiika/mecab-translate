@@ -323,15 +323,15 @@
                 <td><b>Similar</b></td>
                 <td ng-style="{'font-size': similarKanjiSize + 'px'}">
                     <span ng-repeat="kanjiType in ['vertical', 'horizontal', 'enclosed', 'other']"><!--
-                     --><span class="unobtrusive abbr" title="{{kanjiType}}" style="font-size: 10px;">{{kanjiType.slice(0,1)}}</span><!--
+                     --><span class="abbr" title="{{kanjiType}}" style="font-size: 10px;">{{kanjiType.slice(0,1)}}</span><!--
                      --><span
                             class="clickable similar-kanji-char"
                             ng-repeat="k in similarKanji[kanjiType]"
                             ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
                             ng-click="getKanjiInfo(k[0])"
                             ng-mouseenter="getKanjidic2(k[0])"
-                            ng-mouseleave="getKanjidic2(kanji)">{{k[0]}}</span>
-                        <span ng-if="!$last" class="unobtrusive">|</span><!--
+                            ng-mouseleave="getKanjidic2(kanji)">{{k[0]}}</span><!--
+                     --><span ng-if="!$last" class="unobtrusive">|</span><!--
                  --></span>
                     <span>&nbsp;</span>
                 </td>
