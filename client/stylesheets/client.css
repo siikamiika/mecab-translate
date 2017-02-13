@@ -187,6 +187,11 @@ ul {
     font-size: 14px;
 }
 
+.similar-kanji-char {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
 .line {
     width: 90%;
     display: inline-block;

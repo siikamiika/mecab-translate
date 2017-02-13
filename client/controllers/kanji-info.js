@@ -107,4 +107,32 @@ angular.module('mecab-translate')
         }
     }
 
+    $scope.SKIPExplanation = function(skip) {
+        var output = [];
+        var shape = {'1': 'vertical', '2': 'horizontal', '3': 'enclosed', '4': 'other'};
+        var position = {
+            '1': ['left', 'right'],
+            '2': ['top', 'bottom'],
+            '3': ['enclosing', 'enclosed'],
+            '4': [
+                'Total stroke count',
+                {
+                    '1': 'Horizontal line above',
+                    '2': 'Horizontal line below',
+                    '3': 'Dividing vertical line',
+                    '4': 'Does not apply'
+                }
+            ]
+        };
+        output.push('Shape: '+skip[0]+' ('+shape[skip[0]]+')');
+        if (skip[0] < 4) {
+            output.push('Stroke count of the '+position[skip[0]][0]+' part: '+skip[1]);
+            output.push('Stroke count of the '+position[skip[0]][1]+' part: '+skip[2]);
+        } else {
+            output.push(position[skip[0]][0]+': '+skip[1]);
+            output.push('Line: '+position[skip[0]][1][skip[2]]);
+        }
+        return '\n' + output.join('\n');
+    }
+
 });

@@ -315,19 +315,25 @@
                     <span class="abbr" ng-if="kanjidicInfo.freq" title="Frequency" ng-style="{'color': blend([255,0,0], [0,0,0], (kanjidicInfo.freq || 2500)/2500)}">{{kanjidicInfo.freq}}</span>
                     <span ng-if="kanjidicInfo.jlpt" class="unobtrusive">|</span>
                     <span class="abbr" ng-if="kanjidicInfo.jlpt" title="JLPT N{{kanjidicInfo.jlpt}}">N{{kanjidicInfo.jlpt}}</span>
+                    <span ng-if="kanjidicInfo.skip" class="unobtrusive">|</span>
+                    <span class="abbr" ng-if="kanjidicInfo.skip" title="SKIP code explanation:{{SKIPExplanation(kanjidicInfo.skip)}}">{{kanjidicInfo.skip.join('-')}}</span>
                 </td>
             </tr>
             <tr>
                 <td><b>Similar</b></td>
                 <td ng-style="{'font-size': similarKanjiSize + 'px'}">
-                    <span
-                        class="clickable"
-                        ng-repeat="k in similarKanji"
-                        ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
-                        ng-click="getKanjiInfo(k[0])"
-                        ng-mouseenter="getKanjidic2(k[0])"
-                        ng-mouseleave="getKanjidic2(kanji)">{{k[0]}} </span>
-                        <span>&nbsp;</span>
+                    <span ng-repeat="kanjiType in ['vertical', 'horizontal', 'enclosed', 'other']"><!--
+                     --><span class="unobtrusive abbr" title="{{kanjiType}}" style="font-size: 10px;">{{kanjiType.slice(0,1)}}</span><!--
+                     --><span
+                            class="clickable similar-kanji-char"
+                            ng-repeat="k in similarKanji[kanjiType]"
+                            ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
+                            ng-click="getKanjiInfo(k[0])"
+                            ng-mouseenter="getKanjidic2(k[0])"
+                            ng-mouseleave="getKanjidic2(kanji)">{{k[0]}}</span>
+                        <span ng-if="!$last" class="unobtrusive">|</span><!--
+                 --></span>
+                    <span>&nbsp;</span>
                 </td>
             </tr>
         </table>

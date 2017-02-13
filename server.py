@@ -620,6 +620,19 @@ class Kanjidic2(object):
             jlpt = int(jlpt.text)
         entry['jlpt'] = jlpt
 
+        query_code = character.find('query_code')
+
+        skip = None
+        if query_code is not None:
+            all_skip = query_code.findall("q_code[@qc_type='skip']")
+            for s in all_skip:
+                if not 'skip_misclass' in s.attrib:
+                    skip = s
+                    break
+        if skip is not None:
+            skip = tuple(map(int, skip.text.split('-')))
+        entry['skip'] = skip
+
         reading_meaning = character.find('reading_meaning')
         if not reading_meaning:
             return
@@ -976,10 +989,22 @@ class KanjiSimilars(object):
         self._parse()
 
     def get(self, kanji):
-        similar = list(map(
-            lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2501),
-            self.similars.get(kanji) or []))
-        similar.sort(key=lambda k: k[1])
+        similar = dict(vertical=[], horizontal=[], enclosed=[], other=[])
+        skip_dict = {1: 'vertical', 2: 'horizontal', 3: 'enclosed', 4: 'other', -1: 'other'}
+        for k in self.similars.get(kanji) or []:
+            freq = 2501
+            skip = -1
+            info = kanjidic2.get(k)
+            if info:
+                f = info.get('freq')
+                if f:
+                    freq = f
+                s = info.get('skip')
+                if s:
+                    skip = s[0]
+            similar[skip_dict[skip]].append((k, freq))
+        for kanji_type in set(skip_dict.values()):
+            similar[kanji_type].sort(key=lambda k: k[1])
         return similar
 
     def _parse(self):
