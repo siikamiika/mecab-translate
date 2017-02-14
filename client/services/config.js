@@ -44,6 +44,25 @@ angular.module('mecab-translate')
         listen: function(key, cb) {
             configListeners[key].push(cb);
             cb(config[key]);
+        },
+        export: function() {
+            var output = {};
+            for (k in config) {
+                if (!config.hasOwnProperty(k) || ['tts-provider'].indexOf(k) !== -1) continue;
+                output[k] = config[k];
+            }
+            return JSON.stringify(output);
+        },
+        import: function(data) {
+            data = JSON.parse(data);
+            for (k in data) {
+                if (!data.hasOwnProperty(k)) continue;
+                localStorage[k] = JSON.stringify(data[k]);
+                config[k] = data[k];
+            }
+            if (confirm('Config loaded and saved. Reload to apply?')) {
+                window.location.reload();
+            }
         }
     }
 

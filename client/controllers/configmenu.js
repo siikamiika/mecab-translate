@@ -5,6 +5,36 @@ angular.module('mecab-translate')
         $scope.showConfigMenu = !$scope.showConfigMenu;
     }
 
+    $scope.importConfig = function(event) {
+        var file = event.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            Config.import(e.target.result);
+        }
+        reader.readAsText(file);
+    }
+
+    $scope.exportConfig = function() {
+        var saveData = (function () {
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+            return function (data, fileName) {
+                var blob = new Blob([data], {type: "text/plain"});
+                var url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                setTimeout(function(){
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+            };
+        }());
+        saveData(Config.export(), 'mecab-translate.config');
+    }
+
     $scope.wsInputConnected = false;
     EventBridge.addEventListener('websocket-input-connected', function() {
         $scope.wsInputConnected = true;

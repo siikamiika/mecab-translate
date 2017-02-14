@@ -12,6 +12,9 @@
     <div style="position: fixed; top: 0px; left: 0px; z-index: 2;" ng-controller="ConfigMenu">
         <div class="clickable" id="config-button" ng-click="toggleShowConfigMenu()" style="display: inline-block;">&#9881;</div>
         <div ng-show="showConfigMenu" id="config-menu">
+            <h4>Import/export config from/to a file</h4>
+            <div>Import: <input type="file" file-input-on-change="importConfig"> <span class="warning">Warning</span>: overwrites old config!</div>
+            <div>Export: <button ng-click="exportConfig()">Get File</button></div>
             <h4>TTS</h4>
             <div>
                 <select ng-model="ttsProvider" ng-change="updateTts()">
