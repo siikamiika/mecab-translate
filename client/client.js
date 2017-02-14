@@ -1,4 +1,5 @@
-angular.module('mecab-translate', []).directive('keypressEvents', [
+angular.module('mecab-translate', []);
+angular.module('mecab-translate').directive('keypressEvents', [
     '$document',
     '$rootScope',
     function($document, $rootScope) {
@@ -29,7 +30,7 @@ angular.module('mecab-translate', []).directive('keypressEvents', [
     }
 ]);
 
-angular.module('mecab-translate', []).directive('fileInputOnChange', function() {
+angular.module('mecab-translate').directive('fileInputOnChange', function() {
   return {
     restrict: 'A',
     link: function (scope, element, attrs) {
