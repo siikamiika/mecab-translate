@@ -75,8 +75,6 @@ angular.module('mecab-translate')
                 count++;
                 if (count >= max) {
                     if (last != shapeGroup[i][2]) {
-                        console.log(last)
-                        console.log(shapeGroup[i][2])
                         output.push({
                             'start': shapeGroup[start][2],
                             'end': shapeGroup[i - 1][2],
