@@ -41,7 +41,7 @@ ul {
     width: 97%;
     background-color: white;
     border-style: solid;
-    max-height: 600px;
+    max-height: 800px;
     max-height: 80vh;
 }
 
@@ -54,8 +54,19 @@ ul {
 }
 
 #radical-input-candidates {
-    height: 80px;
+    max-height: 400px;
+    max-height: 40vh;
     overflow-y: scroll;
+}
+
+.radical-input-column {
+    width: 25%;
+    min-height: 1px;
+    float: left;
+}
+
+.radical-input-stroke-count-label {
+    font-size: 10px;
 }
 
 .radical-input-candidate {
@@ -65,8 +76,8 @@ ul {
 
 #radical-input-radicals {
     overflow-y: scroll;
-    max-height: 500px;
-    max-height: 45vh;
+    max-height: 300px;
+    max-height: 30vh;
 }
 
 .radical-input-radical {

@@ -119,11 +119,46 @@
             <div ng-click="showRadicalInput = false;" class="clickable" style="position: absolute; right: 0%; display: inline-block; background-color: red;">[x]</div>
         </div>
         <div id="radical-input-candidates">
-            <div
-                ng-click="commitCharacter(k[0])"
-                class="clickable radical-input-candidate"
-                ng-repeat="k in radicalInputCandidates[charIndex]"
-                ng-style="{'color': blend([255,0,0], [0,0,0], (k[1] || 2500)/2500)}">{{k[0]}}</div>
+            <div class="radical-input-column">
+                <div ng-repeat="group in radicalInputCandidates[charIndex].vertical">
+                    <div class="radical-input-stroke-count-label">{{group.start}}-{{group.end}}</div>
+                    <div
+                        ng-click="commitCharacter(k[0])"
+                        class="clickable radical-input-candidate"
+                        ng-repeat="k in group.kanji"
+                        ng-style="{'color': blend([255,0,0], [0,0,0], (k[1] || 2500)/2500)}">{{k[0]}}</div>
+                </div>
+            </div>
+            <div class="radical-input-column">
+                <div ng-repeat="group in radicalInputCandidates[charIndex].horizontal">
+                    <div class="radical-input-stroke-count-label">{{group.start}}-{{group.end}}</div>
+                    <div
+                        ng-click="commitCharacter(k[0])"
+                        class="clickable radical-input-candidate"
+                        ng-repeat="k in group.kanji"
+                        ng-style="{'color': blend([255,0,0], [0,0,0], (k[1] || 2500)/2500)}">{{k[0]}}</div>
+                </div>
+            </div>
+            <div class="radical-input-column">
+                <div ng-repeat="group in radicalInputCandidates[charIndex].enclosed">
+                    <div class="radical-input-stroke-count-label">{{group.start}}-{{group.end}}</div>
+                    <div
+                        ng-click="commitCharacter(k[0])"
+                        class="clickable radical-input-candidate"
+                        ng-repeat="k in group.kanji"
+                        ng-style="{'color': blend([255,0,0], [0,0,0], (k[1] || 2500)/2500)}">{{k[0]}}</div>
+                </div>
+            </div>
+            <div class="radical-input-column">
+                <div ng-repeat="group in radicalInputCandidates[charIndex].other">
+                    <div class="radical-input-stroke-count-label">{{group.start}}-{{group.end}}</div>
+                    <div
+                        ng-click="commitCharacter(k[0])"
+                        class="clickable radical-input-candidate"
+                        ng-repeat="k in group.kanji"
+                        ng-style="{'color': blend([255,0,0], [0,0,0], (k[1] || 2500)/2500)}">{{k[0]}}</div>
+                </div>
+            </div>
         </div>
         <hr>
         <div id="radical-input-radicals">

@@ -721,12 +721,7 @@ class Radkfile(object):
         valid_radicals = set()
         for k in results:
             valid_radicals |= self.krad[k]
-        return dict(
-            kanji=list(map(
-                lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2501),
-                results)),
-            valid_radicals=list(valid_radicals)
-        )
+        return self._result(results, list(valid_radicals))
 
     def decompose(self, text):
         valid_radicals = set()
@@ -779,12 +774,24 @@ class Radkfile(object):
                 if radicals:
                     suggestions[i]['valid_radicals'] |= self.krad.get(c)
 
-        return [dict(
-            kanji=list(map(
-                lambda k: (k, (kanjidic2.get(k) or dict()).get('freq') or 2501),
-                s['kanji'])),
-            valid_radicals=list(s['valid_radicals'])
-        ) for s in suggestions]
+        return [self._result(s['kanji'], list(s['valid_radicals'])) for s in suggestions]
+
+    def _result(self, kanji, valid_radicals):
+        result = dict(kanji=[], valid_radicals=valid_radicals)
+
+        for k in kanji:
+            freq = 2501
+            skip = 4
+            strokes = -1
+            info = kanjidic2.get(k)
+            if info:
+                freq = info.get('freq') or freq
+                s = info.get('skip')
+                if s:
+                    skip = s[0]
+                strokes = info.get('stroke_count') or strokes
+            result['kanji'].append((k, freq, strokes, skip))
+        return result
 
     def get_radicals(self):
         return [(r, self.radicals[r]['strokes'], self.radicals[r]['radical']) for r in self.radicals]

@@ -44,36 +44,105 @@ angular.module('mecab-translate')
         }
     }
 
-    var sortInputCandidates = function(radicals) {
-        return function(a, b) {
-            function sortOrd(__a, __b) {
-                if (__a[0] == __b[0]) {
-                    return 0;
-                } else if (__a[0] > __b[0]) {
-                    return 1;
-                } else {
-                    -1;
-                }
+    var inputCandidates = function(kanji, radicals) {
+        var shapeGroups = {'vertical': [], 'horizontal': [], 'enclosed': [], 'other': []};
+        var shapeDict = {'1': 'vertical', '2': 'horizontal', '3': 'enclosed', '4': 'other'};
+
+        for (var i in kanji) {
+            shapeGroups[shapeDict[kanji[i][3]]].push(kanji[i]);
+        }
+
+        for (var k in shapeGroups) {
+            if (!shapeGroups.hasOwnProperty(k)) continue;
+            shapeGroups[k] = splitStrokeCount(shapeGroups[k]);
+            for (var i in shapeGroups[k]) {
+                shapeGroups[k][i].kanji.sort(function(a, b) {
+                    return sortRadical(a, b) || sortFreq(a, b) || sortOrd(a, b);
+                });
             }
-            function sortFreq(_a, _b) {
-                if (_a[1] == _b[1]) {
-                    return sortOrd(_a, _b);
-                } else if (_a[1] > _b[1]) {
-                    return 1;
-                } else {
-                    return -1;
+        }
+
+        function splitStrokeCount(shapeGroup) {
+            var max = 10;
+            var output = [];
+
+            shapeGroup.sort(sortStrokeCount);
+
+            var count = 0;
+            var start = 0;
+            var last = -1;
+            for (var i = 0; i < shapeGroup.length; i++) {
+                count++;
+                if (count >= max) {
+                    if (last != shapeGroup[i][2]) {
+                        console.log(last)
+                        console.log(shapeGroup[i][2])
+                        output.push({
+                            'start': shapeGroup[start][2],
+                            'end': shapeGroup[i - 1][2],
+                            'kanji': shapeGroup.slice(start, i)
+                        });
+                        start = i;
+                        count = 0;
+                    }
                 }
+                last = shapeGroup[i][2];
             }
-            var aInRadicals = radicals.indexOf($scope.radicals[a[0]]) > -1;
-            var bInRadicals = radicals.indexOf($scope.radicals[b[0]]) > -1;
+
+            if (start < shapeGroup.length) {
+                output.push({
+                    'start': shapeGroup[start][2],
+                    'end': shapeGroup[shapeGroup.length - 1][2],
+                    'kanji': shapeGroup.slice(start, shapeGroup.length)
+                });
+            }
+
+            return output;
+        }
+
+        function sortRadical(_a, _b) {
+            var aInRadicals = radicals.indexOf($scope.radicals[_a[0]]) > -1;
+            var bInRadicals = radicals.indexOf($scope.radicals[_b[0]]) > -1;
             if (aInRadicals == bInRadicals) {
-                return sortFreq(a, b);
+                return 0;
             } else if (aInRadicals) {
                 return -1;
             } else {
                 return 1;
             }
         }
+
+        function sortOrd(_a, _b) {
+            if (_a[0] == _b[0]) {
+                return 0;
+            } else if (_a[0] > _b[0]) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+
+        function sortFreq(_a, _b) {
+            if (_a[1] == _b[1]) {
+                return 0;
+            } else if (_a[1] > _b[1]) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+
+        function sortStrokeCount(_a, _b) {
+            if (_a[2] == _b[2]) {
+                return 0;
+            } else if (_a[2] > _b[2]) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+
+        return shapeGroups;
     }
 
     Radkfile.setOutput(function(data) {
@@ -82,7 +151,7 @@ angular.module('mecab-translate')
             $scope.decomposedRadicals[$scope.charIndex] = data.decomposed_radicals;
         } else if (data.valid_radicals) {
             $scope.validRadicals[$scope.charIndex] = data.valid_radicals;
-            $scope.radicalInputCandidates[$scope.charIndex] = data.kanji.sort(sortInputCandidates($scope.selectedRadicals[$scope.charIndex]));
+            $scope.radicalInputCandidates[$scope.charIndex] = inputCandidates(data.kanji, $scope.selectedRadicals[$scope.charIndex]);
         } else {
             for (i in data) {
                 if (!$scope.selectedRadicals[i]) {
@@ -93,7 +162,7 @@ angular.module('mecab-translate')
                      $scope.selectedRadicals[i] = data[i].kanji[0][0];
                      reload = true;
                 }
-                $scope.radicalInputCandidates[i] = data[i].kanji.sort(sortInputCandidates($scope.selectedRadicals[i]));
+                $scope.radicalInputCandidates[i] = inputCandidates(data[i].kanji, $scope.selectedRadicals[i]);
             }
         }
         if (reload) {
