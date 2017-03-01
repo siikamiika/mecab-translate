@@ -20,7 +20,7 @@ Make sense of Japanese text with minimal effort and learn kanji in the process. 
 
     git clone https://github.com/siikamiika/mecab-translate
     cd mecab-translate
-    pip install --upgrade tornado pypiwin32 # omit pypiwin32 if you aren't on Windows or you plan not to use SAPI5 based text-to-speech
+    pip install --upgrade tornado pypiwin32 pyperclip # omit pypiwin32 if you aren't on Windows or you plan not to use SAPI5 based text-to-speech
     ./download_dependencies.py
     # read below first
     ./server.py
