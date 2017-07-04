@@ -12,7 +12,7 @@ import os
 
 MONASH_MIRRORS = [
     'http://ftp.monash.edu.au/pub/nihongo/',
-    'ftp://ftp.uni-duisburg.de/Mirrors/ftp.monash.edu.au/pub/nihongo/',
+    #'ftp://ftp.uni-duisburg.de/Mirrors/ftp.monash.edu.au/pub/nihongo/', (password protected?)
     'ftp://ftp.monash.edu.au/pub/nihongo/'
 ]
 
@@ -32,7 +32,7 @@ else:
 JMDICT = 'JMdict_e.gz'
 KANJIDIC2 = 'kanjidic2.xml.gz'
 RADKFILE = 'radkfile.gz'
-TATOEBA = 'http://tatoeba.org/files/downloads/wwwjdic.csv'
+TATOEBA = 'examples_s.gz'
 KANJIVG = 'https://github.com/KanjiVG/kanjivg/releases/download/r20160426/kanjivg-20160426-main.zip'
 ANGULAR = 'https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js'
 UNIDIC_MECAB_TRANSLATE = 'https://github.com/siikamiika/unidic-mecab-translate/releases/download/1.2/unidic-mecab-translate-1.2.zip'
@@ -76,7 +76,7 @@ def main():
         download(MONASH + JMDICT, 'data', 'gz')
         download(MONASH + KANJIDIC2, 'data', 'gz')
         download(MONASH + RADKFILE, 'data', 'gz')
-    download(TATOEBA, 'data')
+        download(MONASH + TATOEBA, 'data', 'gz')
     download(KANJIVG, 'client', 'zip')
     download(ANGULAR, 'client/vendor')
     download(UNIDIC_MECAB_TRANSLATE, 'data', 'zip')

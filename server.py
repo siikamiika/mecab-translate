@@ -840,7 +840,7 @@ class Radkfile(object):
 class Tatoeba(object):
 
     def __init__(self):
-        self.datafile = open('data/wwwjdic.csv', 'rb')
+        self.datafile = open('data/examples_s', 'rb')
         self.dictionary = dict()
         self.lines = []
         self._parse()
@@ -880,14 +880,15 @@ class Tatoeba(object):
         file_pos, length = file_pos
 
         self.datafile.seek(file_pos)
-        line = self.datafile.read(length).decode('utf-8')
+        line = self.datafile.read(length).decode('euc-jp')
 
-        jpn, eng = line.split('\t')[2:4]
+        jpn, eng = line[3:].split('\t')
+        eng = re.match(r'(.*)#', eng).group(1)
 
         return dict(jpn=jpn, eng=eng)
 
     def _parse(self):
-        print('parsing wwwjdic.csv...')
+        print('parsing examples_s...')
         start = time.time()
 
         index_pattern = re.compile(r'([^\(\[\{~]+)(?:\|\d)?(\(.*?\))?(\[\d\d\])?({.*?})?(~)?')
@@ -897,25 +898,30 @@ class Tatoeba(object):
             if not line:
                 break
 
-            length = len(line)
-            file_pos = self.datafile.tell() - length
-            file_pos = (file_pos, length)
-            self.lines.append(file_pos)
+            if line.startswith(b'A: '):
+                length = len(line)
+                file_pos = self.datafile.tell() - length
+                file_pos = (file_pos, length)
+                self.lines.append(file_pos)
 
-            indices = line[line.rfind(b'\t') + 1:].decode('utf-8').split()
+            elif line.startswith(b'B: '):
+                indices = line[3:].decode('euc-jp').split()
 
-            for index in indices:
-                headword, reading, sense, form, good = index_pattern.match(index).groups()
-                if good:
-                    if not self.dictionary.get(headword):
-                        self.dictionary[headword] = []
-                    if reading:
-                        reading = reading[1:-1]
-                    if sense:
-                        sense = int(sense[1:-1])
-                    if form:
-                        form = form[1:-1]
-                    self.dictionary[headword].append((file_pos, reading, sense, form))
+                for index in indices:
+                    try:
+                        headword, reading, sense, form, good = index_pattern.match(index).groups()
+                    except Exception as e:
+                        print(e)
+                    if good:
+                        if not self.dictionary.get(headword):
+                            self.dictionary[headword] = []
+                        if reading:
+                            reading = reading[1:-1]
+                        if sense:
+                            sense = int(sense[1:-1])
+                        if form:
+                            form = form[1:-1]
+                        self.dictionary[headword].append((file_pos, reading, sense, form))
 
         print('    parsed in {:.2f} s'.format(time.time() - start))
 
