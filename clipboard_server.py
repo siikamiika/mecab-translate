@@ -28,7 +28,10 @@ class Clipboard(object):
 
     def _watchdog(self):
         while True:
-            self._check_clipboard()
+            try:
+                self._check_clipboard()
+            except Exception as e:
+                print(e)
             time.sleep(0.2)
 
     def _check_clipboard(self):
