@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mecab-translate</title>
     <link href="stylesheets/client.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/font-awesome.min.css" rel="stylesheet" type="text/css">
     <script src="vendor/angular.min.js"></script>
 </head>
 <body keypress-events>
@@ -35,9 +36,9 @@
                 <input ng-change="saveWebsocketInputRegex()" placeholder="/regex/g" ng-model="re.pattern">
                 <input ng-change="saveWebsocketInputRegex()" placeholder="newSubstr" ng-model="re.replacement">
                 <input type="checkbox" ng-change="saveWebsocketInputRegex()" ng-model="re.enabled">
-                <span class="clickable" ng-click="removeWebsocketInputRegex($index)">[x]</span>
+                <i class="clickable fa fa-close" ng-click="removeWebsocketInputRegex($index)"></i>
             </div>
-            <div><span class="clickable" ng-click="addWebsocketInputRegex()">[+]</span></div>
+            <div><i class="clickable fa fa-plus" ng-click="addWebsocketInputRegex()"></i></div>
             <h4>show/hide</h4>
             <div>
                 <label><input type="checkbox" ng-model="showHistoryNavigationButtons" ng-click="setConfig('show-history-navigation-buttons', showHistoryNavigationButtons)">Show history navigation buttons (hotkeys always available)</label>
@@ -75,9 +76,9 @@
                     </div>
                     <input ng-change="saveExternalSites()" class="config-textinput" placeholder="name" ng-model="externalSite.name">
                     <input ng-change="saveExternalSites()" placeholder="http://site.tld/s?q=%QUERY%" ng-model="externalSite.url">
-                    <span class="clickable" ng-click="removeExternalSite($index)">[x]</span>
+                    <i class="clickable fa fa-close" ng-click="removeExternalSite($index)"></i>
                 </div>
-                <div><span class="clickable" ng-click="addExternalSite()">[+]</span></div>
+                <div><i class="clickable fa fa-plus" ng-click="addExternalSite()"></i></div>
             </div>
             <h4>styles</h4>
             <div>
@@ -104,19 +105,19 @@
             <div style="display: inline-block;" ng-show="before">{{before}} | </div>
             <div
                 class="clickable"
-                ng-style="{'color': (charIndex == $index &amp;&amp; 'red') || 'black'}"
+                ng-style="{'color': (charIndex == $index &amp;&amp; '#5675ff') || 'white'}"
                 ng-click="changeChar($index)" ng-repeat="c in selectedRadicals track by $index"
                 style="display: inline-block; text-align: center;">{{multicharText(c)}}</div>
             <div style="display: inline-block;" ng-show="after"> | {{after}}</div>
             <form style="display: inline-block;" ng-show="showInputEdit" ng-submit="toggleInputEdit()">
                 <input style="width: 80px;" ng-model="inputEdit"></input>
             </form>
-            <div ng-click="toggleInputEdit()" class="clickable" style="display: inline-block; width: 1.5em; text-align: center;">[e]</div>
-            <div ng-click="removeChar()" class="clickable" style="display: inline-block; background-color: blue; width: 1.5em; text-align: center;">[-]</div>
-            <div ng-click="addChar()" class="clickable" style="display: inline-block; background-color: red; width: 1.5em; text-align: center;">[+]</div>
-            <div ng-click="commitText()" class="clickable" style="display: inline-block; background-color: green; width: 1.5em; text-align: center;">[&#10003;]</div>
-            <div ng-click="resetText()" class="clickable" style="display: inline-block;">[&#8635;]</div>
-            <div ng-click="showRadicalInput = false;" class="clickable" style="position: absolute; right: 0%; display: inline-block; background-color: red;">[x]</div>
+            <i ng-click="toggleInputEdit()" class="clickable fa fa-pencil-square-o"></i>
+            <i ng-click="removeChar()" class="clickable fa fa-minus"></i>
+            <i ng-click="addChar()" class="clickable fa fa-plus"></i>
+            <i ng-click="commitText()" class="clickable fa fa-check"></i>
+            <i ng-click="resetText()" class="clickable fa fa-refresh"></i>
+            <i ng-click="showRadicalInput = false;" class="clickable fa fa-close" style="position: absolute; right: 0%; display: inline-block;"></i>
         </div>
         <div id="radical-input-candidates">
             <div ng-repeat="shape in ['vertical', 'horizontal', 'enclosed', 'other']" class="radical-input-column">
@@ -126,7 +127,7 @@
                         ng-click="commitCharacter(k[0])"
                         class="clickable radical-input-candidate"
                         ng-repeat="k in group.kanji"
-                        ng-style="{'color': blend([255,0,0], [0,0,0], (k[1] || 2500)/2500)}">{{k[0]}}</div>
+                        ng-style="{'color': blend([86,117,255], [255,255,255], (k[1] || 2500)/2500)}">{{k[0]}}</div>
                 </div>
             </div>
         </div>
@@ -137,7 +138,7 @@
                 ng-change="decomposeText(decomposeInput[charIndex])"
                 ng-model="decomposeInput[charIndex]"
                 placeholder="例えば->⺅歹⺉"></input>
-            <div class="clickable" style="display: inline-block; font-size: 24px;" ng-click="resetRadicals()">&#8635;</div>
+            <i class="clickable fa fa-refresh" style="font-size: 24px;" ng-click="resetRadicals()"></i>
             <div
                 ng-class="[r.class, {'unobtrusive': r.invalid &amp;&amp; r.class == 'radical-input-radical'}, {'selected': r.selected}, {'clickable': r.class == 'radical-input-radical' &amp;&amp; !r.invalid}, {'highlight': r.decomposed}]"
                 ng-repeat="r in radicalInputRadicals"
@@ -180,12 +181,9 @@
     <div ng-controller="Output" ng-mousedown="pauseNonClickMode()" ng-mouseup="translateSelection()" ng-mouseenter="resumeNonClickMode()">
         <div ng-style="{'font-size': outputFontSize + 'px', 'max-height': outputMaxHeight, 'overflow-y': (outputMaxHeight != 'none' &amp;&amp; 'scroll') || 'show'}" id="output">
             <div
-                ng-class="mouseInside ? 'bg-highlight' : ''"
                 ng-repeat="line in lines track by $index"
-                ng-mouseenter="mouseInside = true"
-                ng-mouseleave="mouseInside = false"
                 ng-init="ttsRow = $index">
-                <div class="clickable tts-button unobtrusive" ng-mousedown="$event.stopPropagation()" ng-click="TTS(line, true); updateRow(ttsRow)" ng-class="mouseInside ? '' : 'hide'">[TTS]</div>
+                <div class="clickable tts-button unobtrusive" ng-mousedown="$event.stopPropagation()" ng-click="TTS(line, true); updateRow(ttsRow)"><i class="fa fa-comments"></i></div>
                 <div class="line" ng-class="'row-' + $index"><!--
                  --><div
                         class="clickable word"
@@ -320,7 +318,7 @@
                     <span ng-if="kanjidicInfo.grade" class="unobtrusive">|</span>
                     <span class="abbr" title="Stroke count">{{kanjidicInfo.stroke_count}}s</span>
                     <span ng-if="kanjidicInfo.freq" class="unobtrusive">|</span>
-                    <span class="abbr" ng-if="kanjidicInfo.freq" title="Frequency" ng-style="{'color': blend([255,0,0], [0,0,0], (kanjidicInfo.freq || 2500)/2500)}">{{kanjidicInfo.freq}}</span>
+                    <span class="abbr" ng-if="kanjidicInfo.freq" title="Frequency" ng-style="{'color': blend([86,117,255], [255,255,255], (kanjidicInfo.freq || 2500)/2500)}">{{kanjidicInfo.freq}}</span>
                     <span ng-if="kanjidicInfo.jlpt" class="unobtrusive">|</span>
                     <span class="abbr" ng-if="kanjidicInfo.jlpt" title="JLPT N{{kanjidicInfo.jlpt}}">N{{kanjidicInfo.jlpt}}</span>
                     <span ng-if="kanjidicInfo.skip" class="unobtrusive">|</span>
@@ -335,7 +333,7 @@
                      --><span
                             class="clickable similar-kanji-char"
                             ng-repeat="k in similarKanji[kanjiType]"
-                            ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
+                            ng-style="{'color': blend([86,117,255], [255,255,255], k[1]/2500)}"
                             ng-click="getKanjiInfo(k[0])"
                             ng-mouseenter="getKanjidic2(k[0])"
                             ng-mouseleave="getKanjidic2(kanji)">{{k[0]}}</span><!--
@@ -361,7 +359,7 @@
             <span
                 ng-repeat="k in kanjivgCombinations"
                 class="clickable"
-                ng-style="{'color': blend([255,0,0], [0,0,0], k[1]/2500)}"
+                ng-style="{'color': blend([86,117,255], [255,255,255], k[1]/2500)}"
                 ng-click="getKanjiInfo(k[0])"
                 ng-mouseenter="getKanjidic2(k[0]); getSimilarKanji(k[0])"
                 ng-mouseleave="getKanjidic2(kanji); getSimilarKanji(kanji)">{{k[0]}} </span>
@@ -446,10 +444,10 @@
                             <span>{{gloss}}</span><span ng-if="!$last" class="unobtrusive"> | </span>
                         </span>
                         <span ng-if="translation.lsource.length" ng-repeat="lsource in translation.lsource" class="unobtrusive">({{lsource.join(': ')}})</span>
-                        <span class="unobtrusive clickable reference" ng-if="translation.example" ng-click="translation.showExample = !translation.showExample">[example]</span>
+                        <i class="unobtrusive clickable fa fa-info-circle" ng-if="translation.example" ng-click="translation.showExample = !translation.showExample"></i>
                         <span ng-if="translation.showExample" class="unobtrusive">
                             <br>
-                            <span ng-repeat="part in translation.example.jpn track by $index" ng-style="{'color': part.form ? 'red' : ''}">{{part.text}}</span>
+                            <span ng-repeat="part in translation.example.jpn track by $index" ng-style="{'color': part.form ? '#5675ff' : ''}">{{part.text}}</span>
                             <br>
                             <span>{{translation.example.eng}}</span>
                         </span>

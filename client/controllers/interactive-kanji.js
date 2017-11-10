@@ -12,17 +12,17 @@ angular.module('mecab-translate')
     });
 
     var kanjiPartColors = [
-        '#0d5ba6',
-        '#ce3434',
-        '#049a40',
-        '#e6a600',
+        '#5ea8f2',
+        '#dd7373',
+        '#55fb97',
+        '#ffcf51',
         '#d27d8e',
-        'blue',
-        'red',
-        'green',
-        'cyan',
-        'magenta',
-        'yellow'
+        '#5151ff',
+        '#ff5151',
+        '#51ff51',
+        '#51ffff',
+        '#ff51ff',
+        '#ffff51'
     ];
 
     var mouseOver = null;
@@ -85,6 +85,7 @@ angular.module('mecab-translate')
 
         var groups = [].slice.call(interactiveKanji.getElementsByTagName('g'), 1);
         groups[0].setAttribute('stroke-width', 5);
+        groups[0].setAttribute('stroke', '#fff');
         var original = groups[0].getAttribute('kvg:element');
 
         var topGroups = groups.slice(1).filter(function(group) {
