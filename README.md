@@ -8,7 +8,7 @@ Make sense of Japanese text with minimal effort and learn kanji in the process. 
 
 * Tested on Windows XP, Windows 7, Linux, should work on Mac as well
 * [Python](https://www.python.org/downloads/) 2 or 3
-* [MeCab](https://github.com/taku910/mecab)
+* [MeCab](https://github.com/taku910/mecab) (binary included for Windows)
 * (recommended if Windows) some SAPI5 text-to-speech engine that can speak Japanese. [ResponsiveVoice](http://responsivevoice.org/) can be used as well, though.
 
 ### Front-end
@@ -25,7 +25,7 @@ Make sense of Japanese text with minimal effort and learn kanji in the process. 
     # read below first
     ./server.py
 
-On Windows, mecab.exe must be set available in PATH. Linux package managers should do this by default.
+On Linux, MeCab must be installed separately.
 
 ## Use
 
