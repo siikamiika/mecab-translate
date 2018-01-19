@@ -19,6 +19,8 @@ angular.module('mecab-translate').directive('keypressEvents', [
                             $rootScope.$broadcast('input-history-forward');
                         else if (e.which == 78) // Alt+n
                             $rootScope.$broadcast('toggle-non-click-mode');
+                        else if (e.which == 82) // Alt+r
+                            $rootScope.$broadcast('clear-input');
                         else
                             preventDefault = false;
                         if (preventDefault)

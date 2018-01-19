@@ -74,4 +74,11 @@ angular.module('mecab-translate')
         input.focus();
     });
 
+    $rootScope.$on('clear-input', function() {
+        input.focus();
+        $scope.textInput = '';
+        input.value = '';
+        $scope.analyze();
+    });
+
 });
