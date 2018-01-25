@@ -6,11 +6,27 @@ import time
 from threading import Thread
 import sys
 import os
+from itertools import zip_longest
 
 if os.name == 'posix':
     pyperclip.set_clipboard('xclip')
 
 clients = []
+
+def remove_repetition(text, n):
+    if len(text) % n != 0:
+        return text
+
+    output = []
+    args = [iter(text)] * n
+    for group in zip_longest(*args):
+        first_char = group[0]
+        output.append(first_char)
+        for c in group[1:]:
+            if c != first_char:
+                return text
+
+    return ''.join(output)
 
 class Clipboard(object):
 
@@ -38,8 +54,9 @@ class Clipboard(object):
         text = pyperclip.paste().strip()
         if not text or text == self.old:
             return
+        filtered_text = remove_repetition(text, 2)
         for c in clients:
-            c.write_message(text)
+            c.write_message(filtered_text)
         self.old = text
 
 
