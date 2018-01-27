@@ -369,7 +369,7 @@
     <!-- Translation -->
     <div ng-controller="Translation">
         <div ng-if="query && !query.literal">
-            Results for 「{{query}}」<a target="_blank" ng-href="{{externalLink(externalSite.url, query)}}" ng-repeat="externalSite in externalSites" ng-if="externalSite.aboveResults">[{{externalSite.name}}]</a>
+            Results for 「{{query}}」<a rel="noopener noreferrer" target="_blank" ng-href="{{externalLink(externalSite.url, query)}}" ng-repeat="externalSite in externalSites" ng-if="externalSite.aboveResults">[{{externalSite.name}}]</a>
         </div>
         <div ng-if="shorterEntries" class="warning">
             No exact matches! Did you mean...
@@ -388,6 +388,7 @@
                      --><a
                             class="unobtrusive"
                             style="font-size: 16px;"
+                            rel="noopener noreferrer"
                             target="_blank"
                             ng-href="{{externalLink(externalSite.url, word.text)}}"
                             ng-repeat="externalSite in externalSites"
@@ -412,6 +413,7 @@
                      --><a
                             class="unobtrusive"
                             style="font-size: 16px;"
+                            rel="noopener noreferrer"
                             target="_blank"
                             ng-href="{{externalLink(externalSite.url, reading.text)}}"
                             ng-repeat="externalSite in externalSites"
