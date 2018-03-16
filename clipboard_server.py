@@ -8,6 +8,13 @@ import sys
 import os
 from itertools import zip_longest
 
+try:
+    from tornado.platform.asyncio import AnyThreadEventLoopPolicy
+    import asyncio
+    asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+except:
+    pass
+
 if os.name == 'posix':
     pyperclip.set_clipboard('xclip')
 
