@@ -35,6 +35,12 @@ def remove_repetition(text, n):
 
     return ''.join(output)
 
+JP_TEXT = (
+    (0x3040, 0x309f), # hiragana
+    (0x30a0, 0x30ff), # katakana
+    (0x4e00, 0x9fcc), # kanji
+)
+
 def is_japanese(text):
     pos = 0
     length = len(text)
@@ -43,10 +49,10 @@ def is_japanese(text):
             pos += 1
             continue
         char_code = ord(text[pos])
-        if 0x4e00 < char_code < 0x9fcc:
-            return True
-        else:
-            pos += length // 10 or 1
+        for start, end in JP_TEXT:
+            if start <= char_code <= end:
+                return True
+        pos += length // 10 or 1
 
 class Clipboard(object):
 
