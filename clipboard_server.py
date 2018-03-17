@@ -35,6 +35,19 @@ def remove_repetition(text, n):
 
     return ''.join(output)
 
+def is_japanese(text):
+    pos = 0
+    length = len(text)
+    while pos < length:
+        if not text[pos].strip():
+            pos += 1
+            continue
+        char_code = ord(text[pos])
+        if 0x4e00 < char_code < 0x9fcc:
+            return True
+        else:
+            pos += length // 10 or 1
+
 class Clipboard(object):
 
     def __init__(self):
@@ -59,6 +72,8 @@ class Clipboard(object):
 
     def _check_clipboard(self):
         text = pyperclip.paste().strip()
+        if not is_japanese(text):
+            return
         if not text or text == self.old:
             return
         filtered_text = remove_repetition(text, 2)
