@@ -13,7 +13,7 @@ Make sense of Japanese text with minimal effort and learn kanji in the process. 
 
 ### Front-end
 
-* A modern web browser (Blink-based browsers should work better with SVG)
+* A modern web browser
 * Mouse highly recommended, but touch devices should work to some extent
 
 ## Deployment
